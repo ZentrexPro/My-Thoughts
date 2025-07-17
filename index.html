@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,37 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zentrex Quotes</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      color: #fff;
+      box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-image: url('https://images.unsplash.com/photo-1602407294553-d86cdaa0f2d3?auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
       height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      text-align: center;
     }
 
     .quote-box {
-      max-width: 90%;
-      padding: 30px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      width: 300px;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
     }
 
     .quote {
-      font-size: 1.8rem;
-      font-style: italic;
+      font-size: 20px;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    @media (max-width: 500px) {
+      .quote-box {
+        width: 250px;
+        height: 250px;
+        padding: 20px;
+      }
+
+      .quote {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="quote-box">
     <div class="quote">
-      "Logon ne mujhe todne ki puri koshish ki... aur maine har baar khud ko aur mazboot banaya 💔🖤"
+      “Log mujhe todte gaye… aur main khud ko jodta gaya 💭🖤”
     </div>
   </div>
 </body>
