@@ -2,62 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zentrix Thoughts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Thoughts</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
-      height: 100vh;
-      background: url('https://i.postimg.cc/hjBQy2N8/zentrix-bg.jpg') no-repeat center center fixed;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('bg.jpg') no-repeat center center fixed;
       background-size: cover;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Segoe UI', sans-serif;
     }
 
-    .quote-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-      padding: 30px;
+    .card {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px 40px;
       max-width: 90%;
-      width: 500px;
-      color: #fff;
+      width: 400px;
       text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      color: white;
     }
 
-    .quote-card h1 {
-      font-size: 1.8rem;
-      margin-bottom: 15px;
+    h1 {
+      font-size: 28px;
+      margin-bottom: 16px;
+      text-shadow: 1px 1px 4px black;
     }
 
-    .quote-card p {
-      font-size: 1.2rem;
-      line-height: 1.6;
+    p {
+      font-size: 18px;
+      line-height: 1.5;
+      text-shadow: 1px 1px 3px black;
     }
 
-    @media (max-width: 600px) {
-      .quote-card {
-        width: 90%;
+    @media (max-width: 500px) {
+      .card {
         padding: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="quote-card">
-    <h1>My Thoughts 💭</h1>
+  <div class="card">
+    <h1>My Thoughts</h1>
     <p>
-      "Log mujhe hurt karne ke liye kisi bhi hadd tak gir sakte hain...<br />
-      Par main har baar khud ko jodta hoon jaise kuch hua hi nahi tha."
+      लोग मुझे तोड़ने की कसम खा चुके हैं…  
+      और मैं हर बार खुद को जोड़ता रहा  
+      जैसे कुछ हुआ ही नहीं था 💭🖤
     </p>
   </div>
 </body>
