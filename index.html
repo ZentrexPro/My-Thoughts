@@ -4,14 +4,30 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Thoughts</title>
-
-  <!-- ✅ Google Analytics Tracking Code -->
+  
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-WYSBQ3FW82');
+
+    // Default GA tracking
+    gtag('config', 'G-WYSBQ3FW82', {
+      'transport_type': 'beacon',
+      'anonymize_ip': false, // Let GA capture location
+    });
+
+    // Custom event to track Instagram referrals
+    document.addEventListener("DOMContentLoaded", () => {
+      const ref = document.referrer;
+      if (ref.includes("instagram.com") || ref.includes("l.instagram.com")) {
+        gtag('event', 'visit_from_instagram', {
+          'event_category': 'Referral',
+          'event_label': ref
+        });
+      }
+    });
   </script>
 
   <style>
