@@ -15,16 +15,16 @@
     // Default GA tracking
     gtag('config', 'G-WYSBQ3FW82', {
       'transport_type': 'beacon',
-      'anonymize_ip': false, // Let GA capture location
+      'anonymize_ip': false
     });
 
-    // Custom event to track Instagram referrals
+    // Instagram referral tracking
     document.addEventListener("DOMContentLoaded", () => {
-      const ref = document.referrer;
+      const ref = document.referrer.toLowerCase();
       if (ref.includes("instagram.com") || ref.includes("l.instagram.com")) {
         gtag('event', 'visit_from_instagram', {
-          'event_category': 'Referral',
-          'event_label': ref
+          event_category: 'Referral',
+          event_label: ref
         });
       }
     });
@@ -67,17 +67,33 @@
       text-shadow: 2px 2px 6px black;
     }
 
-    .glass-card p {
+    .glass-card h4 {
       font-size: 18px;
       line-height: 1.6;
       text-shadow: 1px 1px 2px black;
+      margin-bottom: 20px;
+    }
+
+    .track-btn {
+      padding: 12px 20px;
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .track-btn:hover {
+      background-color: #e68a00;
     }
   </style>
 </head>
 <body>
   <div class="glass-card">
     <h1>@nextgenn__vee</h1>
-    <p><h4>
+    <h4>
     »“Pehle log hamse pyar krte hai, phir hamari sari bate mante hai:;
       <br>
        Or jab humse man bhar jata hai to vo sare kaam vese krte h jinse hume hurt ho!!
@@ -85,7 +101,22 @@
       wow That's Great Guys & Thanks a Lot
       ”«
     </h4>
-    </p>
+
+    <!-- Button -->
+    <button class="track-btn" id="clickG">Click Here G</button>
   </div>
+
+  <script>
+    document.getElementById("clickG").addEventListener("click", () => {
+      // Show message to user
+      alert("Namaste! Aapne 'Click Here G' button click kiya 😄");
+
+      // Send event to Google Analytics
+      gtag('event', 'click_here_g', {
+        event_category: 'Button',
+        event_label: 'Click Here G'
+      });
+    });
+  </script>
 </body>
 </html>
