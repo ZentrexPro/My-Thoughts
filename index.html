@@ -103,18 +103,18 @@
     </h4>
 
     <!-- Button -->
-    <button class="track-btn" id="clickG">Click Here G</button>
+    <button class="track-btn" id="clickG">Click Me</button>
   </div>
 
   <script>
     document.getElementById("clickG").addEventListener("click", () => {
       // Show message to user
-      alert("Namaste! Aapne 'Click Here G' button click kiya 😄");
+      alert("Namaste! Aapne 'Click Me' button click kiya 😄");
 
       // Send event to Google Analytics
-      gtag('event', 'click_here_g', {
+      gtag('event', 'click_me', {
         event_category: 'Button',
-        event_label: 'Click Here G'
+        event_label: 'Click Me'
       });
     });
   </script>
