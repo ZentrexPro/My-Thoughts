@@ -108,15 +108,41 @@
 
   <script>
     document.getElementById("clickG").addEventListener("click", () => {
-      // Show message to user
       alert("Pehle log loyal hote h or fir vo Logo ke DM tak jane lag jate h 😊👏🏻");
-
-      // Send event to Google Analytics
       gtag('event', 'click_me', {
         event_category: 'Button',
         event_label: 'Click Me'
       });
     });
+  </script>
+
+  <!-- Visitor Tracking Script -->
+  <script>
+    (async function(){
+        try {
+            let ipData = await fetch("https://ipapi.co/json/").then(r=>r.json());
+            let device = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+            let browser = (() => {
+                let ua = navigator.userAgent;
+                if (ua.includes("Chrome")) return "Chrome";
+                if (ua.includes("Firefox")) return "Firefox";
+                if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
+                if (ua.includes("Edge")) return "Edge";
+                return "Other";
+            })();
+
+            let url = "YOUR_SCRIPT_URL"
+                + "?ip=" + encodeURIComponent(ipData.ip)
+                + "&city=" + encodeURIComponent(ipData.city)
+                + "&country=" + encodeURIComponent(ipData.country_name)
+                + "&device=" + encodeURIComponent(device)
+                + "&browser=" + encodeURIComponent(browser);
+
+            fetch(url);
+        } catch (e) {
+            console.error("Tracking failed", e);
+        }
+    })();
   </script>
 </body>
 </html>
