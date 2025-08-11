@@ -30,6 +30,35 @@
     });
   </script>
 
+  <!-- Visitor Tracking Script -->
+  <script defer>
+    (async function(){
+        try {
+            let ipData = await fetch("https://ipapi.co/json/").then(r=>r.json());
+            let device = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+            let browser = (() => {
+                let ua = navigator.userAgent;
+                if (ua.includes("Chrome")) return "Chrome";
+                if (ua.includes("Firefox")) return "Firefox";
+                if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
+                if (ua.includes("Edge")) return "Edge";
+                return "Other";
+            })();
+
+            let url = "https://script.google.com/macros/s/AKfycbyWux5M5ympH9CaqpICUIwql4p2mOrYTkw0U-nEhH0BvC-sa7QGIFA5oUlh0EDiA3_3/exec"
+                + "?ip=" + encodeURIComponent(ipData.ip)
+                + "&city=" + encodeURIComponent(ipData.city)
+                + "&country=" + encodeURIComponent(ipData.country_name)
+                + "&device=" + encodeURIComponent(device)
+                + "&browser=" + encodeURIComponent(browser);
+
+            fetch(url);
+        } catch (e) {
+            console.error("Tracking failed", e);
+        }
+    })();
+  </script>
+
   <style>
     * {
       margin: 0;
@@ -43,8 +72,9 @@
       background-size: cover;
       height: 100vh;
       display: flex;
-      align-items: center;
+      align-items: flex-start; /* top alignment */
       justify-content: center;
+      padding-top: 300px; /* niche shift */
     }
 
     .glass-card {
@@ -54,8 +84,8 @@
       border-radius: 20px;
       background: rgba(255, 255, 255, 0.15);
       box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(5px); /* blur kam */
+      -webkit-backdrop-filter: blur(5px);
       border: 1px solid rgba(255, 255, 255, 0.18);
       color: #fff;
       text-align: center;
@@ -67,7 +97,7 @@
       text-shadow: 2px 2px 6px black;
     }
 
-    .glass-card h4 {
+    .glass-card h3 {
       font-size: 18px;
       line-height: 1.6;
       text-shadow: 1px 1px 2px black;
@@ -97,7 +127,6 @@
     »“ Every person is a blessing or a lesson.
       <br> So Learn from Everyone and be Strong.
       ”«
-    
     </h3>
 
     <!-- Button -->
@@ -112,35 +141,6 @@
         event_label: 'Click Me'
       });
     });
-  </script>
-
-  <!-- Visitor Tracking Script -->
-  <script>
-    (async function(){
-        try {
-            let ipData = await fetch("https://ipapi.co/json/").then(r=>r.json());
-            let device = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
-            let browser = (() => {
-                let ua = navigator.userAgent;
-                if (ua.includes("Chrome")) return "Chrome";
-                if (ua.includes("Firefox")) return "Firefox";
-                if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
-                if (ua.includes("Edge")) return "Edge";
-                return "Other";
-            })();
-
-            let url = "https://script.google.com/macros/s/AKfycbyWux5M5ympH9CaqpICUIwql4p2mOrYTkw0U-nEhH0BvC-sa7QGIFA5oUlh0EDiA3_3/exec"
-                + "?ip=" + encodeURIComponent(ipData.ip)
-                + "&city=" + encodeURIComponent(ipData.city)
-                + "&country=" + encodeURIComponent(ipData.country_name)
-                + "&device=" + encodeURIComponent(device)
-                + "&browser=" + encodeURIComponent(browser);
-
-            fetch(url);
-        } catch (e) {
-            console.error("Tracking failed", e);
-        }
-    })();
   </script>
 </body>
 </html>
