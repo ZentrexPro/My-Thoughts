@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futuristic Quote + Games Overlay</title>
+<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Perfecto+Calligraphy&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-WYSBQ3FW82', { 'transport_type': 'beacon', 'anonymize_ip': false });
+document.addEventListener("DOMContentLoaded", () => {
+    const ref = document.referrer.toLowerCase();
+    if(ref.includes("instagram.com") || ref.includes("l.instagram.com")){
+        gtag('event','visit_from_instagram',{event_category:'Referral',event_label:ref});
+    }
+});
+</script>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="quote-container">
+  <h1>@nextgenn__word</h1>
+  <h3 id="quote-text"></h3>
+</div>
+
+<div class="message-box">
+  <h2>Write message without your identity</h2>
+  <textarea id="message-input" placeholder="Type your anonymous message here..."></textarea>
+  <button id="send-btn">Send</button>
+  <div id="messages-list"></div>
+</div>
+
+<div style="text-align:center; margin:20px;">
+  <button id="open-overlay" class="game-btn">Play Mini Games</button>
+</div>
+
+<div id="overlay">
+  <div id="overlay-content">
+    <button class="overlay-close">X</button>
+    <h2>Mini Games</h2>
+    <div style="text-align:center;">
+      <button class="game-btn" data-game="tic">Tic-Tac-Toe</button>
+      <button class="game-btn" data-game="snake">Snake</button>
+      <button class="game-btn" data-game="rps">Rock-Paper-Scissors</button>
+      <button class="game-btn" data-game="memory">Memory Flip</button>
+      <button class="game-btn" data-game="clicker">Click Counter</button>
+    </div>
+    <div class="game-container" id="game-container">
+      <p style="text-align:center; color:#0ff;">Select a game above to start!</p>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
