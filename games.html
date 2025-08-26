@@ -5,92 +5,111 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mini Games</title>
 <style>
-  :root { --bg:#0b0f14; --card:#141a22; --acc:#00fff5; --txt:#e8f1f2; }
+  :root {
+    --bg:#0b0f14; --card:#141a22; --acc:#00fff5; --txt:#e8f1f2;
+  }
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+  body{
+    margin:0; font-family:system-ui,Segoe UI,Arial,sans-serif;
+    background:var(--bg); color:var(--txt); min-height:100vh;
+    display:flex; flex-direction:column; align-items:center;
+  }
   header{width:100%;padding:18px 16px;text-align:center;border-bottom:1px solid #1e2631}
   h1{margin:0;font-size:22px;letter-spacing:.3px}
-  .grid{width:min(950px,92%);margin:22px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-  .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;flex-direction:column;justify-content:space-between}
-  .card h3{margin:.2rem 0 0.5rem;font-size:18px}
+  .grid{
+    width:min(950px,92%); margin:22px auto; display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;
+  }
+  .card{
+    background:var(--card); padding:18px; border-radius:14px;
+    box-shadow:0 8px 24px rgba(0,0,0,.35); display:flex;
+    flex-direction:column; justify-content:space-between;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .card:hover{
+    transform: translateY(-6px);
+    box-shadow:0 12px 32px rgba(0,255,255,.5);
+  }
+  .card h3{margin:.2rem 0 0.5rem;font-size:18px;color:#0ff;}
   .card p{margin:0 0 10px;color:#a8b3bd;font-size:14px;min-height:38px}
-  .btn{border:0;border-radius:10px;padding:9px 14px;background:var(--acc);color:#001;cursor:pointer;font-weight:700}
-  .btn:hover{filter:brightness(1.05)}
+  .btn{
+    border:0;border-radius:10px;padding:9px 14px;
+    background:var(--acc); color:#001; cursor:pointer; font-weight:700;
+    transition: transform .08s ease, background .2s ease;
+  }
+  .btn:hover{ background:#0cc; }
   footer{margin:24px 0 28px;color:#9fb2be;font-size:13px}
   .back{position:fixed;left:12px;top:12px}
   .back a{color:#9fe; text-decoration:none;font-weight:600}
 </style>
 </head>
 <body>
-  <div class="back"><a href="index.html">← Back</a></div>
-  <header><h1>🎮 Mini Games</h1></header>
-  <main class="grid">
-    <div class="card">
-      <h3>Tic Tac Toe</h3>
-      <p>Classic 3×3 battle. Beat the AI or a friend locally.</p>
-      <button class="btn" onclick="location.href='tic-tac-toe.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Rock Paper Scissors</h3>
-      <p>Best of luck vs Computer. Simple & fast.</p>
-      <button class="btn" onclick="location.href='rock-paper.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Memory Flip</h3>
-      <p>Match the pairs. How sharp is your memory?</p>
-      <button class="btn" onclick="location.href='memory.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Snake</h3>
-      <p>Eat, grow, survive. Arrow keys / touch controls.</p>
-      <button class="btn" onclick="location.href='snake.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Flappy Bird</h3>
-      <p>Tap/Space to fly. Avoid pipes!</p>
-      <button class="btn" onclick="location.href='flappy.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>2048</h3>
-      <p>Join the tiles & reach 2048.</p>
-      <button class="btn" onclick="location.href='2048.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Minesweeper</h3>
-      <p>Clear the board without hitting a mine.</p>
-      <button class="btn" onclick="location.href='minesweeper.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Dino</h3>
-      <p>Jump and duck to survive like Chrome dino.</p>
-      <button class="btn" onclick="location.href='dino.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Typing Speed Game</h3>
-      <p>Test how fast you can type.</p>
-      <button class="btn" onclick="location.href='typing-speed.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Pong</h3>
-      <p>Classic paddle vs ball arcade game.</p>
-      <button class="btn" onclick="location.href='pong.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Connect Four</h3>
-      <p>Drop tokens & connect 4 in a row.</p>
-      <button class="btn" onclick="location.href='connect-four.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Ludo (vs Computer)</h3>
-      <p>Roll dice & race your token against AI.</p>
-      <button class="btn" onclick="location.href='ludo.html'">Play</button>
-    </div>
-    <div class="card">
-      <h3>Snake & Ladders</h3>
-      <p>Climb ladders, avoid snakes. Reach 100 first!</p>
-      <button class="btn" onclick="location.href='snake-and-ladders.html'">Play</button>
-    </div>
-  </main>
-  <footer>Made for fun ✨</footer>
+
+<div class="back"><a href="index.html">← Back</a></div>
+<header><h1>🎮 Mini Games</h1></header>
+
+<main class="grid">
+  <div class="card">
+    <h3>Tic Tac Toe</h3>
+    <p>Classic 3×3 battle. Beat the AI or a friend locally.</p>
+    <button class="btn" onclick="location.href='tic-tac-toe.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Rock Paper Scissors</h3>
+    <p>Best of luck vs Computer. Simple & fast.</p>
+    <button class="btn" onclick="location.href='rock-paper.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Memory Flip</h3>
+    <p>Match the pairs. Test your memory.</p>
+    <button class="btn" onclick="location.href='memory.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Snake</h3>
+    <p>Eat, grow, survive. Arrow keys / touch controls.</p>
+    <button class="btn" onclick="location.href='snake.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Flappy</h3>
+    <p>Tap / Space to fly. Avoid pipes!</p>
+    <button class="btn" onclick="location.href='flappy.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Dino Runner</h3>
+    <p>Jump over cacti and survive! Use Space / Tap.</p>
+    <button class="btn" onclick="location.href='dino.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Coin Flip</h3>
+    <p>Guess Head or Tail and test your luck.</p>
+    <button class="btn" onclick="location.href='coin.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Dice Roll</h3>
+    <p>Guess a number 1–6 and roll the dice.</p>
+    <button class="btn" onclick="location.href='dice.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Typing Speed</h3>
+    <p>Test your typing speed and accuracy.</p>
+    <button class="btn" onclick="location.href='typing-speed.html'">Play</button>
+  </div>
+
+  <div class="card">
+    <h3>Snake & Ladders</h3>
+    <p>Roll dice, climb ladders, avoid snakes!</p>
+    <button class="btn" onclick="location.href='snake-and-ladders.html'">Play</button>
+  </div>
+</main>
+
+<footer>Made for fun ✨</footer>
 </body>
-        </html>
+</html>
