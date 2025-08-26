@@ -3,53 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Futuristic Handwriting Quote</title>
+<title>Futuristic Handwriting Quote + Messages</title>
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Perfecto+Calligraphy&display=swap" rel="stylesheet">
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-WYSBQ3FW82', { 'transport_type': 'beacon', 'anonymize_ip': false });
-
-document.addEventListener("DOMContentLoaded", () => {
-    const ref = document.referrer.toLowerCase();
-    if(ref.includes("instagram.com") || ref.includes("l.instagram.com")){
-        gtag('event','visit_from_instagram',{event_category:'Referral',event_label:ref});
-    }
-});
-</script>
-
-<!-- Visitor Tracking -->
-<script defer>
-(async function(){
-    try {
-        let ipData = await fetch("https://ipapi.co/json/").then(r=>r.json());
-        let device = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
-        let browser = (() => {
-            let ua = navigator.userAgent;
-            if(ua.includes("Chrome")) return "Chrome";
-            if(ua.includes("Firefox")) return "Firefox";
-            if(ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
-            if(ua.includes("Edge")) return "Edge";
-            return "Other";
-        })();
-
-        let url = "https://script.google.com/macros/s/AKfycbyWux5M5ympH9CaqpICUIwql4p2mOrYTkw0U-nEhH0BvC-sa7QGIFA5oUlh0EDiA3_3/exec"
-            + "?ip=" + encodeURIComponent(ipData.ip)
-            + "&city=" + encodeURIComponent(ipData.city)
-            + "&country=" + encodeURIComponent(ipData.country_name)
-            + "&device=" + encodeURIComponent(device)
-            + "&browser=" + encodeURIComponent(browser);
-
-        fetch(url);
-    } catch(e){console.error("Tracking failed", e);}
-})();
-</script>
 
 <style>
 html, body {
@@ -57,14 +14,15 @@ html, body {
   padding:0;
   width:100%;
   height:100%;
-  overflow:hidden;
+  overflow:auto;
   background:#000;
   font-family: 'Perfecto Calligraphy', cursive;
+  color:#ddd;
 }
 
 /* Particle background */
 canvas#bg {
-  position:absolute;
+  position:fixed;
   top:0; left:0;
   width:100%;
   height:100%;
@@ -73,13 +31,10 @@ canvas#bg {
 
 /* Quote container */
 .quote-container {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
+  position:relative;
   max-width:90%;
-  width:80%;
-  padding:30px 40px;
+  margin:40px auto;
+  padding:25px 35px;
   text-align:center;
   z-index:1;
   border: 2px solid #fff;
@@ -104,7 +59,6 @@ canvas#bg {
   text-shadow: 0 0 4px #0ff;
   white-space:pre-wrap;
   overflow:hidden;
-  box-sizing:border-box;
 }
 
 .cursor {
@@ -119,6 +73,77 @@ canvas#bg {
   0%,50%,100%{opacity:1;}
   25%,75%{opacity:0;}
 }
+
+/* Message box */
+.message-box {
+  position:relative;
+  max-width:600px;
+  margin:40px auto;
+  padding:20px;
+  border: 2px solid #fff;
+  border-radius:15px;
+  background: rgba(0,0,0,0.3);
+  box-shadow: 0 0 10px #fff;
+}
+
+.message-box h2 {
+  text-align:center;
+  margin-bottom:10px;
+  color:#0ff;
+  font-family:'Audiowide', sans-serif;
+}
+
+.message-box textarea {
+  width:100%;
+  height:80px;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #0ff;
+  background:#111;
+  color:#ddd;
+  resize:none;
+  font-family: 'Perfecto Calligraphy', cursive;
+  font-size:1rem;
+}
+
+.message-box button {
+  margin-top:10px;
+  padding:10px 20px;
+  border:none;
+  border-radius:10px;
+  background:#0ff;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#messages-list {
+  margin-top:20px;
+  max-height:300px;
+  overflow-y:auto;
+}
+
+.message-item {
+  background:#111;
+  border:1px solid #0ff;
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:10px;
+  word-wrap:break-word;
+  position:relative;
+}
+
+.message-item .delete-btn {
+  position:absolute;
+  top:5px;
+  right:5px;
+  background:#ff0000;
+  color:#fff;
+  border:none;
+  border-radius:5px;
+  padding:2px 6px;
+  cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -130,12 +155,19 @@ canvas#bg {
   <h3 id="quote-text"></h3>
 </div>
 
+<div class="message-box">
+  <h2>Write message for me with your name</h2>
+  <textarea id="message-input" placeholder="Type your message here..."></textarea>
+  <button id="send-btn">Send</button>
+  <div id="messages-list"></div>
+</div>
+
 <script>
 // Particle background
 const canvas = document.getElementById('bg');
 const ctx = canvas.getContext('2d');
 let particles = [];
-const particleCount = 150;
+const particleCount = 120;
 
 function initParticles(){
   particles = [];
@@ -144,8 +176,8 @@ function initParticles(){
       x: Math.random()*canvas.width,
       y: Math.random()*canvas.height,
       r: Math.random()*2+1,
-      dx: (Math.random()-0.5)*0.7,
-      dy: (Math.random()-0.5)*0.7,
+      dx: (Math.random()-0.5)*0.6,
+      dy: (Math.random()-0.5)*0.6,
       color: `hsl(${Math.random()*360}, 80%, 60%)`
     });
   }
@@ -156,7 +188,6 @@ function resizeCanvas(){
   canvas.height = window.innerHeight;
   initParticles();
 }
-
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
@@ -178,10 +209,9 @@ function animate(){
 animate();
 
 // Typewriter effect
-const text = "My Golden Period Started 🪐";
+const text = "You deserve like a gold 🪙 <br>and<br> I deserve like a diamond 💎";
 const target = document.getElementById('quote-text');
 let index = 0;
-
 function typeWriter(){
   if(index < text.length){
     let char = text.charAt(index);
@@ -207,7 +237,50 @@ function typeWriter(){
   }
 }
 typeWriter();
-</script>
 
+// Message system using localStorage
+const sendBtn = document.getElementById('send-btn');
+const input = document.getElementById('message-input');
+const messagesList = document.getElementById('messages-list');
+
+// Load messages from localStorage
+function loadMessages(){
+  messagesList.innerHTML = '';
+  const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+  messages.forEach((msg, i)=>{
+    const div = document.createElement('div');
+    div.classList.add('message-item');
+    div.innerHTML = `<strong>${msg.name}</strong>: ${msg.text} <button class="delete-btn" data-index="${i}">X</button>`;
+    messagesList.appendChild(div);
+  });
+}
+
+// Save message
+sendBtn.addEventListener('click', ()=>{
+  const value = input.value.trim();
+  if(value){
+    const nameMatch = value.match(/^[^:]+/); // optional name before colon
+    const msgObj = {name: nameMatch ? nameMatch[0] : 'Anonymous', text: value};
+    const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+    messages.push(msgObj);
+    localStorage.setItem('messages', JSON.stringify(messages));
+    input.value = '';
+    loadMessages();
+  }
+});
+
+// Delete message
+messagesList.addEventListener('click', (e)=>{
+  if(e.target.classList.contains('delete-btn')){
+    const index = e.target.dataset.index;
+    let messages = JSON.parse(localStorage.getItem('messages') || '[]');
+    messages.splice(index,1);
+    localStorage.setItem('messages', JSON.stringify(messages));
+    loadMessages();
+  }
+});
+
+loadMessages();
+</script>
 </body>
 </html>
