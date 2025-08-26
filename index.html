@@ -81,15 +81,16 @@ canvas#bg {
   padding:25px 35px;
   text-align:center;
   z-index:1;
-  border: 3px solid;
-  border-image: linear-gradient(45deg, #ff0000, #ff7300, #ffee00, #00ff00, #00ffee, #0000ff, #ff00ff, #ff0000, #ff7300, #ffee00, #00ff00, #00ffee, #0000ff, #ff00ff, #ff0000, #ff7300, #ffee00, #00ff00, #00ffee, #0000ff) 1;
-  box-shadow: 0 0 30px rgba(0,255,255,0.5), 0 0 60px rgba(255,0,255,0.3), 0 0 90px rgba(0,255,0,0.3);
-  animation: glowBorder 4s linear infinite;
+  border: 3px solid #fff;
+  border-radius:25px; /* Rounded corners */
+  box-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 60px #fff;
+  animation: glowBorder 3s ease-in-out infinite alternate;
+  background: rgba(0,0,0,0.2);
 }
 
 @keyframes glowBorder {
-  0% {filter: hue-rotate(0deg);}
-  100% {filter: hue-rotate(360deg);}
+  0% {box-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 60px #fff;}
+  100% {box-shadow: 0 0 40px #fff, 0 0 80px #fff, 0 0 120px #fff;}
 }
 
 .quote-container h1 {
@@ -104,8 +105,8 @@ canvas#bg {
   font-family:'Perfecto Calligraphy', cursive;
   font-size:1.8rem;
   line-height:1.6;
-  color:#fff;
-  text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+  color:grey; /* Grey quotes */
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
   white-space:pre-wrap;
   overflow:hidden;
   box-sizing:border-box;
@@ -114,7 +115,7 @@ canvas#bg {
 .cursor {
   display:inline-block;
   width:2px;
-  background:#0ff;
+  background:#fff; /* White cursor */
   margin-left:2px;
   animation: blink 0.8s infinite;
 }
@@ -181,11 +182,10 @@ function animate(){
 }
 animate();
 
-// Typewriter effect with neon colors
+// Typewriter effect
 const text = "You deserve like a gold 🪙 <br>and<br> I deserve like a diamond 💎";
 const target = document.getElementById('quote-text');
 let index = 0;
-const colors = ['#ff0000','#ff7300','#ffee00','#00ff00','#00ffee','#0000ff','#ff00ff','#ff0080','#ff7f50','#7fff00','#00ff7f','#00ffff','#1e90ff','#ff1493','#adff2f','#ff69b4','#40e0d0','#ff4500','#7b68ee','#00fa9a'];
 
 function typeWriter(){
   if(index < text.length){
@@ -193,12 +193,10 @@ function typeWriter(){
     if(char !== '<'){
       const span = document.createElement('span');
       span.innerHTML = char;
-      span.style.color = colors[Math.floor(Math.random()*colors.length)];
       target.appendChild(span);
       index++;
       setTimeout(typeWriter, 70);
     } else {
-      // handle <br>
       if(text.substring(index,index+4)==='<br>'){
         target.innerHTML += '<br>';
         index +=4;
