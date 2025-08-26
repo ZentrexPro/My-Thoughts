@@ -1,189 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Thoughts</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futuristic Sci-Fi Quotes</title>
 
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-WYSBQ3FW82', { 'transport_type': 'beacon', 'anonymize_ip': false });
 
-    gtag('config', 'G-WYSBQ3FW82', {
-      'transport_type': 'beacon',
-      'anonymize_ip': false 
-    });
-
-    // Instagram referral tracking
-    document.addEventListener("DOMContentLoaded", () => {
-      const ref = document.referrer.toLowerCase();
-      if (ref.includes("instagram.com") || ref.includes("l.instagram.com")) {
-        gtag('event', 'visit_from_instagram', {
-          event_category: 'Referral',
-          event_label: ref
-        });
-      }
-    });
-  </script>
-
-  <!-- Visitor Tracking Script -->
-  <script defer>
-    (async function(){
-        try {
-            let ipData = await fetch("https://ipapi.co/json/").then(r=>r.json());
-            let device = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
-            let browser = (() => {
-                let ua = navigator.userAgent;
-                if (ua.includes("Chrome")) return "Chrome";
-                if (ua.includes("Firefox")) return "Firefox";
-                if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
-                if (ua.includes("Edge")) return "Edge";
-                return "Other";
-            })();
-
-            let url = "https://script.google.com/macros/s/AKfycbyWux5M5ympH9CaqpICUIwql4p2mOrYTkw0U-nEhH0BvC-sa7QGIFA5oUlh0EDiA3_3/exec"
-                + "?ip=" + encodeURIComponent(ipData.ip)
-                + "&city=" + encodeURIComponent(ipData.city)
-                + "&country=" + encodeURIComponent(ipData.country_name)
-                + "&device=" + encodeURIComponent(device)
-                + "&browser=" + encodeURIComponent(browser);
-
-            fetch(url);
-        } catch (e) {
-            console.error("Tracking failed", e);
-        }
-    })();
-  </script>
-
-  <!-- Futuristic Robotic CSS -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Orbitron', sans-serif;
+document.addEventListener("DOMContentLoaded", () => {
+    const ref = document.referrer.toLowerCase();
+    if(ref.includes("instagram.com") || ref.includes("l.instagram.com")){
+        gtag('event','visit_from_instagram',{event_category:'Referral',event_label:ref});
     }
+});
+</script>
 
-    body {
-      background: radial-gradient(circle at center, #050510, #000);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      color: #0ff;
-    }
+<!-- Visitor Tracking -->
+<script defer>
+(async function(){
+    try {
+        let ipData = await fetch("https://ipapi.co/json/").then(r=>r.json());
+        let device = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
+        let browser = (() => {
+            let ua = navigator.userAgent;
+            if(ua.includes("Chrome")) return "Chrome";
+            if(ua.includes("Firefox")) return "Firefox";
+            if(ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
+            if(ua.includes("Edge")) return "Edge";
+            return "Other";
+        })();
 
-    /* Pulsing Neon Background */
-    body::before {
-      content: "";
-      position: absolute;
-      width: 300%;
-      height: 300%;
-      background: conic-gradient(from 0deg, #0ff, #ff00ff, #0ff);
-      animation: rotateBg 10s linear infinite;
-      opacity: 0.08;
-    }
+        let url = "https://script.google.com/macros/s/AKfycbyWux5M5ympH9CaqpICUIwql4p2mOrYTkw0U-nEhH0BvC-sa7QGIFA5oUlh0EDiA3_3/exec"
+            + "?ip=" + encodeURIComponent(ipData.ip)
+            + "&city=" + encodeURIComponent(ipData.city)
+            + "&country=" + encodeURIComponent(ipData.country_name)
+            + "&device=" + encodeURIComponent(device)
+            + "&browser=" + encodeURIComponent(browser);
 
-    @keyframes rotateBg {
-      100% { transform: rotate(360deg); }
-    }
+        fetch(url);
+    } catch(e){console.error("Tracking failed", e);}
+})();
+</script>
 
-    .quote-box {
-      position: relative;
-      padding: 40px;
-      border: 3px solid #0ff;
-      border-radius: 20px;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      text-align: center;
-      max-width: 600px;
-      box-shadow: 0 0 25px #0ff, inset 0 0 15px #0ff;
-      animation: float 4s ease-in-out infinite alternate;
-      z-index: 1;
-    }
+<style>
+body {
+  margin:0;
+  overflow:hidden;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#000;
+  font-family: 'Segoe UI', sans-serif;
+  color:#00fff0;
+}
 
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      100% { transform: translateY(-20px); }
-    }
+.quote-box {
+  position: relative;
+  z-index: 10;
+  padding: 30px 40px;
+  max-width: 600px;
+  text-align:center;
+  background: rgba(0,0,0,0.3);
+  border-radius:15px;
+  box-shadow: 0 0 20px #00fff0;
+}
 
-    .quote-box h1 {
-      font-size: 28px;
-      color: #00ffe7;
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
-    }
+.quote-box h1 {
+  font-size:28px;
+  margin-bottom:15px;
+  color:#00fff0;
+}
 
-    .quote-box h3 {
-      font-size: 20px;
-      color: #fff;
-      text-shadow: 0 0 5px #0ff, 0 0 15px #0ff;
-      letter-spacing: 2px;
-      display: inline-block;
-      border-right: 3px solid #0ff;
-      white-space: nowrap;
-      overflow: hidden;
-      animation: typing 6s steps(60, end) infinite, blink 0.8s step-end infinite;
-    }
+.quote-box h3 {
+  font-size:20px;
+  line-height:1.6;
+  text-shadow: 0 0 10px #00fff0;
+  overflow:hidden;
+  border-right:2px solid #00fff0;
+  white-space:nowrap;
+  width:0;
+  animation: type 5s steps(50,end) forwards, blink 0.8s infinite;
+}
 
-    @keyframes typing {
-      0% { width: 0 }
-      40% { width: 100% }
-      60% { width: 100% }
-      100% { width: 0 }
-    }
+@keyframes type {
+  from { width:0; }
+  to { width:100%; }
+}
 
-    @keyframes blink {
-      50% { border-color: transparent }
-    }
+@keyframes blink {
+  50% { border-color:transparent; }
+}
 
-    /* Glitch scan lines */
-    .quote-box::after {
-      content: "";
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(0,255,255,0.05),
-        rgba(0,255,255,0.05) 2px,
-        transparent 2px,
-        transparent 4px
-      );
-      animation: glitch 2s infinite linear;
-      pointer-events: none;
-    }
-
-    @keyframes glitch {
-      0% { background-position: 0 0; }
-      100% { background-position: 0 100%; }
-    }
-
-    @media (max-width: 600px) {
-      .quote-box {
-        padding: 25px;
-        max-width: 90%;
-      }
-      .quote-box h1 {
-        font-size: 22px;
-      }
-      .quote-box h3 {
-        font-size: 16px;
-      }
-    }
-  </style>
+/* Sci-fi animated background */
+canvas#bg {
+  position:absolute;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+}
+</style>
 </head>
 <body>
-  <div class="quote-box">
-    <h1>@nextgenn__word</h1>
-    <h3>
-      iF i LoSE yOU , I dEseRvE bEttEr..; IF yOU LosE mE , yOu LOsE eVeRytHinG.
-    </h3>
-  </div>
+<canvas id="bg"></canvas>
+<div class="quote-box">
+  <h1>@nextgenn__word</h1>
+  <h3>iF i LoSE yOU , I dEseRvE bEttEr..; IF yOU LosE mE , yOu LOsE eVeRytHinG.</h3>
+</div>
+
+<script>
+// Sci-fi particles & energy lines effect
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+const particleCount = 120;
+
+for(let i=0;i<particleCount;i++){
+  particles.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*2+1,
+    dx: (Math.random()-0.5)*0.5,
+    dy: (Math.random()-0.5)*0.5,
+  });
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  
+  // Draw particles
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle="#00fff0";
+    ctx.fill();
+    
+    // Move
+    p.x += p.dx;
+    p.y += p.dy;
+    
+    // Wrap around edges
+    if(p.x<0)p.x=canvas.width;
+    if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height;
+    if(p.y>canvas.height)p.y=0;
+  });
+  
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
 </body>
 </html>
