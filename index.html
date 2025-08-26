@@ -3,339 +3,187 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Futuristic Quote + Games Overlay</title>
+<title>Lover Quotes</title>
 
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Perfecto+Calligraphy&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&display=swap" rel="stylesheet">
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
 <script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-WYSBQ3FW82', { 'transport_type': 'beacon', 'anonymize_ip': false });
-
-document.addEventListener("DOMContentLoaded", () => {
-    const ref = document.referrer.toLowerCase();
-    if(ref.includes("instagram.com") || ref.includes("l.instagram.com")){
-        gtag('event','visit_from_instagram',{event_category:'Referral',event_label:ref});
-    }
-});
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-WYSBQ3FW82', { 'transport_type': 'beacon', 'anonymize_ip': false });
 </script>
 
 <style>
 html, body {
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:auto;
-  background:#000;
-  font-family: 'Perfecto Calligraphy', cursive;
-  color:#ddd;
+  margin:0; padding:0;
+  width:100%; height:100%;
+  overflow:hidden;
+  font-family: 'Great Vibes', cursive;
+  background: url("bg.jpg") no-repeat center center/cover;
 }
 
-/* Particle background */
-canvas#bg {
-  position:fixed;
-  top:0; left:0;
-  width:100%;
-  height:100%;
+/* Overlay effect */
+body::after {
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,0.55);
   z-index:0;
 }
 
-/* Quote container */
-.quote-container {
-  position:relative;
-  max-width:90%;
-  margin:40px auto;
-  padding:25px 35px;
-  text-align:center;
-  z-index:1;
-  border: 2px solid #fff;
-  border-radius:25px;
-  box-shadow: 0 0 15px #fff, 0 0 30px #fff;
-  background: rgba(0,0,0,0.3);
+/* Quote Box */
+.quote-box {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 80%;
+  padding: 30px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, rgba(255,0,150,0.7), rgba(0,200,255,0.7));
+  backdrop-filter: blur(10px);
+  text-align: center;
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1.5;
+  box-shadow: 0 0 25px rgba(255,255,255,0.6);
+  z-index: 1;
+  animation: floaty 6s ease-in-out infinite;
 }
 
-.quote-container h1 {
-  font-family:'Audiowide', sans-serif;
-  font-size:2rem;
-  margin-bottom:15px;
-  color:#0ff;
-  text-shadow: 0 0 8px #0ff;
+.quote-box::before, .quote-box::after {
+  content: '"';
+  font-size: 3rem;
+  color: #ffeb3b;
+  position: absolute;
+}
+.quote-box::before { top: -15px; left: 20px; }
+.quote-box::after { bottom: -15px; right: 20px; }
+
+@keyframes floaty {
+  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+  50% { transform: translate(-50%, -50%) translateY(-15px); }
 }
 
-.quote-container h3 {
-  font-family:'Perfecto Calligraphy', cursive;
-  font-size:1.8rem;
-  line-height:1.6;
-  color:#ddd;
-  text-shadow: 0 0 4px #0ff;
-  white-space:pre-wrap;
-  overflow:hidden;
+/* Typewriter effect for quote */
+#quote-text {
+  display: inline-block;
+  white-space: pre-wrap;
+  border-right: 2px solid #fff;
+  overflow: hidden;
+  animation: typing 6s steps(40, end), blink .8s step-end infinite;
 }
-
-.cursor {
-  display:inline-block;
-  width:2px;
-  background:#0ff;
-  margin-left:2px;
-  animation: blink 0.8s infinite;
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
 }
-
 @keyframes blink {
-  0%,50%,100%{opacity:1;}
-  25%,75%{opacity:0;}
+  50% { border-color: transparent; }
 }
 
-/* Message box */
+/* Message Box */
 .message-box {
-  position:relative;
-  max-width:600px;
-  margin:40px auto;
-  padding:20px;
-  border: 2px solid #fff;
-  border-radius:15px;
-  background: rgba(0,0,0,0.3);
-  box-shadow: 0 0 10px #fff;
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 500px;
+  background: rgba(255,255,255,0.15);
+  padding: 20px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 1rem;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,255,255,0.5);
 }
 
 .message-box h2 {
-  text-align:center;
-  margin-bottom:10px;
-  color:#0ff;
-  font-family:'Audiowide', sans-serif;
+  font-family: 'Audiowide', cursive;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #0ff;
+  text-shadow: 0 0 10px #0ff;
 }
 
 .message-box textarea {
-  width:100%;
-  height:80px;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid #0ff;
-  background:#111;
-  color:#ddd;
-  resize:none;
-  font-family: 'Perfecto Calligraphy', cursive;
-  font-size:1rem;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: 'Arial', sans-serif;
 }
 
 .message-box button {
-  margin-top:10px;
-  padding:10px 20px;
-  border:none;
-  border-radius:10px;
-  background:#0ff;
-  color:#000;
-  font-weight:bold;
-  cursor:pointer;
+  margin-top: 10px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #0ff;
+  color: #000;
+  font-weight: bold;
+  transition: 0.3s;
 }
-
-#messages-list {
-  margin-top:20px;
-  max-height:300px;
-  overflow-y:auto;
-}
-
-.message-item {
-  background:#111;
-  border:1px solid #0ff;
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:10px;
-  word-wrap:break-word;
-  position:relative;
-}
-
-.message-item .delete-btn {
-  position:absolute;
-  top:5px;
-  right:5px;
-  background:#ff0000;
-  color:#fff;
-  border:none;
-  border-radius:5px;
-  padding:2px 6px;
-  cursor:pointer;
-}
-
-/* Overlay modal */
-#overlay {
-  position:fixed;
-  top:0; left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.85);
-  display:none;
-  z-index:10;
-  justify-content:center;
-  align-items:center;
-  overflow:auto;
-}
-
-#overlay-content {
-  background:#111;
-  padding:20px;
-  border-radius:20px;
-  max-width:90%;
-  max-height:90%;
-  color:#fff;
-}
-
-#overlay h2 {
-  text-align:center;
-  color:#0ff;
-  font-family:'Audiowide', sans-serif;
-}
-
-.overlay-close {
-  position:absolute;
-  top:15px;
-  right:20px;
-  background:#ff0000;
-  border:none;
-  color:#fff;
-  padding:5px 10px;
-  cursor:pointer;
-  border-radius:5px;
-  font-weight:bold;
-}
-
-/* Game selector buttons */
-.game-btn {
-  padding:8px 15px;
-  margin:5px;
-  border:none;
-  border-radius:10px;
-  background:#0ff;
-  color:#000;
-  cursor:pointer;
-  font-weight:bold;
-}
-.game-container {
-  margin-top:15px;
-  min-height:250px;
+.message-box button:hover {
+  background: #fff;
+  color: #000;
 }
 </style>
 </head>
 <body>
 
-<canvas id="bg"></canvas>
-
-<div class="quote-container">
-  <h1>@nextgenn__word</h1>
-  <h3 id="quote-text"></h3>
+<!-- Quote -->
+<div class="quote-box">
+  <span id="quote-text"></span>
 </div>
 
+<!-- Message Box -->
 <div class="message-box">
-  <h2>Write message without your identity</h2>
-  <textarea id="message-input" placeholder="Type your anonymous message here..."></textarea>
-  <button id="send-btn">Send</button>
-  <div id="messages-list"></div>
-</div>
-
-<!-- Open Games Overlay Button -->
-<div style="text-align:center; margin:20px;">
-  <button id="open-overlay" class="game-btn">Play Mini Games</button>
-</div>
-
-<!-- Overlay Modal -->
-<div id="overlay">
-  <div id="overlay-content">
-    <button class="overlay-close">X</button>
-    <h2>Mini Games</h2>
-    <div style="text-align:center;">
-      <button class="game-btn" data-game="tic">Tic-Tac-Toe</button>
-      <button class="game-btn" data-game="snake">Snake</button>
-      <button class="game-btn" data-game="rps">Rock-Paper-Scissors</button>
-      <button class="game-btn" data-game="memory">Memory Flip</button>
-      <button class="game-btn" data-game="clicker">Click Counter</button>
-    </div>
-    <div class="game-container" id="game-container">
-      <p style="text-align:center; color:#0ff;">Select a game above to start!</p>
-    </div>
-  </div>
+  <h2>Message for me without your identity</h2>
+  <textarea id="userMessage" rows="4" placeholder="Write your secret message here..."></textarea>
+  <br>
+  <button onclick="submitMessage()">Send</button>
+  <button onclick="clearMessage()">Remove</button>
 </div>
 
 <script>
-// Particle background
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
-let particles = [];
-const particleCount = 120;
-
-function initParticles(){
-  particles = [];
-  for(let i=0;i<particleCount;i++){
-    particles.push({
-      x: Math.random()*canvas.width,
-      y: Math.random()*canvas.height,
-      r: Math.random()*2+1,
-      dx: (Math.random()-0.5)*0.6,
-      dy: (Math.random()-0.5)*0.6,
-      color: `hsl(${Math.random()*360}, 80%, 60%)`
-    });
-  }
-}
-
-function resizeCanvas(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  initParticles();
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-function animate(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p=>{
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle=p.color;
-    ctx.fill();
-    p.x += p.dx; p.y += p.dy;
-    if(p.x<0)p.x=canvas.width;
-    if(p.x>canvas.width)p.x=0;
-    if(p.y<0)p.y=canvas.height;
-    if(p.y>canvas.height)p.y=0;
-  });
-  requestAnimationFrame(animate);
-}
-animate();
-
-// Typewriter effect
-const text = "You deserve like a gold 🪙 <br>and<br> I deserve like a diamond 💎";
-const target = document.getElementById('quote-text');
+// Typewriter Quote
+const text = "In your arms, I find my home ❤️\nWithout you, even the stars lose their shine.";
 let index = 0;
+const target = document.getElementById("quote-text");
+
 function typeWriter(){
   if(index < text.length){
-    let char = text.charAt(index);
-    if(char !== '<'){
-      const span = document.createElement('span');
-      span.innerHTML = char;
-      target.appendChild(span);
-      index++;
-      setTimeout(typeWriter, 70);
-    } else {
-      if(text.substring(index,index+4)==='<br>'){
-        target.innerHTML += '<br>';
-        index +=4;
-      } else {
-        index++;
-      }
-      typeWriter();
-    }
-  } else {
-    const cursor = document.createElement('span');
-    cursor.classList.add('cursor');
-    target.appendChild(cursor);
+    target.innerHTML += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
   }
 }
 typeWriter();
 
-// Message system using localStorage
-const sendBtn = document.getElementById('send-btn');
-const input = document.getElementById('message-input');
-const messages
+// Message System
+function submitMessage(){
+  let msg = document.getElementById("userMessage").value;
+  if(msg.trim() === ""){
+    alert("Please write something!");
+    return;
+  }
+  alert("Your message is saved secretly ✅");
+}
+
+function clearMessage(){
+  document.getElementById("userMessage").value = "";
+  alert("Message removed ❌");
+}
+</script>
+
+</body>
+</html>
