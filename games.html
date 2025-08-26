@@ -2,63 +2,55 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Futuristic Quote + Games Overlay</title>
-<link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Perfecto+Calligraphy&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-WYSBQ3FW82', { 'transport_type': 'beacon', 'anonymize_ip': false });
-document.addEventListener("DOMContentLoaded", () => {
-    const ref = document.referrer.toLowerCase();
-    if(ref.includes("instagram.com") || ref.includes("l.instagram.com")){
-        gtag('event','visit_from_instagram',{event_category:'Referral',event_label:ref});
-    }
-});
-</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mini Games</title>
+<style>
+  :root { --bg:#0b0f14; --card:#141a22; --acc:#00fff5; --txt:#e8f1f2; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;align-items:center}
+  header{width:100%;padding:18px 16px;text-align:center;border-bottom:1px solid #1e2631}
+  h1{margin:0;font-size:22px;letter-spacing:.3px}
+  .grid{width:min(950px,92%);margin:22px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;flex-direction:column;justify-content:space-between}
+  .card h3{margin:.2rem 0 0.5rem;font-size:18px}
+  .card p{margin:0 0 10px;color:#a8b3bd;font-size:14px;min-height:38px}
+  .btn{border:0;border-radius:10px;padding:9px 14px;background:var(--acc);color:#001;cursor:pointer;font-weight:700}
+  .btn:hover{filter:brightness(1.05)}
+  footer{margin:24px 0 28px;color:#9fb2be;font-size:13px}
+  .back{position:fixed;left:12px;top:12px}
+  .back a{color:#9fe; text-decoration:none;font-weight:600}
+</style>
 </head>
 <body>
-
-<canvas id="bg"></canvas>
-
-<div class="quote-container">
-  <h1>@nextgenn__word</h1>
-  <h3 id="quote-text"></h3>
-</div>
-
-<div class="message-box">
-  <h2>Write message without your identity</h2>
-  <textarea id="message-input" placeholder="Type your anonymous message here..."></textarea>
-  <button id="send-btn">Send</button>
-  <div id="messages-list"></div>
-</div>
-
-<div style="text-align:center; margin:20px;">
-  <button id="open-overlay" class="game-btn">Play Mini Games</button>
-</div>
-
-<div id="overlay">
-  <div id="overlay-content">
-    <button class="overlay-close">X</button>
-    <h2>Mini Games</h2>
-    <div style="text-align:center;">
-      <button class="game-btn" data-game="tic">Tic-Tac-Toe</button>
-      <button class="game-btn" data-game="snake">Snake</button>
-      <button class="game-btn" data-game="rps">Rock-Paper-Scissors</button>
-      <button class="game-btn" data-game="memory">Memory Flip</button>
-      <button class="game-btn" data-game="clicker">Click Counter</button>
+  <div class="back"><a href="index.html">← Back</a></div>
+  <header><h1>🎮 Mini Games</h1></header>
+  <main class="grid">
+    <div class="card">
+      <h3>Tic Tac Toe</h3>
+      <p>Classic 3×3 battle. Beat the AI or a friend locally.</p>
+      <button class="btn" onclick="location.href='tic-tac-toe.html'">Play</button>
     </div>
-    <div class="game-container" id="game-container">
-      <p style="text-align:center; color:#0ff;">Select a game above to start!</p>
+    <div class="card">
+      <h3>Rock Paper Scissors</h3>
+      <p>Best of luck vs Computer. Simple & fast.</p>
+      <button class="btn" onclick="location.href='rock-paper.html'">Play</button>
     </div>
-  </div>
-</div>
-
-<script src="script.js"></script>
+    <div class="card">
+      <h3>Memory Flip</h3>
+      <p>Match the pairs. How sharp is your memory?</p>
+      <button class="btn" onclick="location.href='memory.html'">Play</button>
+    </div>
+    <div class="card">
+      <h3>Snake</h3>
+      <p>Eat, grow, survive. Arrow keys / touch controls.</p>
+      <button class="btn" onclick="location.href='snake.html'">Play</button>
+    </div>
+    <div class="card">
+      <h3>Flappy</h3>
+      <p>Tap/Space to fly. Avoid pipes!</p>
+      <button class="btn" onclick="location.href='flappy.html'">Play</button>
+    </div>
+  </main>
+  <footer>Made for fun ✨</footer>
 </body>
-</html>
+    </html>
