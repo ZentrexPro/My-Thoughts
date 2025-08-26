@@ -38,35 +38,33 @@ body::after {
   z-index:0;
 }
 
-/* Quote Box - Premium */
+/* Quote Box */
 .quote-box {
   position: relative;
   width: 60%;
   max-width: 500px;
-  padding: 25px 30px;
+  padding: 20px;
   border-radius: 25px;
   background: rgba(255,255,255,0.1);
   backdrop-filter: blur(10px);
   text-align: center;
   color: #fff;
-  font-size: 1.8rem;
-  font-style: italic;
-  line-height: 1.5;
+  font-size: 1.6rem;
+  line-height: 1.4;
   box-shadow: 0 0 20px rgba(255,255,255,0.4);
   z-index: 1;
   margin-bottom: 40px;
-  opacity: 0;
-  animation: fadeIn 3s ease forwards;
+  animation: fadeIn 2s ease forwards;
 }
 
 .quote-box::before, .quote-box::after {
   content: '"';
-  font-size: 2.5rem;
+  font-size: 2rem;
   color: #ffeb3b;
   position: absolute;
 }
-.quote-box::before { top: -15px; left: 15px; }
-.quote-box::after { bottom: -15px; right: 15px; }
+.quote-box::before { top: -10px; left: 15px; }
+.quote-box::after { bottom: -10px; right: 15px; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
@@ -91,10 +89,9 @@ body::after {
 
 .message-box h2 {
   font-family: 'Audiowide', cursive;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-bottom: 10px;
   color: #0ff;
-  text-shadow: 0 0 10px #0ff;
 }
 
 .message-box textarea {
@@ -104,7 +101,7 @@ body::after {
   border: none;
   outline: none;
   resize: none;
-  font-family: 'Arial', sans-serif;
+  font-family: Arial, sans-serif;
   margin-bottom: 10px;
 }
 
@@ -121,7 +118,6 @@ body::after {
 }
 .message-box button:hover {
   background: #fff;
-  color: #000;
 }
 
 /* Saved Messages */
@@ -130,23 +126,27 @@ body::after {
   text-align: left;
   max-height: 200px;
   overflow-y: auto;
+  width: 80%;
+  max-width: 500px;
+  z-index: 1;
 }
 .message-item {
   background: rgba(0,255,255,0.2);
-  padding: 10px;
+  padding: 10px 40px 10px 10px;
   margin: 8px 0;
   border-radius: 12px;
   color: #fff;
+  font-family: Arial, sans-serif;
   position: relative;
 }
-.message-item button {
+
+/* Wand Button */
+.wand {
   position: absolute;
   right: 10px;
-  top: 10px;
-  background: red;
-  color: white;
-  font-size: 0.8rem;
-  display: none; /* hide for normal users */
+  top: 8px;
+  cursor: pointer;
+  font-size: 1.2rem;
 }
 </style>
 </head>
@@ -169,10 +169,7 @@ body::after {
 <div id="savedMessages"></div>
 
 <script>
-// ✅ Admin Password Fixed
 const ADMIN_PASS = "0420"; 
-
-// Load messages from localStorage
 let messages = JSON.parse(localStorage.getItem("allMessages")) || [];
 
 // Render Messages
@@ -184,10 +181,11 @@ function renderMessages() {
     div.classList.add("message-item");
     div.innerText = msg;
 
-    // remove button (hidden normally)
-    let btn = document.createElement("button");
-    btn.innerText = "Remove";
-    btn.onclick = function() {
+    // 🪄 wand
+    let wand = document.createElement("span");
+    wand.classList.add("wand");
+    wand.innerText = "🪄";
+    wand.onclick = function() {
       let pass = prompt("Enter Admin Password to remove:");
       if(pass === ADMIN_PASS){
         messages.splice(index,1);
@@ -197,7 +195,7 @@ function renderMessages() {
         alert("❌ Wrong Password!");
       }
     };
-    div.appendChild(btn);
+    div.appendChild(wand);
 
     container.appendChild(div);
   });
