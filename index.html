@@ -14,7 +14,7 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-WYSBQ3FW82', { 'transport_type': 'beacon', 'anonymize_ip': false });
+  gtag('config', 'G-WYSBQ3FW82');
 </script>
 
 <style>
@@ -38,23 +38,25 @@ body::after {
   z-index:0;
 }
 
-/* Quote Box */
+/* Quote Box - Premium */
 .quote-box {
   position: relative;
   width: 60%;
   max-width: 500px;
   padding: 25px 30px;
   border-radius: 25px;
-  background: linear-gradient(135deg, rgba(255,0,150,0.7), rgba(0,200,255,0.7));
+  background: rgba(255,255,255,0.1);
   backdrop-filter: blur(10px);
   text-align: center;
   color: #fff;
-  font-size: 1.6rem;
-  line-height: 1.4;
-  box-shadow: 0 0 20px rgba(255,255,255,0.5);
+  font-size: 1.8rem;
+  font-style: italic;
+  line-height: 1.5;
+  box-shadow: 0 0 20px rgba(255,255,255,0.4);
   z-index: 1;
   margin-bottom: 40px;
-  animation: floaty 6s ease-in-out infinite;
+  opacity: 0;
+  animation: fadeIn 3s ease forwards;
 }
 
 .quote-box::before, .quote-box::after {
@@ -66,25 +68,9 @@ body::after {
 .quote-box::before { top: -15px; left: 15px; }
 .quote-box::after { bottom: -15px; right: 15px; }
 
-@keyframes floaty {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-
-/* Typewriter */
-#quote-text {
-  display: inline-block;
-  white-space: pre-wrap;
-  border-right: 2px solid #fff;
-  overflow: hidden;
-  animation: typing 6s steps(40, end), blink .8s step-end infinite;
-}
-@keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
-}
-@keyframes blink {
-  50% { border-color: transparent; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 /* Message Box */
@@ -119,10 +105,11 @@ body::after {
   outline: none;
   resize: none;
   font-family: 'Arial', sans-serif;
+  margin-bottom: 10px;
 }
 
 .message-box button {
-  margin-top: 10px;
+  margin: 5px;
   padding: 8px 16px;
   border-radius: 12px;
   border: none;
@@ -136,62 +123,102 @@ body::after {
   background: #fff;
   color: #000;
 }
+
+/* Saved Messages */
+#savedMessages {
+  margin-top: 20px;
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.message-item {
+  background: rgba(0,255,255,0.2);
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 12px;
+  color: #fff;
+  position: relative;
+}
+.message-item button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: red;
+  color: white;
+  font-size: 0.8rem;
+  display: none; /* hide for normal users */
+}
 </style>
 </head>
 <body>
 
 <!-- Quote -->
 <div class="quote-box">
-  <span id="quote-text"></span>
+  When I see you, my heart whispers: You are my forever ❤️
 </div>
 
 <!-- Message Box -->
 <div class="message-box">
   <h2>Message for me without your identity</h2>
-  <textarea id="userMessage" rows="4" placeholder="Write your secret message here..."></textarea>
+  <textarea id="userMessage" rows="3" placeholder="Write your secret message here..."></textarea>
   <br>
   <button onclick="submitMessage()">Send</button>
-  <button onclick="clearMessage()">Remove</button>
 </div>
 
+<!-- Show Saved Messages -->
+<div id="savedMessages"></div>
+
 <script>
-// Typewriter Quote
-const text = "When I see you, my heart whispers:\nYou are my forever ❤️";
-let index = 0;
-const target = document.getElementById("quote-text");
+// ✅ Admin Password Fixed
+const ADMIN_PASS = "0420"; 
 
-function typeWriter(){
-  if(index < text.length){
-    target.innerHTML += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
+// Load messages from localStorage
+let messages = JSON.parse(localStorage.getItem("allMessages")) || [];
+
+// Render Messages
+function renderMessages() {
+  let container = document.getElementById("savedMessages");
+  container.innerHTML = "";
+  messages.forEach((msg, index) => {
+    let div = document.createElement("div");
+    div.classList.add("message-item");
+    div.innerText = msg;
+
+    // remove button (hidden normally)
+    let btn = document.createElement("button");
+    btn.innerText = "Remove";
+    btn.onclick = function() {
+      let pass = prompt("Enter Admin Password to remove:");
+      if(pass === ADMIN_PASS){
+        messages.splice(index,1);
+        localStorage.setItem("allMessages", JSON.stringify(messages));
+        renderMessages();
+      } else {
+        alert("❌ Wrong Password!");
+      }
+    };
+    div.appendChild(btn);
+
+    container.appendChild(div);
+  });
 }
-typeWriter();
 
-// Secret Message Save (local only for you)
+// Add new message
 function submitMessage(){
   let msg = document.getElementById("userMessage").value;
   if(msg.trim() === ""){
     alert("Please write something!");
     return;
   }
-  localStorage.setItem("secretMessage", msg);
-  alert("Your message is saved secretly ✅");
-}
-
-function clearMessage(){
-  localStorage.removeItem("secretMessage");
+  messages.push(msg);
+  localStorage.setItem("allMessages", JSON.stringify(messages));
   document.getElementById("userMessage").value = "";
-  alert("Message removed ❌");
+  renderMessages();
 }
 
-// Reload hone par saved msg wapas show ho
+// On reload load messages
 window.onload = function(){
-  let saved = localStorage.getItem("secretMessage");
-  if(saved){
-    document.getElementById("userMessage").value = saved;
-  }
+  renderMessages();
 }
 </script>
 
