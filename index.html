@@ -73,7 +73,7 @@ canvas#bg {
   left:50%;
   transform:translate(-50%, -50%);
   max-width:90%;
-  width:600px;
+  width:80%;
   padding:20px 30px;
   background:rgba(0,0,0,0.3);
   border-radius:15px;
@@ -93,12 +93,13 @@ canvas#bg {
   line-height:1.6;
   color:#fff;
   text-shadow:0 0 10px #00fff0;
-  overflow:hidden;
+  display:inline-block;
   border-right:2px solid #00fff0;
-  white-space:nowrap;
-  box-sizing:border-box;
+  white-space:pre-wrap;   /* allow wrapping */
+  overflow:hidden;         /* for typing effect */
   width:100%;
-  animation:type 6s steps(60,end) forwards, blink 0.8s step-end infinite;
+  box-sizing:border-box;
+  animation:type 10s steps(120,end) forwards, blink 0.8s step-end infinite;
 }
 
 @keyframes type {
@@ -109,6 +110,11 @@ canvas#bg {
 @keyframes blink {
   50% { border-color:transparent; }
 }
+
+@media (max-width:600px){
+  .quote-container h1 { font-size:1.5rem; }
+  .quote-container h3 { font-size:1rem; }
+}
 </style>
 </head>
 <body>
@@ -117,7 +123,10 @@ canvas#bg {
 
 <div class="quote-container">
   <h1>@nextgenn__word</h1>
-  <h3>iF i LoSE yOU , I dEseRvE bEttEr..; IF yOU LosE mE , yOu LOsE eVeRytHinG.</h3>
+  <h3>
+iF i LoSE yOU , I dEseRvE bEttEr..;
+IF yOU LosE mE , yOu LOsE eVeRytHinG.
+  </h3>
 </div>
 
 <script>
@@ -174,4 +183,4 @@ animate();
 </script>
 
 </body>
-</html>
+    </html>
