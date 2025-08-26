@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Snakes & Ladders</title>
+<style>
+ body{margin:0;font-family:Arial;display:flex;flex-direction:column;align-items:center;background:#f2f8fb;padding:12px}
+ #board{display:grid;grid-template-columns:repeat(10,40px);grid-auto-rows:40px;gap:2px;border:2px solid #0a2333;padding:6px;background:#fff}
+ .cell{display:flex;align-items:center;justify-content:center;font-size:11px;background:#e6f3f8;border-radius:4px}
+ .controls{margin-top:12px}
+ .btn{padding:8px 12px;border-radius:8px;border:none;background:#00c6ff;color:#001;cursor:pointer}
+ .token{width:18px;height:18px;border-radius:50%;display:inline-block;position:relative;transform:translateY(-6px)}
+ .p1{background:#ff6b6b}
+ .p2{background:#ffd24d}
+</style>
+</head>
+<body>
+<h2>Snakes & Ladders</h2>
+<div id="board"></div>
+<div class="controls">
+ <div>Player: <span id="turn">1</span></div>
+ <div style="margin-top:8px">
+  <button class="btn" id="roll">Roll Dice</button> <span id="out"></span>
+ </div>
+</div>
+
+<script>
+const boardEl=document.getElementById('board');
+const size=10;
+const total=size*size;
+let cells=[];
+for(let i=total;i>=1;i--){ const d=document.createElement('div'); d.className='cell'; d.id='cell'+i; d.innerHTML=i; boardEl.appendChild(d); }
+const snakes={16:6,48:30,62:19,88:24,95:56,97:78};
+const ladders={2:38,7:14,8:31,15:26,21:42,28:84,36:44,51:67,71:91,78:98};
+let pos=[0,0]; let turn=0; document.getElementById('turn').textContent=turn+1;
+function placeTokens(){
+  // clear tokens
+  for(let i=1;i<=100;i++){ const el=document.getElementById('cell'+i); el.querySelectorAll('.token').forEach(t=>t.remove()); }
+  // add tokens
+  for(let p=0;p<2;p++){
+    const place = pos[p] || 0;
+    const target = place===0? null: document.getElementById('cell'+place);
+    const token = document.createElement('div'); token.className='token '+(p===0?'p1':'p2');
+    if(target) target.appendChild(token);
+    else document.getElementById('cell1').appendChild(token);
+  }
+}
+placeTokens();
+
+document.getElementById('roll').addEventListener('click', ()=>{
+  const r = Math.floor(Math.random()*6)+1; document.getElementById('out').textContent = 'Rolled: '+r;
+  pos[turn] += r;
+  if(pos[turn] > 100) pos[turn] = 100 - (pos[turn]-100); // bounce back
+  // snakes/ladders
+  if(snakes[pos[turn]]) pos[turn] = snakes[pos[turn]];
+  if(ladders[pos[turn]]) pos[turn] = ladders[pos[turn]];
+  placeTokens();
+  if(pos[turn]===100){ setTimeout(()=>alert('Player '+(turn+1)+' wins!'),50); return; }
+  turn = 1 - turn;
+  document.getElementById('turn').textContent = turn+1;
+});
+</script>
+</body>
+</html>

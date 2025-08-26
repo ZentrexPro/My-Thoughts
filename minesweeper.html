@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Minesweeper</title>
+<style>
+ body{margin:0;background:#0b1220;color:#e8f1f2;font-family:system-ui;display:flex;flex-direction:column;align-items:center;padding:14px}
+ h1{margin:12px 0}
+ .controls{display:flex;gap:8px;margin-bottom:12px}
+ .btn{padding:8px 12px;background:#00d1ff;color:#001;border:none;border-radius:8px;cursor:pointer}
+ .grid{display:grid;gap:6px}
+ .cell{width:36px;height:36px;background:#111827;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+ .cell.open{background:#e6eef5;color:#111}
+ .cell.flag{background:#ffd6e7}
+ .info{margin-top:10px;color:#9fb2be}
+ @media(max-width:420px){ .cell{width:30px;height:30px} }
+</style>
+</head>
+<body>
+<h1>Minesweeper</h1>
+<div class="controls">
+ <label>Size:
+  <select id="sizeSel">
+    <option value="8">8×8</option>
+    <option value="10" selected>10×10</option>
+    <option value="12">12×12</option>
+  </select>
+ </label>
+ <button class="btn" onclick="start()">New</button>
+</div>
+<div id="board" class="grid" role="grid" aria-label="Minesweeper board"></div>
+<div class="info" id="info">Left-click to open, right-click to flag.</div>
+
+<script>
+let size=10, mines=15;
+const boardEl=document.getElementById('board');
+const sizeSel=document.getElementById('sizeSel');
+
+sizeSel.addEventListener('change', ()=>{ size=parseInt(sizeSel.value); mines=Math.floor(size*size*0.15); start(); });
+
+function start(){
+  boardEl.innerHTML=''; boardEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+  mines = Math.floor(size*size*0.15);
+  const cells = Array.from({length:size*size}, ()=>({mine:false,open:false,flag:false,adj:0}));
+  // place mines
+  for(let k=0;k<mines;k++){
+    let idx; do{ idx=Math.floor(Math.random()*cells.length);} while(cells[idx].mine);
+    cells[idx].mine=true;
+  }
+  // adj
+  for(let i=0;i<cells.length;i++){
+    const r=Math.floor(i/size), c=i%size;
+    if(cells[i].mine) continue;
+    let count=0;
+    for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+      if(dr===0&&dc===0) continue;
+      const rr=r+dr, cc=c+dc;
+      if(rr>=0&&rr<size&&cc>=0&&cc<size){
+        if(cells[rr*size+cc].mine) count++;
+      }
+    }
+    cells[i].adj=count;
+  }
+  // render
+  cells.forEach((cell,i)=>{
+    const el=document.createElement('div');
+    el.className='cell';
+    el.dataset.i=i;
+    el.oncontextmenu=e=>{ e.preventDefault(); toggleFlag(i,el,cells); }
+    el.onclick=()=> openCell(i,el,cells);
+    boardEl.appendChild(el);
+  });
+  // store
+  window.__ms = {cells, size};
+}
+
+function revealAll(cells){
+  document.querySelectorAll('.cell').forEach((el,idx)=> {
+    const c=cells[idx];
+    if(c.mine) el.classList.add('open'), el.textContent='💣';
+    else if(c.adj) el.classList.add('open'), el.textContent=c.adj;
+    else el.classList.add('open');
+  });
+}
+
+function toggleFlag(i,el,cells){
+  const c=cells[i];
+  if(c.open) return;
+  c.flag = !c.flag;
+  el.classList.toggle('flag', c.flag);
+  el.textContent = c.flag? '🚩':''; 
+}
+
+function openCell(i,el,cells){
+  const c=cells[i];
+  if(c.flag || c.open) return;
+  if(c.mine){ el.classList.add('open'); el.textContent='💣'; revealAll(cells); setTimeout(()=>alert('Boom! You hit a mine.'),50); return; }
+  flood(i,cells);
+  updateCells(cells);
+  checkWin(cells);
+}
+
+function flood(i,cells){
+  const size=window.__ms.size;
+  const toOpen=[i];
+  while(toOpen.length){
+    const idx=toOpen.shift();
+    const c=cells[idx];
+    if(c.open) continue;
+    c.open=true;
+    if(c.adj===0){
+      const r=Math.floor(idx/size), col=idx%size;
+      for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++){
+        if(dr===0&&dc===0) continue;
+        const rr=r+dr, cc=col+dc;
+        if(rr>=0&&rr<size&&cc>=0&&cc<size){
+          const ni=rr*size+cc;
+          if(!cells[ni].open && !cells[ni].mine) toOpen.push(ni);
+        }
+      }
+    }
+  }
+}
+
+function updateCells(cells){
+  document.querySelectorAll('.cell').forEach((el,idx)=>{
+    const c=cells[idx];
+    if(c.open){ el.classList.add('open'); el.textContent = c.adj? c.adj : ''; }
+    else { if(!c.flag) el.textContent=''; }
+  });
+}
+
+function checkWin(cells){
+  const ok = cells.every(c => (c.mine && !c.open) || (!c.mine && c.open));
+  if(ok){ setTimeout(()=>alert('You Win!'),50); }
+}
+
+start();
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dino Runner</title>
+<style>
+ body{margin:0;background:linear-gradient(#70c5ce,#0288a6);display:flex;align-items:center;flex-direction:column;font-family:Arial}
+ canvas{background:#70c5ce;border-radius:8px;margin-top:18px}
+ .info{color:#013; margin-top:8px}
+ button{margin-top:8px;padding:8px 12px;border-radius:8px;border:none;background:#ffde59}
+</style>
+</head>
+<body>
+<h2 style="color:#013">Dino Runner</h2>
+<canvas id="cv" width="700" height="180"></canvas>
+<div class="info">Space / Tap to jump. Click to restart after crash.</div>
+<button onclick="resetGame()">Restart</button>
+
+<script>
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+let w=cv.width, h=cv.height;
+let dino={x:60,y:h-40,w:40,h:36,vy:0,ground:h-36,isJumping:false};
+let gravity=0.8;
+let obstacles=[];
+let frame=0, score=0, speed=6, running=true;
+
+function spawnObs(){
+  const height=20+Math.random()*30;
+  obstacles.push({x:w, y:h-height, w:20+Math.random()*20, h:height});
+}
+
+function resetGame(){
+  obstacles=[]; frame=0; score=0; speed=6; running=true;
+  dino.y=dino.ground; dino.vy=0; dino.isJumping=false;
+}
+
+function update(){
+  frame++;
+  // spawn
+  if(frame%90===0) spawnObs();
+  // increase difficulty
+  if(frame%600===0) speed+=1;
+  // move
+  obstacles.forEach(o=>o.x-=speed);
+  // remove offscreen
+  obstacles = obstacles.filter(o=>o.x+o.w>0);
+  // dino physics
+  dino.vy += gravity;
+  dino.y += dino.vy;
+  if(dino.y > dino.ground) { dino.y = dino.ground; dino.vy=0; dino.isJumping=false; }
+  // collision
+  for(const o of obstacles){
+    if(dino.x < o.x+o.w && dino.x + dino.w > o.x && dino.y < o.y+o.h && dino.y + dino.h > o.y){
+      running=false;
+      break;
+    }
+  }
+  if(running) score = Math.floor(frame/6);
+}
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  // ground
+  ctx.fillStyle = '#f7f7f7';
+  ctx.fillRect(0,h-6,w,6);
+  // dino (rounded)
+  ctx.fillStyle='#2b2';
+  roundRect(ctx,dino.x,dino.y,dino.w,dino.h,6,true);
+  // obstacles
+  ctx.fillStyle='#333';
+  obstacles.forEach(o=> roundRect(ctx,o.x,o.y,o.w,o.h,3,true));
+  // score
+  ctx.fillStyle='#013'; ctx.font='16px Arial'; ctx.fillText('Score: '+score, 10,20);
+  if(!running){
+    ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(w/2-140,h/2-28,280,56);
+    ctx.fillStyle='#fff'; ctx.font='18px Arial'; ctx.fillText('Game Over - Click Restart', w/2-120, h/2+6);
+  }
+}
+
+function loop(){
+  update(); draw();
+  requestAnimationFrame(loop);
+}
+
+function roundRect(ctx,x,y,w,h,r,fill){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+  if(fill) ctx.fill();
+}
+
+document.addEventListener('keydown', e=> {
+  if(e.code==='Space'){ e.preventDefault(); if(running){ if(!dino.isJumping){ dino.vy=-12; dino.isJumping=true; } } else resetGame(); }
+});
+cv.addEventListener('click', ()=> { if(running){ if(!dino.isJumping){ dino.vy=-12; dino.isJumping=true; } } else resetGame(); });
+
+resetGame(); loop();
+</script>
+</body>
+</html>

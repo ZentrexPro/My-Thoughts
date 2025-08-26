@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pong</title>
+<style>
+ body{margin:0;background:#041122;color:#e8f1f2;font-family:Arial;display:flex;align-items:center;justify-content:center;height:100vh}
+ canvas{background:#001;display:block;border-radius:8px}
+ .note{position:fixed;top:10px;left:10px;color:#9fb2be}
+</style>
+</head>
+<body>
+<div class="note">W/S : Left | ↑/↓ : Right</div>
+<canvas id="cv" width="700" height="400"></canvas>
+<script>
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+let leftY=H/2-40, rightY=H/2-40, padH=80, padW=10;
+let by=H/2, bx=W/2, bvx=4, bvy=3, scoreL=0, scoreR=0;
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  // center line
+  ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.fillRect(W/2-1,0,2,H);
+  // paddles
+  ctx.fillStyle='#0ff'; ctx.fillRect(20,leftY,padW,padH); ctx.fillRect(W-30,rightY,padW,padH);
+  // ball
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(bx,by,8,0,Math.PI*2); ctx.fill();
+  // scores
+  ctx.fillStyle='#9fb2be'; ctx.font='22px Arial'; ctx.fillText(scoreL, W/2-80,40); ctx.fillText(scoreR, W/2+70,40);
+}
+
+function update(){
+  bx+=bvx; by+=bvy;
+  // bounce top/bottom
+  if(by<8||by>H-8) bvy*=-1;
+  // left paddle
+  if(bx-8 < 20+padW && by > leftY && by < leftY+padH){ bx = 20+padW+8; bvx*=-1; }
+  // right paddle
+  if(bx+8 > W-30 && by > rightY && by < rightY+padH){ bx = W-30-8; bvx*=-1; }
+  // score
+  if(bx < 0){ scoreR++; resetBall(); }
+  if(bx > W){ scoreL++; resetBall(); }
+  // simple AI for right when no key pressed? we'll keep player control only
+}
+
+function resetBall(){
+  bx=W/2; by=H/2; bvx = (Math.random()>0.5?1:-1)*4; bvy=(Math.random()*4-2);
+}
+
+setInterval(()=>{ update(); draw(); },1000/60);
+
+// controls
+window.addEventListener('keydown', e=>{
+  if(e.key==='w') leftY-=20;
+  if(e.key==='s') leftY+=20;
+  if(e.key==='ArrowUp') rightY-=20;
+  if(e.key==='ArrowDown') rightY+=20;
+  // clamp
+  leftY = Math.max(0,Math.min(H-padH,leftY));
+  rightY = Math.max(0,Math.min(H-padH,rightY));
+});
+</script>
+</body>
+</html>

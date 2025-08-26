@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Mini Ludo — Human vs Computer</title>
+<style>
+  :root{
+    --bg:#071021; --card:#0e2430; --accent:#00d1ff; --p1:#ff6b6b; --p2:#ffd166;
+  }
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family:system-ui,Segoe UI,Roboto,Arial; background:linear-gradient(180deg,var(--bg),#031224);
+    color:#e6f0f3; padding:18px;
+  }
+  .wrap{width:100%; max-width:720px; background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.12)); border-radius:12px; padding:18px; box-shadow:0 12px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03)}
+  h2{margin:0 0 12px 0; font-weight:600; color:var(--accent)}
+  .board{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:12px 0;}
+  .cell{width:56px; height:56px; border-radius:8px; background:#071926; display:flex; align-items:center; justify-content:center; font-size:13px; color:#9fb2be; box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+  .cell .token{width:20px; height:20px; border-radius:50%;}
+  .controls{display:flex; gap:10px; align-items:center; justify-content:space-between; margin-top:12px; flex-wrap:wrap}
+  .left{display:flex; gap:10px; align-items:center}
+  .btn{background:linear-gradient(180deg,var(--accent),#0088cc); border:none; padding:10px 14px; color:#002; font-weight:700; border-radius:10px; cursor:pointer}
+  .btn:disabled{opacity:0.45; cursor:default}
+  .status{padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.02); color:#cfe; font-weight:600}
+  .dice{font-size:22px; padding:8px 12px; border-radius:8px; background:rgba(255,255,255,0.02)}
+  .legend{display:flex; gap:12px; align-items:center; margin-top:12px; color:#9fb2be;}
+  .dot{width:14px; height:14px; border-radius:50%}
+  @media(max-width:520px){ .cell{width:44px;height:44px;font-size:12px} .cell .token{width:16px;height:16px} }
+</style>
+</head>
+<body>
+  <div class="wrap" role="application" aria-label="Ludo Human vs Computer">
+    <h2>Mini Ludo — Human vs Computer</h2>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:14px;color:#9fb2be">Track: <strong id="trackLenLabel">20</strong> steps</div>
+        <div style="margin-top:6px" class="legend">
+          <div style="display:flex;align-items:center;gap:8px"><div class="dot" style="background:var(--p1)"></div> You</div>
+          <div style="display:flex;align-items:center;gap:8px"><div class="dot" style="background:var(--p2)"></div> Computer</div>
+        </div>
+      </div>
+
+      <div class="status" id="status">Your turn — Click Roll</div>
+    </div>
+
+    <!-- simple linear board (20 cells) -->
+    <div class="board" id="board" role="grid" aria-label="Game board"></div>
+
+    <div class="controls">
+      <div class="left">
+        <button id="rollBtn" class="btn">Roll Dice</button>
+        <div class="dice" id="diceVal">-</div>
+        <button id="resetBtn" class="btn" style="background:linear-gradient(180deg,#ff8fb6,#ff4d8a)">Reset</button>
+      </div>
+
+      <div style="text-align:right">
+        <div style="font-size:13px;color:#9fb2be">Positions</div>
+        <div style="font-weight:700;margin-top:4px">You: <span id="pos1">Start</span> — CPU: <span id="pos2">Start</span></div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+(function(){
+  // Config
+  const TRACK_LEN = 20; // steps 0..TRACK_LEN-1 (finish at TRACK_LEN-1)
+  const HUMAN = 1, CPU = 2;
+  // State
+  let posHuman = -1, posCPU = -1; // -1 means not started
+  let turn = HUMAN; // who has turn
+  let rolling = false;
+  const boardEl = document.getElementById('board');
+  const statusEl = document.getElementById('status');
+  const diceEl = document.getElementById('diceVal');
+  const rollBtn = document.getElementById('rollBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const pos1El = document.getElementById('pos1');
+  const pos2El = document.getElementById('pos2');
+  document.getElementById('trackLenLabel').textContent = TRACK_LEN;
+
+  // create board cells
+  function buildBoard(){
+    boardEl.innerHTML = '';
+    for(let i=0;i<TRACK_LEN;i++){
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.idx = i;
+      cell.innerHTML = `<div style="font-size:11px;color:#7fb3c5">${i+1}</div><div style="height:6px"></div>`;
+      boardEl.appendChild(cell);
+    }
+  }
+
+  buildBoard();
+
+  function updateBoard(){
+    // clear tokens
+    document.querySelectorAll('.cell').forEach(el => {
+      // remove token container if any
+      const exists = el.querySelector('.token-wrap');
+      if(exists) exists.remove();
+    });
+
+    // helper to place token
+    function placeAt(idx, cls){
+      if(idx < 0) return;
+      const cell = document.querySelector('.cell[data-idx="'+idx+'"]');
+      if(!cell) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'token-wrap';
+      wrap.style.display = 'flex';
+      wrap.style.gap = '6px';
+      wrap.style.alignItems = 'center';
+      wrap.style.justifyContent = 'center';
+      // if both on same cell show both small tokens
+      const humanHere = (posHuman === idx);
+      const cpuHere = (posCPU === idx);
+      if(humanHere){
+        const t = document.createElement('div'); t.className='token'; t.style.backgroundColor='var(--p1)'; t.style.width='18px'; t.style.height='18px';
+        wrap.appendChild(t);
+      }
+      if(cpuHere){
+        const t2 = document.createElement('div'); t2.className='token'; t2.style.backgroundColor='var(--p2)'; t2.style.width='18px'; t2.style.height='18px';
+        wrap.appendChild(t2);
+      }
+      // attach
+      cell.appendChild(wrap);
+    }
+
+    // place both (order doesn't matter)
+    for(let i=0;i<TRACK_LEN;i++){
+      // placed via placeAt
+    }
+    placeAt(posHuman);
+    placeAt(posCPU);
+
+    // update textual positions
+    pos1El.textContent = posHuman < 0 ? 'Start' : (posHuman+1);
+    pos2El.textContent = posCPU < 0 ? 'Start' : (posCPU+1);
+  }
+
+  function setStatus(txt){
+    statusEl.textContent = txt;
+  }
+
+  function rollDice(){
+    if(rolling) return null;
+    rolling = true;
+    // animate dice feel
+    let ticks = 10;
+    const interval = setInterval(()=>{
+      const v = Math.floor(Math.random()*6)+1;
+      diceEl.textContent = v;
+      ticks--;
+      if(ticks<=0){
+        clearInterval(interval);
+        rolling = false;
+        diceEl.textContent = v;
+        handleRoll(v);
+      }
+    }, 50);
+  }
+
+  function handleRoll(value){
+    // apply roll to current player
+    if(turn === HUMAN){
+      setStatus('You rolled '+value);
+      movePlayer(HUMAN, value).then(extra=>{
+        if(checkWin()) return;
+        if(extra){
+          setStatus('You got a 6 — roll again!');
+          // keep turn
+        } else {
+          // switch to CPU after short delay
+          turn = CPU;
+          setStatus('Computer thinking...');
+          setTimeout(() => cpuTurn(), 700);
+        }
+      });
+    } else {
+      // CPU roll handled in cpuTurn
+    }
+  }
+
+  function movePlayer(player, steps){
+    return new Promise(resolve => {
+      // simulate stepping with small animation
+      const stepMs = 90;
+      let targetPos = (player === HUMAN ? posHuman : posCPU) + steps;
+      // if hasn't started and steps>0 then start at 0, else move
+      if((player === HUMAN && posHuman < 0) || (player === CPU && posCPU < 0)){
+        // start only when steps>0
+        if(steps > 0) targetPos = steps - 1; else targetPos = -1;
+      }
+      // cap at finish
+      if(targetPos >= TRACK_LEN) targetPos = TRACK_LEN - 1;
+
+      // incremental move count
+      const start = (player === HUMAN ? posHuman : posCPU);
+      const moveCount = (targetPos - start) >= 0 ? (targetPos - (start<0? -1 : start)) : 0;
+      let moved = 0;
+
+      const stepInterval = setInterval(()=>{
+        moved++;
+        if(player === HUMAN){
+          posHuman = Math.min(TRACK_LEN-1, (posHuman < 0 ? 0 : posHuman + 1));
+        } else {
+          posCPU = Math.min(TRACK_LEN-1, (posCPU < 0 ? 0 : posCPU + 1));
+        }
+        updateBoard();
+        if(moved >= moveCount){
+          clearInterval(stepInterval);
+          // check kick: if land on opponent, kick them to start
+          if(player === HUMAN && posHuman === posCPU && posHuman >= 0){
+            // kick CPU
+            posCPU = -1;
+            setStatus('You landed on Computer — you sent it to start!');
+            updateBoard();
+          }
+          if(player === CPU && posCPU === posHuman && posCPU >= 0){
+            posHuman = -1;
+            setStatus('Computer landed on you — you go back to start!');
+            updateBoard();
+          }
+          // extra turn on 6
+          resolve(steps === 6);
+        }
+      }, stepMs);
+      // if no movement (e.g., rolled 0), resolve immediately
+      if(moveCount <= 0){
+        resolve(steps === 6);
+      }
+    });
+  }
+
+  // CPU turn logic: auto-roll, auto-move; extra turns for 6
+  function cpuTurn(){
+    if(turn !== CPU) return;
+    // small simulated thinking delay before roll
+    setTimeout(async ()=>{
+      // roll once
+      const v = Math.floor(Math.random()*6)+1;
+      diceEl.textContent = v;
+      setStatus('Computer rolled '+v);
+      const extra = await movePlayer(CPU, v);
+      if(checkWin()) return;
+      if(extra){
+        setStatus('Computer got a 6 — rolling again...');
+        setTimeout(()=> cpuTurn(), 700);
+      } else {
+        // back to human
+        turn = HUMAN;
+        setStatus('Your turn — Click Roll');
+      }
+    }, 600);
+  }
+
+  function checkWin(){
+    if(posHuman >= TRACK_LEN - 1){
+      setStatus('You Win! 🎉');
+      rollBtn.disabled = true;
+      return true;
+    }
+    if(posCPU >= TRACK_LEN - 1){
+      setStatus('Computer Wins 😞');
+      rollBtn.disabled = true;
+      return true;
+    }
+    return false;
+  }
+
+  // UI wiring
+  rollBtn.addEventListener('click', ()=>{
+    if(turn !== HUMAN) return;
+    if(rolling) return;
+    rollDice();
+  });
+  resetBtn.addEventListener('click', ()=>{
+    posHuman = -1; posCPU = -1; turn = HUMAN; diceEl.textContent='-'; rollBtn.disabled=false;
+    setStatus('Your turn — Click Roll'); updateBoard();
+  });
+
+  // initialize
+  resetBtn.click();
+  updateBoard();
+
+})();
+</script>
+</body>
+</html>

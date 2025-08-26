@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>2048</title>
+<style>
+  :root{--bg:#111;--tile:#eee}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0b1220,#071126);font-family:Arial}
+  .wrap{width:320px}
+  h1{color:#fff;text-align:center;margin-bottom:8px;font-weight:400}
+  .board{background:rgba(255,255,255,0.08);padding:12px;border-radius:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .cell{height:64px;border-radius:8px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:#fff}
+  .tile-2{background:#eee;color:#111}
+  .tile-4{background:#ffd; color:#111}
+  .tile-8{background:#ffb86b}
+  .tile-16{background:#ff9b4a}
+  .tile-32{background:#ff7a3d}
+  .tile-64{background:#ff5722}
+  .tile-128{background:#f5d76e;font-size:16px}
+  .tile-256{background:#f39c12}
+  .controls{display:flex;justify-content:space-between;margin-top:10px}
+  .btn{background:#00d1ff;border:none;padding:8px 12px;border-radius:8px;color:#002;font-weight:700;cursor:pointer}
+  .score{color:#fff}
+  @media(max-width:360px){.cell{height:60px;font-size:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>2048</h1>
+  <div class="board" id="board"></div>
+  <div class="controls">
+    <div class="score">Score: <span id="score">0</span></div>
+    <div>
+      <button class="btn" onclick="init()">New</button>
+    </div>
+  </div>
+  <p style="color:#aaa;font-size:12px;text-align:center;margin-top:8px">Use arrow keys / swipe</p>
+</div>
+
+<script>
+const boardEl = document.getElementById('board');
+const scoreEl = document.getElementById('score');
+let grid, score;
+
+function emptyGrid(){ return Array.from({length:16},()=>0); }
+
+function render(){
+  boardEl.innerHTML='';
+  grid.forEach(v=>{
+    const div=document.createElement('div');
+    div.className='cell';
+    if(v) div.classList.add('tile-'+v);
+    div.textContent = v? v : '';
+    boardEl.appendChild(div);
+  });
+  scoreEl.textContent = score;
+}
+
+function addRandom(){
+  const empty = grid.map((v,i)=>v===0? i: -1).filter(i=>i>=0);
+  if(!empty.length) return false;
+  const idx = empty[Math.floor(Math.random()*empty.length)];
+  grid[idx] = Math.random()<0.9? 2:4;
+  return true;
+}
+
+function compress(row){
+  const arr = row.filter(x=>x!==0);
+  for(let i=0;i<arr.length-1;i++){
+    if(arr[i]===arr[i+1]){
+      arr[i]*=2;
+      score+=arr[i];
+      arr.splice(i+1,1);
+    }
+  }
+  while(arr.length<4) arr.push(0);
+  return arr;
+}
+
+function move(dir){ // 0 left 1 up 2 right 3 down
+  let moved=false;
+  if(dir===0 || dir===2){
+    for(let r=0;r<4;r++){
+      const row = [grid[r*4],grid[r*4+1],grid[r*4+2],grid[r*4+3]];
+      const newRow = dir===0? compress(row): compress(row.reverse()).reverse();
+      for(let c=0;c<4;c++){
+        if(grid[r*4+c]!==newRow[c]) moved=true;
+        grid[r*4+c]=newRow[c];
+      }
+    }
+  } else {
+    for(let c=0;c<4;c++){
+      const col=[grid[c],grid[c+4],grid[c+8],grid[c+12]];
+      const newCol = dir===1? compress(col): compress(col.reverse()).reverse();
+      for(let r=0;r<4;r++){
+        if(grid[r*4+c]!==newCol[r]) moved=true;
+        grid[r*4+c]=newCol[r];
+      }
+    }
+  }
+  if(moved){ addRandom(); render(); checkGame(); }
+}
+
+function checkGame(){
+  if(grid.includes(2048)){ setTimeout(()=>alert('You reached 2048!'),50); }
+  if(!grid.includes(0)){
+    // check moves available
+    for(let r=0;r<4;r++){
+      for(let c=0;c<4;c++){
+        const v=grid[r*4+c];
+        if(c<3 && grid[r*4+c+1]===v) return;
+        if(r<3 && grid[(r+1)*4+c]===v) return;
+      }
+    }
+    setTimeout(()=>alert('Game Over'),50);
+  }
+}
+
+function init(){
+  grid = emptyGrid();
+  score=0;
+  addRandom(); addRandom(); render();
+}
+
+init();
+
+// keyboard
+window.addEventListener('keydown', e=>{
+  if(e.key.includes('Arrow')) e.preventDefault();
+  if(e.key==='ArrowLeft') move(0);
+  if(e.key==='ArrowUp') move(1);
+  if(e.key==='ArrowRight') move(2);
+  if(e.key==='ArrowDown') move(3);
+});
+
+// simple swipe for mobile
+let sx, sy;
+window.addEventListener('touchstart', e=>{ const t=e.changedTouches[0]; sx=t.clientX; sy=t.clientY; });
+window.addEventListener('touchend', e=>{
+  const t=e.changedTouches[0]; const dx=t.clientX-sx, dy=t.clientY-sy;
+  if(Math.abs(dx)>Math.abs(dy)){
+    if(dx>30) move(2); else if(dx<-30) move(0);
+  } else {
+    if(dy>30) move(3); else if(dy<-30) move(1);
+  }
+});
+</script>
+</body>
+</html>
