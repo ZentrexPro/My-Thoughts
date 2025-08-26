@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flappy</title>
+<style>
+  body{margin:0;background:#0b0f14;color:#e8f1f2;font-family:system-ui,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
+  header{width:100%;padding:16px;text-align:center;border-bottom:1px solid #1e2631}
+  canvas{background:linear-gradient(#3a8,#036);border:2px solid #1e2631;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+  .hud{margin:10px 0}
+  .btn{border:0;border-radius:10px;padding:8px 14px;background:#00fff5;color:#001;font-weight:700;cursor:pointer}
+  .back{position:fixed;left:10px;top:10px}
+  .back a{color:#9fe;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+  <div class="back"><a href="games.html">← Back</a></div>
+  <header><h2>Flappy</h2></header>
+  <div class="hud">Score: <span id="score">0</span></div>
+  <canvas id="cv" width="360" height="520"></canvas>
+  <button class="btn" onclick="flap()">Tap / Space</button>
+<script>
+  const cv=document.getElementById('cv'), ct=cv.getContext('2d');
+  let y=240, vy=0, g=0.4, flapV=-6, pipes=[], frame=0, score=0, alive=true;
+  function reset(){ y=240; vy=0; pipes=[]; frame=0; score=0; alive=true; document.getElementById('score').textContent=0; }
+  function flap(){ if(!alive){ reset(); } vy=flapV; }
+  document.addEventListener('keydown',e=>{ if(e.code==='Space') flap(); });
+
+  function addPipe(){
+    const gap=120, topH=Math.floor(Math.random()*220)+60;
+    pipes.push({x:cv.width, top:topH, passed:false});
+  }
+  function draw(){
+    if(!alive){ ct.fillStyle='rgba(0,0,0,.3)'; ct.fillRect(0,0,cv.width,cv.height); ct.fillStyle='#fff'; ct.fillText('Game Over - Tap to restart', 70, 250); return; }
+    ct.clearRect(0,0,cv.width,cv.height);
+    // bird
+    vy+=g; y+=vy;
+    ct.fillStyle='#ffeb3b'; ct.beginPath(); ct.arc(80,y,12,0,Math.PI*2); ct.fill();
+    // pipes
+    pipes.forEach(p=>{
+      ct.fillStyle='#0f5';
+      ct.fillRect(p.x,0,40,p.top-60); // top pipe
+      ct.fillRect(p.x,p.top+60,40,cv.height-(p.top+60)); // bottom
+    });
+    // move pipes
+    pipes.forEach(p=>p.x-=2.5);
+    if(frame%120===0) addPipe();
+    if(pipes[0] && pipes[0].x<-50) pipes.shift();
+    // collision
+    for(const p of pipes){
+      if(80+12>p.x && 80-12<p.x+40){
+        if(y-12 < p.top-60 || y+12 > p.top+60){ alive=false; }
+      }
+      if(!p.passed && p.x+40<80-12){ p.passed=true; score++; document.getElementById('score').textContent=score; }
+    }
+    if(y>cv.height-12 || y<12) alive=false;
+
+    frame++; requestAnimationFrame(draw);
+  }
+  cv.addEventListener('touchstart', flap);
+  draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Snake</title>
+<style>
+  body{margin:0;background:#0b0f14;color:#e8f1f2;font-family:system-ui,Arial,sans-serif;display:flex;flex-direction:column;align-items:center}
+  header{width:100%;padding:16px;text-align:center;border-bottom:1px solid #1e2631}
+  canvas{background:#111;border:2px solid #1e2631;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+  .hud{margin:10px 0}
+  .pad{display:flex;gap:10px;margin-top:10px}
+  .pad button{width:56px;height:40px;border:0;border-radius:8px;background:#141a22;color:#e8f1f2}
+  .back{position:fixed;left:10px;top:10px}
+  .back a{color:#9fe;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+  <div class="back"><a href="games.html">← Back</a></div>
+  <header><h2>Snake</h2></header>
+  <div class="hud">Score: <span id="score">0</span></div>
+  <canvas id="cv" width="360" height="360"></canvas>
+  <div class="pad">
+    <button onclick="dir(0,-1)">↑</button>
+  </div>
+  <div class="pad">
+    <button onclick="dir(-1,0)">←</button>
+    <button onclick="dir(0,1)">↓</button>
+    <button onclick="dir(1,0)">→</button>
+  </div>
+<script>
+  const cv=document.getElementById('cv'), ct=cv.getContext('2d'), sz=12, cells=cv.width/sz;
+  let snake=[[5,5]], vx=1, vy=0, food=spawn(), score=0, speed=110, dead=false;
+  function spawn(){ return [Math.floor(Math.random()*cells), Math.floor(Math.random()*cells)]; }
+  function dir(x,y){ if(x===-vx && y===-vy) return; vx=x; vy=y; }
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowUp')dir(0,-1);
+    if(e.key==='ArrowDown')dir(0,1);
+    if(e.key==='ArrowLeft')dir(-1,0);
+    if(e.key==='ArrowRight')dir(1,0);
+  });
+  function loop(){
+    if(dead) return;
+    const head=[snake[0][0]+vx, snake[0][1]+vy];
+    // wrap
+    head[0]=(head[0]+cells)%cells; head[1]=(head[1]+cells)%cells;
+    // hit self?
+    if(snake.some(([x,y])=>x===head[0]&&y===head[1])){ dead=true; alert('Game Over!'); return; }
+    snake.unshift(head);
+    if(head[0]===food[0] && head[1]===food[1]){ score++; document.getElementById('score').textContent=score; food=spawn(); if(speed>60) speed-=2; }
+    else snake.pop();
+
+    // draw
+    ct.fillStyle='#111'; ct.fillRect(0,0,cv.width,cv.height);
+    // food
+    ct.fillStyle='#00fff5'; ct.fillRect(food[0]*sz, food[1]*sz, sz-1, sz-1);
+    // snake
+    ct.fillStyle='#e8f1f2';
+    snake.forEach(([x,y],i)=>ct.fillRect(x*sz, y*sz, sz-1, sz-1));
+
+    setTimeout(loop, speed);
+  }
+  loop();
+</script>
+</body>
+</html>
