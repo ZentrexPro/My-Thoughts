@@ -21,12 +21,15 @@
 html, body {
   margin:0; padding:0;
   width:100%; height:100%;
-  overflow:hidden;
   font-family: 'Great Vibes', cursive;
   background: url("bg.jpg") no-repeat center center/cover;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
 }
 
-/* Overlay effect */
+/* Overlay */
 body::after {
   content:"";
   position:absolute;
@@ -37,39 +40,38 @@ body::after {
 
 /* Quote Box */
 .quote-box {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 80%;
-  padding: 30px;
-  border-radius: 30px;
+  position: relative;
+  width: 60%;
+  max-width: 500px;
+  padding: 25px 30px;
+  border-radius: 25px;
   background: linear-gradient(135deg, rgba(255,0,150,0.7), rgba(0,200,255,0.7));
   backdrop-filter: blur(10px);
   text-align: center;
   color: #fff;
-  font-size: 2rem;
-  line-height: 1.5;
-  box-shadow: 0 0 25px rgba(255,255,255,0.6);
+  font-size: 1.6rem;
+  line-height: 1.4;
+  box-shadow: 0 0 20px rgba(255,255,255,0.5);
   z-index: 1;
+  margin-bottom: 40px;
   animation: floaty 6s ease-in-out infinite;
 }
 
 .quote-box::before, .quote-box::after {
   content: '"';
-  font-size: 3rem;
+  font-size: 2.5rem;
   color: #ffeb3b;
   position: absolute;
 }
-.quote-box::before { top: -15px; left: 20px; }
-.quote-box::after { bottom: -15px; right: 20px; }
+.quote-box::before { top: -15px; left: 15px; }
+.quote-box::after { bottom: -15px; right: 15px; }
 
 @keyframes floaty {
-  0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-  50% { transform: translate(-50%, -50%) translateY(-15px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
-/* Typewriter effect for quote */
+/* Typewriter */
 #quote-text {
   display: inline-block;
   white-space: pre-wrap;
@@ -87,10 +89,7 @@ body::after {
 
 /* Message Box */
 .message-box {
-  position: absolute;
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   width: 80%;
   max-width: 500px;
   background: rgba(255,255,255,0.15);
@@ -101,6 +100,7 @@ body::after {
   font-size: 1rem;
   text-align: center;
   box-shadow: 0 0 15px rgba(0,255,255,0.5);
+  z-index: 1;
 }
 
 .message-box h2 {
@@ -156,7 +156,7 @@ body::after {
 
 <script>
 // Typewriter Quote
-const text = "In your arms, I find my home ❤️\nWithout you, even the stars lose their shine.";
+const text = "When I see you, my heart whispers:\nYou are my forever ❤️";
 let index = 0;
 const target = document.getElementById("quote-text");
 
@@ -169,19 +169,29 @@ function typeWriter(){
 }
 typeWriter();
 
-// Message System
+// Secret Message Save (local only for you)
 function submitMessage(){
   let msg = document.getElementById("userMessage").value;
   if(msg.trim() === ""){
     alert("Please write something!");
     return;
   }
+  localStorage.setItem("secretMessage", msg);
   alert("Your message is saved secretly ✅");
 }
 
 function clearMessage(){
+  localStorage.removeItem("secretMessage");
   document.getElementById("userMessage").value = "";
   alert("Message removed ❌");
+}
+
+// Reload hone par saved msg wapas show ho
+window.onload = function(){
+  let saved = localStorage.getItem("secretMessage");
+  if(saved){
+    document.getElementById("userMessage").value = saved;
+  }
 }
 </script>
 
