@@ -12,13 +12,11 @@
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    // Default GA tracking
     gtag('config', 'G-WYSBQ3FW82', {
       'transport_type': 'beacon',
       'anonymize_ip': false 
     });
 
-    // Instagram referral tracking
     document.addEventListener("DOMContentLoaded", () => {
       const ref = document.referrer.toLowerCase();
       if (ref.includes("instagram.com") || ref.includes("l.instagram.com")) {
@@ -68,64 +66,81 @@
     }
 
     body {
-      background: url('bg.jpg') no-repeat center center fixed;
-      background-size: cover;
-      height: 100vh;
-      display: flex;
-      align-items: flex-start; /* top alignment */
-      justify-content: center;
-      padding-top: 400px; /* niche shift */
-    }
-
-    .glass-card {
-      width: 60%;
-      max-width: 300px;
-      padding: 13px;
-      border-radius: 13px;
-      background: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(5px); /* blur kam */
-      -webkit-backdrop-filter: blur(5px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: linear-gradient(135deg, #1e1e2f, #3c3c52);
       color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .quote-box {
+      border: 2px solid transparent;
+      border-radius: 20px;
+      padding: 25px 30px;
+      max-width: 500px;
       text-align: center;
+      background: rgba(0,0,0,0.3);
+      position: relative;
+      animation: neon-border 3s linear infinite;
     }
 
-    .glass-card h1 {
-      font-size: 24px;
+    @keyframes neon-border {
+      0% { border-color: #ff0080; }
+      50% { border-color: #00ffe7; }
+      100% { border-color: #ff0080; }
+    }
+
+    .quote-box h1 {
+      font-size: 26px;
       margin-bottom: 15px;
-      text-shadow: 2px 2px 6px black;
+      color: #00ffe7;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
-    .glass-card h3 {
-      font-size: 18px;
-      line-height: 1.6;
-      text-shadow: 1px 1px 2px black;
-      margin-bottom: 20px;
+    .quote-box h3 {
+      font-size: 20px;
+      line-height: 1.7;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 3px solid #ff0080;
+      width: 0;
+      margin: 0 auto;
+      animation: typing 5s steps(50, end) forwards, blink 0.8s infinite;
     }
 
-    .track-btn {
-      padding: 12px 20px;
-      background-color: #ff9800;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s ease;
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
     }
 
-    .track-btn:hover {
-      background-color: #e68a00;
+    @keyframes blink {
+      50% { border-color: transparent }
+    }
+
+    @media (max-width: 600px) {
+      .quote-box {
+        padding: 20px;
+        max-width: 90%;
+      }
+      .quote-box h1 {
+        font-size: 20px;
+      }
+      .quote-box h3 {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="glass-card">
+  <div class="quote-box">
     <h1>@nextgenn__word</h1>
     <h3>
-      iF i LoSE yOU , I dEseRvE bEttEr..;
-      IF yOU LosE mE , yOu LOsE eVeRytHinG.
+      I learn the lesson from You.
+      <br> JeJe will sent someone for me.
     </h3>
+  </div>
 </body>
 </html>
