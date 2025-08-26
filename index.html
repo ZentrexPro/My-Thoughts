@@ -1,224 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lover Quotes</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lover Quotes</title>
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&display=swap" rel="stylesheet">
+  <!-- Google Fonts (quote only; messages use Arial) -->
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&display=swap" rel="stylesheet"/>
 
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-WYSBQ3FW82');
-</script>
+  <!-- Google Analytics (GA4) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-WYSBQ3FW82', { transport_type: 'beacon', anonymize_ip: false });
+  </script>
 
-<style>
-html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
-  font-family: 'Great Vibes', cursive;
-  background: url("bg.jpg") no-repeat center center/cover;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
+  <style>
+    html, body {
+      margin:0; padding:0;
+      width:100%; height:100%;
+      background: url("bg.jpg") no-repeat center center/cover;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+    }
+    /* subtle overlay for readability */
+    body::after{
+      content:""; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:0;
+    }
 
-/* Overlay */
-body::after {
-  content:"";
-  position:absolute;
-  top:0; left:0; right:0; bottom:0;
-  background:rgba(0,0,0,0.55);
-  z-index:0;
-}
+    /* Quote (premium, calm) */
+    .quote-box{
+      position:relative; z-index:1;
+      width:min(90%, 520px);
+      padding:22px 28px;
+      border-radius:24px;
+      background:rgba(255,255,255,0.10);
+      backdrop-filter: blur(10px);
+      color:#fff; text-align:center;
+      font: italic 1.8rem/1.5 'Great Vibes', cursive;
+      box-shadow:0 0 20px rgba(255,255,255,0.35);
+      margin-bottom:32px;
+      opacity:0; transform:translateY(8px) scale(.98);
+      animation: qfade .9s ease-out forwards;
+    }
+    .quote-box::before, .quote-box::after{
+      content:'"'; position:absolute; color:#ffeb3b; font-size:2rem;
+      text-shadow:0 0 8px rgba(255,235,59,.6);
+    }
+    .quote-box::before{ top:-10px; left:14px; }
+    .quote-box::after{ bottom:-10px; right:14px; }
 
-/* Quote Box */
-.quote-box {
-  position: relative;
-  width: 60%;
-  max-width: 500px;
-  padding: 20px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  text-align: center;
-  color: #fff;
-  font-size: 1.6rem;
-  line-height: 1.4;
-  box-shadow: 0 0 20px rgba(255,255,255,0.4);
-  z-index: 1;
-  margin-bottom: 40px;
-  animation: fadeIn 2s ease forwards;
-}
+    @keyframes qfade{
+      to{ opacity:1; transform:translateY(0) scale(1); }
+    }
 
-.quote-box::before, .quote-box::after {
-  content: '"';
-  font-size: 2rem;
-  color: #ffeb3b;
-  position: absolute;
-}
-.quote-box::before { top: -10px; left: 15px; }
-.quote-box::after { bottom: -10px; right: 15px; }
+    /* Message composer */
+    .message-box{
+      position:relative; z-index:1;
+      width:min(90%, 520px);
+      background:rgba(255,255,255,0.14);
+      border-radius:18px;
+      padding:18px;
+      backdrop-filter: blur(10px);
+      box-shadow:0 0 15px rgba(0,255,255,0.35);
+      color:#fff; text-align:center;
+      margin-bottom:16px;
+    }
+    .message-box h2{
+      margin:0 0 10px;
+      font: 600 1.05rem/1 'Audiowide', system-ui, sans-serif;
+      color:#0ff; text-shadow:0 0 10px #0ff;
+      letter-spacing:.5px;
+    }
+    .message-box textarea{
+      width:100%; min-height:90px;
+      border:none; border-radius:10px; padding:10px 12px;
+      outline:none; resize:vertical; font: 400 15px/1.4 Arial, sans-serif;
+      background:rgba(255,255,255,0.9); color:#111;
+      box-sizing:border-box;
+    }
+    .btn{
+      display:inline-block; cursor:pointer; user-select:none;
+      margin:8px 6px 0; padding:9px 16px;
+      border:none; border-radius:12px;
+      background:#0ff; color:#000; font-weight:700;
+      transition:transform .08s ease, background .2s ease;
+    }
+    .btn:hover{ background:#fff; }
+    .btn:active{ transform:scale(.98); }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
+    /* Messages list */
+    #savedMessages{
+      position:relative; z-index:1;
+      width:min(90%, 520px);
+      max-height:240px; overflow:auto;
+      padding:0 2px;
+    }
+    .message-item{
+      position:relative;
+      background:rgba(0,255,255,0.18);
+      color:#fff; border-radius:12px;
+      padding:12px 40px 12px 12px;
+      margin:8px 0; font: 400 15px/1.45 Arial, sans-serif;
+      word-wrap:break-word; white-space:pre-wrap;
+    }
+    .wand{
+      position:absolute; right:10px; top:8px;
+      cursor:pointer; font-size:1.2rem; filter: drop-shadow(0 0 4px rgba(255,255,255,.6));
+      transition: transform .12s ease;
+    }
+    .wand:hover{ transform: scale(1.1) rotate(-8deg); }
 
-/* Message Box */
-.message-box {
-  position: relative;
-  width: 80%;
-  max-width: 500px;
-  background: rgba(255,255,255,0.15);
-  padding: 20px;
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  color: #fff;
-  font-size: 1rem;
-  text-align: center;
-  box-shadow: 0 0 15px rgba(0,255,255,0.5);
-  z-index: 1;
-}
-
-.message-box h2 {
-  font-family: 'Audiowide', cursive;
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-  color: #0ff;
-}
-
-.message-box textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  resize: none;
-  font-family: Arial, sans-serif;
-  margin-bottom: 10px;
-}
-
-.message-box button {
-  margin: 5px;
-  padding: 8px 16px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  background: #0ff;
-  color: #000;
-  font-weight: bold;
-  transition: 0.3s;
-}
-.message-box button:hover {
-  background: #fff;
-}
-
-/* Saved Messages */
-#savedMessages {
-  margin-top: 20px;
-  text-align: left;
-  max-height: 200px;
-  overflow-y: auto;
-  width: 80%;
-  max-width: 500px;
-  z-index: 1;
-}
-.message-item {
-  background: rgba(0,255,255,0.2);
-  padding: 10px 40px 10px 10px;
-  margin: 8px 0;
-  border-radius: 12px;
-  color: #fff;
-  font-family: Arial, sans-serif;
-  position: relative;
-}
-
-/* Wand Button */
-.wand {
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-</style>
+    /* Mini games button block */
+    .games-block{
+      position:relative; z-index:1;
+      margin-top:18px;
+    }
+    .games-btn{
+      composes: btn;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Quote -->
-<div class="quote-box">
-  When I see you, my heart whispers: You are my forever ❤️
-</div>
+  <!-- Quote -->
+  <div class="quote-box">
+    When I see you, my heart whispers: You are my forever ❤️
+  </div>
 
-<!-- Message Box -->
-<div class="message-box">
-  <h2>Message for me without your identity</h2>
-  <textarea id="userMessage" rows="3" placeholder="Write your secret message here..."></textarea>
-  <br>
-  <button onclick="submitMessage()">Send</button>
-</div>
+  <!-- Message composer -->
+  <div class="message-box">
+    <h2>Message for me without your identity</h2>
+    <textarea id="userMessage" placeholder="Write your secret message here..."></textarea>
+    <br/>
+    <button class="btn" onclick="submitMessage()">Send</button>
+  </div>
 
-<!-- Show Saved Messages -->
-<div id="savedMessages"></div>
+  <!-- Public wall -->
+  <div id="savedMessages" aria-live="polite"></div>
 
-<script>
-const ADMIN_PASS = "0420"; 
-let messages = JSON.parse(localStorage.getItem("allMessages")) || [];
+  <!-- Play Mini Games -->
+  <div class="games-block">
+    <button class="btn" onclick="location.href='games.html'">🎮 Play Mini Games</button>
+  </div>
 
-// Render Messages
-function renderMessages() {
-  let container = document.getElementById("savedMessages");
-  container.innerHTML = "";
-  messages.forEach((msg, index) => {
-    let div = document.createElement("div");
-    div.classList.add("message-item");
-    div.innerText = msg;
+  <script>
+    // Admin password for removal (prompted on 🪄 click)
+    const ADMIN_PASS = "0420";
 
-    // 🪄 wand
-    let wand = document.createElement("span");
-    wand.classList.add("wand");
-    wand.innerText = "🪄";
-    wand.onclick = function() {
-      let pass = prompt("Enter Admin Password to remove:");
-      if(pass === ADMIN_PASS){
-        messages.splice(index,1);
-        localStorage.setItem("allMessages", JSON.stringify(messages));
-        renderMessages();
-      } else {
-        alert("❌ Wrong Password!");
-      }
-    };
-    div.appendChild(wand);
+    // Load existing (shared) messages from localStorage
+    let messages = [];
+    try{
+      messages = JSON.parse(localStorage.getItem("allMessages")) || [];
+      if(!Array.isArray(messages)) messages = [];
+    }catch(e){ messages = []; }
 
-    container.appendChild(div);
-  });
-}
+    // Render messages onto the public wall
+    function renderMessages(){
+      const container = document.getElementById('savedMessages');
+      container.innerHTML = '';
+      messages.forEach((msg, index) => {
+        const item = document.createElement('div');
+        item.className = 'message-item';
+        item.textContent = msg;
 
-// Add new message
-function submitMessage(){
-  let msg = document.getElementById("userMessage").value;
-  if(msg.trim() === ""){
-    alert("Please write something!");
-    return;
-  }
-  messages.push(msg);
-  localStorage.setItem("allMessages", JSON.stringify(messages));
-  document.getElementById("userMessage").value = "";
-  renderMessages();
-}
+        const wand = document.createElement('span');
+        wand.className = 'wand';
+        wand.textContent = '🪄';
+        wand.title = 'Remove (admin only)';
+        wand.onclick = () => {
+          const pass = prompt('Enter Admin Password to remove:');
+          if(pass === ADMIN_PASS){
+            messages.splice(index, 1);
+            localStorage.setItem('allMessages', JSON.stringify(messages));
+            renderMessages();
+          }else if(pass !== null){
+            alert('❌ Wrong Password!');
+          }
+        };
 
-// On reload load messages
-window.onload = function(){
-  renderMessages();
-}
-</script>
+        item.appendChild(wand);
+        container.appendChild(item);
+      });
+    }
 
+    // Add a new message to the wall
+    function submitMessage(){
+      const el = document.getElementById('userMessage');
+      const text = (el.value || '').trim();
+      if(!text){ alert('Please write something!'); return; }
+      messages.push(text);
+      localStorage.setItem('allMessages', JSON.stringify(messages));
+      el.value = '';
+      renderMessages();
+    }
+
+    // Initial render
+    renderMessages();
+  </script>
 </body>
 </html>
