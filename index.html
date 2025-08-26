@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Futuristic Handwriting Quote + Messages + Music</title>
+<title>Futuristic Handwriting Quote + Messages</title>
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Perfecto+Calligraphy&display=swap" rel="stylesheet">
@@ -160,19 +160,6 @@ canvas#bg {
   padding:2px 6px;
   cursor:pointer;
 }
-
-/* Music button */
-#music-toggle {
-  display:block;
-  margin:20px auto;
-  padding:10px 20px;
-  border:none;
-  border-radius:10px;
-  background:#0ff;
-  color:#000;
-  font-weight:bold;
-  cursor:pointer;
-}
 </style>
 </head>
 <body>
@@ -190,14 +177,6 @@ canvas#bg {
   <button id="send-btn">Send</button>
   <div id="messages-list"></div>
 </div>
-
-<!-- Music play/pause button -->
-<button id="music-toggle">Play Music</button>
-
-<audio id="bg-music" loop>
-  <source src="music.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
 
 <script>
 // Particle background
@@ -313,24 +292,7 @@ messagesList.addEventListener('click', (e)=>{
 });
 
 loadMessages();
-
-// Background music toggle
-const bgMusic = document.getElementById('bg-music');
-const musicBtn = document.getElementById('music-toggle');
-let playing = false;
-
-musicBtn.addEventListener('click', () => {
-  if(!playing){
-    bgMusic.play();
-    musicBtn.innerText = "Pause Music";
-    playing = true;
-  } else {
-    bgMusic.pause();
-    musicBtn.innerText = "Play Music";
-    playing = false;
-  }
-});
 </script>
 
 </body>
-    </html>
+</html>
