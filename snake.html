@@ -1,314 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Snake (Fixed)</title>
-<style>
-  :root{
-    --bg:#0b0f14; --card:#111418; --accent:#00fff5; --text:#e8f1f2;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    background:var(--bg);
-    color:var(--text);
-    font-family:system-ui,Segoe UI,Arial,sans-serif;
-    padding:18px 12px 36px;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      color: #0f0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+    }
 
-  .back{position:fixed; left:12px; top:12px; z-index:99;}
-  .back a{color:#9fe; text-decoration:none; font-weight:600}
+    canvas {
+      border: 2px solid #0f0;
+      background: #111;
+      margin-bottom: 15px;
+    }
 
-  header{width:100%; text-align:center; margin-top:8px; margin-bottom:8px;}
-  h2{margin:0; font-size:20px}
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 15px;
+      justify-content: center;
+      align-items: center;
+    }
 
-  .board-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:8px;}
+    .controls button {
+      padding: 20px;
+      font-size: 26px;
+      border: none;
+      border-radius: 12px;
+      background: #0f0;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
 
-  /* responsive canvas container */
-  .canvas-box{
-    position:relative;
-    background:#0f1317;
-    padding:8px;
-    border-radius:12px;
-    box-shadow:0 10px 30px rgba(0,0,0,.6);
-  }
+    .controls button:hover {
+      background: #09d;
+      color: #fff;
+    }
 
-  canvas{display:block; background:#0b0f14; border-radius:8px; touch-action:none; }
-
-  .hud{display:flex;gap:14px;align-items:center; justify-content:center;}
-  .hud .score{font-weight:700; color:var(--accent)}
-
-  /* controls area (overlay) */
-  .controls{
-    margin-top:10px;
-    display:flex;
-    gap:10px;
-    align-items:center;
-    justify-content:center;
-    flex-wrap:wrap;
-  }
-
-  .ctrl-btn{
-    width:58px; height:44px;
-    border-radius:10px; border:0;
-    background:#141a22; color:var(--text);
-    font-size:20px; cursor:pointer;
-    box-shadow:0 8px 18px rgba(0,0,0,.45);
-    display:flex; align-items:center; justify-content:center;
-    user-select:none;
-    -webkit-user-select:none;
-  }
-  .ctrl-btn:active{ transform:scale(.98) }
-
-  /* small screens */
-  @media (max-width:420px){
-    .ctrl-btn{ width:48px; height:40px; font-size:18px; }
-  }
-
-  .note{color:#9fb2be;font-size:13px;margin-top:8px;}
-</style>
+    .empty {
+      visibility: hidden;
+    }
+  </style>
 </head>
 <body>
+  <h2>Snake Game 🐍</h2>
+  <canvas id="game" width="300" height="300"></canvas>
 
-  <div class="back"><a href="games.html">← Back</a></div>
-
-  <header><h2>Snake</h2></header>
-
-  <div class="board-wrap">
-
-    <div class="hud">
-      <div class="score">Score: <span id="score">0</span></div>
-      <div class="note" id="status">Play: Arrow keys / Buttons / Tap canvas to restart after Game Over</div>
-    </div>
-
-    <div class="canvas-box" id="canvasBox">
-      <!-- canvas size will be set from JS responsively -->
-      <canvas id="cv" width="360" height="360" aria-label="Snake game"></canvas>
-    </div>
-
-    <div class="controls" aria-hidden="false">
-      <button class="ctrl-btn" id="upBtn">↑</button>
-      <div style="display:flex;gap:10px;">
-        <button class="ctrl-btn" id="leftBtn">←</button>
-        <button class="ctrl-btn" id="downBtn">↓</button>
-        <button class="ctrl-btn" id="rightBtn">→</button>
-      </div>
-    </div>
-
+  <div class="controls">
+    <div class="empty"></div>
+    <button onclick="changeDirection('UP')">⬆️</button>
+    <div class="empty"></div>
+    <button onclick="changeDirection('LEFT')">⬅️</button>
+    <div class="empty"></div>
+    <button onclick="changeDirection('RIGHT')">➡️</button>
+    <div class="empty"></div>
+    <button onclick="changeDirection('DOWN')">⬇️</button>
+    <div class="empty"></div>
   </div>
 
-<script>
-/*
-  Robust Snake implementation:
-  - responsive canvas (keeps square)
-  - cell-size auto computed -> consistent behavior on phones
-  - buttons use addEventListener (works on click/touch)
-  - restart on canvas click when dead
-*/
+  <script>
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
 
-// DOM refs
-const canvas = document.getElementById('cv');
-const scoreEl = document.getElementById('score');
-const statusEl = document.getElementById('status');
-const upBtn = document.getElementById('upBtn');
-const leftBtn = document.getElementById('leftBtn');
-const downBtn = document.getElementById('downBtn');
-const rightBtn = document.getElementById('rightBtn');
+    const box = 15; // Snake dot size
+    let snake = [{ x: 5 * box, y: 5 * box }];
+    let food = {
+      x: Math.floor(Math.random() * (canvas.width / box)) * box,
+      y: Math.floor(Math.random() * (canvas.height / box)) * box
+    };
 
-let ctx = canvas.getContext('2d');
+    let direction;
+    let score = 0;
 
-// Game state
-let snake = [];
-let vx = 1, vy = 0;
-let food = null;
-let score = 0;
-let cellSize = 14;      // will recompute
-let cols = 0, rows = 0;
-let tickInterval = null;
-let tickMs = 120;      // speed (lower = faster)
-let dead = false;
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+      if (event.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+      if (event.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+      if (event.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+    });
 
-// responsive sizing and HiDPI scaling
-function resizeCanvas(){
-  // desired logical size (CSS pixels)
-  const maxWidth = Math.min(window.innerWidth - 40, 420); // leave margins
-  const size = Math.max(240, Math.floor(maxWidth)); // min 240
-  // set CSS size
-  canvas.style.width = size + 'px';
-  canvas.style.height = size + 'px';
-
-  // HiDPI: set internal pixel buffer
-  const ratio = window.devicePixelRatio || 1;
-  canvas.width = Math.floor(size * ratio);
-  canvas.height = Math.floor(size * ratio);
-  ctx.setTransform(ratio,0,0,ratio,0,0); // scale drawing so coordinates in CSS px
-
-  // compute grid cell size to have roughly 24-32 cells depending on size
-  // choose cellSize so that cols is integer ~ between 18 and 30
-  const desiredCols = Math.round(size / 14); // prefer ~14px cells
-  cellSize = Math.floor(size / desiredCols) || 12;
-  cols = Math.floor(size / cellSize);
-  rows = cols; // square grid
-}
-
-// spawn food at random empty cell
-function spawnFood(){
-  let tries = 0;
-  while(tries < 200){
-    const x = Math.floor(Math.random() * cols);
-    const y = Math.floor(Math.random() * rows);
-    if(!snake.some(s => s[0] === x && s[1] === y)){
-      return [x,y];
+    function changeDirection(dir) {
+      if (dir === "UP" && direction !== "DOWN") direction = "UP";
+      if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
+      if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+      if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
     }
-    tries++;
-  }
-  return [Math.floor(Math.random()*cols), Math.floor(Math.random()*rows)];
-}
 
-function initGame(){
-  // reset
-  snake = [[Math.floor(cols/2), Math.floor(rows/2)]];
-  vx = 1; vy = 0;
-  score = 0; dead = false;
-  tickMs = 120;
-  food = spawnFood();
-  scoreEl.textContent = score;
-  statusEl.textContent = 'Playing — Arrow keys / Buttons / Tap canvas to restart after Game Over';
-  // clear previous interval
-  if(tickInterval) clearInterval(tickInterval);
-  tickInterval = setInterval(gameTick, tickMs);
-  render();
-}
+    function draw() {
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// game tick (movement + check)
-function gameTick(){
-  if(dead) return;
-  const head = [snake[0][0] + vx, snake[0][1] + vy];
-  // wrap-around
-  head[0] = (head[0] + cols) % cols;
-  head[1] = (head[1] + rows) % rows;
+      // Food
+      ctx.beginPath();
+      ctx.arc(food.x + box/2, food.y + box/2, box/2, 0, Math.PI * 2);
+      ctx.fillStyle = "red";
+      ctx.fill();
 
-  // collision with self
-  if(snake.some(seg => seg[0]===head[0] && seg[1]===head[1])){
-    dead = true;
-    clearInterval(tickInterval);
-    tickInterval = null;
-    statusEl.textContent = 'Game Over — Tap canvas to restart';
-    alert('Game Over! Your score: ' + score);
-    render(); // final frame
-    return;
-  }
+      // Snake
+      for (let i = 0; i < snake.length; i++) {
+        ctx.beginPath();
+        ctx.arc(snake[i].x + box/2, snake[i].y + box/2, box/2, 0, Math.PI * 2);
+        ctx.fillStyle = i === 0 ? "#0f0" : "#9f9";
+        ctx.fill();
+      }
 
-  snake.unshift(head);
-  if(head[0] === food[0] && head[1] === food[1]){
-    score++;
-    scoreEl.textContent = score;
-    food = spawnFood();
-    // speed up slightly
-    if(tickMs > 60){
-      tickMs = Math.max(60, tickMs - 4);
-      clearInterval(tickInterval);
-      tickInterval = setInterval(gameTick, tickMs);
+      let snakeX = snake[0].x;
+      let snakeY = snake[0].y;
+
+      if (direction === "UP") snakeY -= box;
+      if (direction === "DOWN") snakeY += box;
+      if (direction === "LEFT") snakeX -= box;
+      if (direction === "RIGHT") snakeX += box;
+
+      if (snakeX === food.x && snakeY === food.y) {
+        score++;
+        food = {
+          x: Math.floor(Math.random() * (canvas.width / box)) * box,
+          y: Math.floor(Math.random() * (canvas.height / box)) * box
+        };
+      } else {
+        snake.pop();
+      }
+
+      const newHead = { x: snakeX, y: snakeY };
+
+      // Game over check
+      if (
+        snakeX < 0 ||
+        snakeY < 0 ||
+        snakeX >= canvas.width ||
+        snakeY >= canvas.height ||
+        snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)
+      ) {
+        alert("Game Over! Score: " + score);
+        document.location.reload();
+      }
+
+      snake.unshift(newHead);
     }
-  } else {
-    snake.pop();
-  }
-  render();
-}
 
-// drawing
-function render(){
-  // logical canvas size in CSS pixels
-  const cssW = parseInt(canvas.style.width || canvas.width);
-  const cssH = parseInt(canvas.style.height || canvas.height);
-
-  // clear background
-  ctx.fillStyle = '#0b0f14';
-  ctx.fillRect(0,0,cssW,cssH);
-
-  // draw food
-  ctx.fillStyle = '#00fff5';
-  ctx.fillRect(food[0]*cellSize + 2, food[1]*cellSize + 2, cellSize - 4, cellSize - 4);
-
-  // draw snake
-  for(let i=0;i<snake.length;i++){
-    const [x,y] = snake[i];
-    if(i===0){
-      // head
-      ctx.fillStyle = '#ffeb3b';
-    } else {
-      ctx.fillStyle = '#e8f1f2';
-    }
-    ctx.fillRect(x*cellSize + 1, y*cellSize + 1, cellSize - 2, cellSize - 2);
-  }
-
-  // optional grid (light)
-  // ctx.strokeStyle = 'rgba(255,255,255,0.02)';
-  // for(let i=0;i<=cols;i++) ctx.strokeRect(i*cellSize,0,1,cssH);
-}
-
-// directional control: prevent reversing into self
-function setDirection(dx,dy){
-  // if trying to reverse direction, ignore
-  if(dx === -vx && dy === -vy) return;
-  vx = dx; vy = dy;
-}
-
-// attach button listeners (click/touch)
-function attachControls(){
-  upBtn.addEventListener('click', ()=> setDirection(0,-1));
-  leftBtn.addEventListener('click', ()=> setDirection(-1,0));
-  downBtn.addEventListener('click', ()=> setDirection(0,1));
-  rightBtn.addEventListener('click', ()=> setDirection(1,0));
-
-  // also allow touchstart for buttons (mobile)
-  ['touchstart','pointerdown'].forEach(ev=>{
-    upBtn.addEventListener(ev, (e)=>{ e.preventDefault(); setDirection(0,-1); });
-    leftBtn.addEventListener(ev, (e)=>{ e.preventDefault(); setDirection(-1,0); });
-    downBtn.addEventListener(ev, (e)=>{ e.preventDefault(); setDirection(0,1); });
-    rightBtn.addEventListener(ev, (e)=>{ e.preventDefault(); setDirection(1,0); });
-  });
-
-  // keyboard
-  window.addEventListener('keydown', (e)=>{
-    if(e.key === 'ArrowUp' || e.key === 'w') setDirection(0,-1);
-    if(e.key === 'ArrowDown' || e.key === 's') setDirection(0,1);
-    if(e.key === 'ArrowLeft' || e.key === 'a') setDirection(-1,0);
-    if(e.key === 'ArrowRight' || e.key === 'd') setDirection(1,0);
-  });
-
-  // tap canvas to restart when dead, or to flap/ start
-  canvas.addEventListener('click', ()=>{
-    if(dead){ initGame(); }
-  });
-  // touch also
-  canvas.addEventListener('touchend', (e)=>{
-    if(dead){ initGame(); }
-  }, {passive:true});
-}
-
-// handle window resize
-window.addEventListener('resize', ()=>{
-  const wasDead = dead;
-  resizeCanvas();
-  // re-init positions proportionally: simpler approach = restart game to recalc grid
-  initGame();
-  if(wasDead){
-    // leave as playing after restart
-  }
-});
-
-// init on load
-resizeCanvas();
-attachControls();
-initGame();
-
-</script>
+    setInterval(draw, 200); // slower speed
+  </script>
 </body>
-  </html>
+</html>
