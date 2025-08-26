@@ -8,49 +8,6 @@
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Perfecto+Calligraphy&display=swap" rel="stylesheet">
 
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-WYSBQ3FW82', { 'transport_type': 'beacon', 'anonymize_ip': false });
-
-document.addEventListener("DOMContentLoaded", () => {
-    const ref = document.referrer.toLowerCase();
-    if(ref.includes("instagram.com") || ref.includes("l.instagram.com")){
-        gtag('event','visit_from_instagram',{event_category:'Referral',event_label:ref});
-    }
-});
-</script>
-
-<!-- Visitor Tracking -->
-<script defer>
-(async function(){
-    try {
-        let ipData = await fetch("https://ipapi.co/json/").then(r=>r.json());
-        let device = /Mobi|Android/i.test(navigator.userAgent) ? "Mobile" : "Desktop";
-        let browser = (() => {
-            let ua = navigator.userAgent;
-            if(ua.includes("Chrome")) return "Chrome";
-            if(ua.includes("Firefox")) return "Firefox";
-            if(ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
-            if(ua.includes("Edge")) return "Edge";
-            return "Other";
-        })();
-
-        let url = "https://script.google.com/macros/s/AKfycbyWux5M5ympH9CaqpICUIwql4p2mOrYTkw0U-nEhH0BvC-sa7QGIFA5oUlh0EDiA3_3/exec"
-            + "?ip=" + encodeURIComponent(ipData.ip)
-            + "&city=" + encodeURIComponent(ipData.city)
-            + "&country=" + encodeURIComponent(ipData.country_name)
-            + "&device=" + encodeURIComponent(device)
-            + "&browser=" + encodeURIComponent(browser);
-
-        fetch(url);
-    } catch(e){console.error("Tracking failed", e);}
-})();
-</script>
-
 <style>
 html, body {
   margin:0;
@@ -61,7 +18,7 @@ html, body {
   background:#000;
 }
 
-/* Sci-fi particle canvas */
+/* Particle background */
 canvas#bg {
   position:absolute;
   top:0; left:0;
@@ -81,16 +38,10 @@ canvas#bg {
   padding:25px 35px;
   text-align:center;
   z-index:1;
-  border: 3px solid #fff;
-  border-radius:25px; /* Rounded corners */
-  box-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 60px #fff;
-  animation: glowBorder 3s ease-in-out infinite alternate;
-  background: rgba(0,0,0,0.2);
-}
-
-@keyframes glowBorder {
-  0% {box-shadow: 0 0 20px #fff, 0 0 40px #fff, 0 0 60px #fff;}
-  100% {box-shadow: 0 0 40px #fff, 0 0 80px #fff, 0 0 120px #fff;}
+  border: 2px solid #fff;
+  border-radius:20px;
+  box-shadow: 0 0 15px #fff, 0 0 30px #fff;
+  background: rgba(0,0,0,0.3);
 }
 
 .quote-container h1 {
@@ -98,15 +49,15 @@ canvas#bg {
   font-size:2rem;
   margin-bottom:15px;
   color:#0ff;
-  text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+  text-shadow: 0 0 8px #0ff;
 }
 
 .quote-container h3 {
   font-family:'Perfecto Calligraphy', cursive;
-  font-size:1.8rem;
+  font-size:1.7rem;
   line-height:1.6;
-  color:grey; /* Grey quotes */
-  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+  color:#ddd; /* light grey text */
+  text-shadow: 0 0 4px #0ff; /* subtle glow */
   white-space:pre-wrap;
   overflow:hidden;
   box-sizing:border-box;
@@ -115,14 +66,14 @@ canvas#bg {
 .cursor {
   display:inline-block;
   width:2px;
-  background:#fff; /* White cursor */
+  background:#0ff;
   margin-left:2px;
   animation: blink 0.8s infinite;
 }
 
 @keyframes blink {
-  0%, 50%, 100% {opacity:1;}
-  25%, 75% {opacity:0;}
+  0%,50%,100%{opacity:1;}
+  25%,75%{opacity:0;}
 }
 </style>
 </head>
@@ -140,7 +91,7 @@ canvas#bg {
 const canvas = document.getElementById('bg');
 const ctx = canvas.getContext('2d');
 let particles = [];
-const particleCount = 150;
+const particleCount = 120;
 
 function initParticles(){
   particles = [];
@@ -149,9 +100,9 @@ function initParticles(){
       x: Math.random()*canvas.width,
       y: Math.random()*canvas.height,
       r: Math.random()*2+1,
-      dx: (Math.random()-0.5)*1,
-      dy: (Math.random()-0.5)*1,
-      color: `hsl(${Math.random()*360}, 100%, 50%)`
+      dx: (Math.random()-0.5)*0.6,
+      dy: (Math.random()-0.5)*0.6,
+      color: `hsl(${Math.random()*360}, 80%, 60%)`
     });
   }
 }
@@ -183,7 +134,7 @@ function animate(){
 animate();
 
 // Typewriter effect
-const text = "You deserve like a gold 🪙 <br>and<br> I deserve like a diamond 💎";
+const text = "Have a Great day ahead 😘💎";
 const target = document.getElementById('quote-text');
 let index = 0;
 
