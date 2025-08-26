@@ -81,6 +81,15 @@ canvas#bg {
   padding:25px 35px;
   text-align:center;
   z-index:1;
+  border: 3px solid;
+  border-image: linear-gradient(45deg, #ff0000, #ff7300, #ffee00, #00ff00, #00ffee, #0000ff, #ff00ff, #ff0000, #ff7300, #ffee00, #00ff00, #00ffee, #0000ff, #ff00ff, #ff0000, #ff7300, #ffee00, #00ff00, #00ffee, #0000ff) 1;
+  box-shadow: 0 0 30px rgba(0,255,255,0.5), 0 0 60px rgba(255,0,255,0.3), 0 0 90px rgba(0,255,0,0.3);
+  animation: glowBorder 4s linear infinite;
+}
+
+@keyframes glowBorder {
+  0% {filter: hue-rotate(0deg);}
+  100% {filter: hue-rotate(360deg);}
 }
 
 .quote-container h1 {
@@ -93,15 +102,26 @@ canvas#bg {
 
 .quote-container h3 {
   font-family:'Perfecto Calligraphy', cursive;
-  font-size:1.5rem;
+  font-size:1.8rem;
   line-height:1.6;
   color:#fff;
   text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
   white-space:pre-wrap;
   overflow:hidden;
-  border-right:2px solid #0ff;
-  width:100%;
   box-sizing:border-box;
+}
+
+.cursor {
+  display:inline-block;
+  width:2px;
+  background:#0ff;
+  margin-left:2px;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% {opacity:1;}
+  25%, 75% {opacity:0;}
 }
 </style>
 </head>
@@ -119,7 +139,7 @@ canvas#bg {
 const canvas = document.getElementById('bg');
 const ctx = canvas.getContext('2d');
 let particles = [];
-const particleCount = 120;
+const particleCount = 150;
 
 function initParticles(){
   particles = [];
@@ -128,8 +148,9 @@ function initParticles(){
       x: Math.random()*canvas.width,
       y: Math.random()*canvas.height,
       r: Math.random()*2+1,
-      dx: (Math.random()-0.5)*0.5,
-      dy: (Math.random()-0.5)*0.5,
+      dx: (Math.random()-0.5)*1,
+      dy: (Math.random()-0.5)*1,
+      color: `hsl(${Math.random()*360}, 100%, 50%)`
     });
   }
 }
@@ -148,7 +169,7 @@ function animate(){
   particles.forEach(p=>{
     ctx.beginPath();
     ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle="#0ff";
+    ctx.fillStyle=p.color;
     ctx.fill();
     p.x += p.dx; p.y += p.dy;
     if(p.x<0)p.x=canvas.width;
@@ -160,16 +181,36 @@ function animate(){
 }
 animate();
 
-// Typewriter effect
-const text = You deserve like a gold 🪙 <br>and<br> I deserve like a diamond 💎
+// Typewriter effect with neon colors
+const text = "You deserve like a gold 🪙 <br>and<br> I deserve like a diamond 💎";
 const target = document.getElementById('quote-text');
 let index = 0;
+const colors = ['#ff0000','#ff7300','#ffee00','#00ff00','#00ffee','#0000ff','#ff00ff','#ff0080','#ff7f50','#7fff00','#00ff7f','#00ffff','#1e90ff','#ff1493','#adff2f','#ff69b4','#40e0d0','#ff4500','#7b68ee','#00fa9a'];
 
 function typeWriter(){
   if(index < text.length){
-    target.innerHTML += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 70); // speed of writing
+    let char = text.charAt(index);
+    if(char !== '<'){
+      const span = document.createElement('span');
+      span.innerHTML = char;
+      span.style.color = colors[Math.floor(Math.random()*colors.length)];
+      target.appendChild(span);
+      index++;
+      setTimeout(typeWriter, 70);
+    } else {
+      // handle <br>
+      if(text.substring(index,index+4)==='<br>'){
+        target.innerHTML += '<br>';
+        index +=4;
+      } else {
+        index++;
+      }
+      typeWriter();
+    }
+  } else {
+    const cursor = document.createElement('span');
+    cursor.classList.add('cursor');
+    target.appendChild(cursor);
   }
 }
 typeWriter();
