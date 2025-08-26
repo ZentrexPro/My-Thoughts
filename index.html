@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Futuristic Sci-Fi Quotes</title>
+<title>Futuristic Handwriting Quote</title>
 
 <!-- Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
@@ -48,6 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 </script>
 
+<!-- Handwriting font -->
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+
 <style>
 html, body {
   margin:0;
@@ -55,7 +58,7 @@ html, body {
   width:100%;
   height:100%;
   overflow:hidden;
-  font-family:'Segoe UI', sans-serif;
+  font-family:'Patrick Hand', cursive;
   background:#000;
 }
 
@@ -67,6 +70,7 @@ canvas#bg {
   z-index:0;
 }
 
+/* Quote box */
 .quote-container {
   position:absolute;
   top:50%;
@@ -74,10 +78,7 @@ canvas#bg {
   transform:translate(-50%, -50%);
   max-width:90%;
   width:80%;
-  padding:20px 30px;
-  background:rgba(0,0,0,0.3);
-  border-radius:15px;
-  box-shadow:0 0 25px #00fff0;
+  padding:25px 35px;
   text-align:center;
   z-index:1;
 }
@@ -85,36 +86,23 @@ canvas#bg {
 .quote-container h1 {
   font-size:2rem;
   margin-bottom:15px;
-  color:#00fff0;
+  color:#0ff;
+  text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
 }
 
 .quote-container h3 {
-  font-size:1.25rem;
+  font-size:1.4rem;
   line-height:1.6;
   color:#fff;
-  text-shadow:0 0 10px #00fff0;
-  display:inline-block;
-  border-right:2px solid #00fff0;
-  white-space:pre-wrap;   /* allow wrapping */
-  overflow:hidden;         /* for typing effect */
+  text-shadow: 0 0 8px #0ff, 0 0 15px #0ff;
+  white-space:pre-wrap;
+  overflow:hidden;
+  border-right:2px solid #0ff;
   width:100%;
   box-sizing:border-box;
-  animation:type 10s steps(120,end) forwards, blink 0.8s step-end infinite;
 }
 
-@keyframes type {
-  0% { width:0; }
-  100% { width:100%; }
-}
-
-@keyframes blink {
-  50% { border-color:transparent; }
-}
-
-@media (max-width:600px){
-  .quote-container h1 { font-size:1.5rem; }
-  .quote-container h3 { font-size:1rem; }
-}
+/* Typewriter animation controlled via JS for proper handwriting style */
 </style>
 </head>
 <body>
@@ -123,17 +111,13 @@ canvas#bg {
 
 <div class="quote-container">
   <h1>@nextgenn__word</h1>
-  <h3>
-iF i LoSE yOU , I dEseRvE bEttEr..;
-IF yOU LosE mE , yOu LOsE eVeRytHinG.
-  </h3>
+  <h3 id="quote-text"></h3>
 </div>
 
 <script>
 // Particle background with responsive resize
 const canvas = document.getElementById('bg');
 const ctx = canvas.getContext('2d');
-
 let particles = [];
 const particleCount = 120;
 
@@ -161,26 +145,35 @@ resizeCanvas();
 
 function animate(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-
   particles.forEach(p=>{
     ctx.beginPath();
     ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fillStyle="#00fff0";
+    ctx.fillStyle="#0ff";
     ctx.fill();
-
-    p.x += p.dx;
-    p.y += p.dy;
-
+    p.x += p.dx; p.y += p.dy;
     if(p.x<0)p.x=canvas.width;
     if(p.x>canvas.width)p.x=0;
     if(p.y<0)p.y=canvas.height;
     if(p.y>canvas.height)p.y=0;
   });
-
   requestAnimationFrame(animate);
 }
 animate();
+
+// Typewriter effect for handwriting font
+const text = `iF i LoSE yOU , I dEseRvE bEttEr..;\nIF yOU LosE mE , yOu LOsE eVeRytHinG.`;
+const target = document.getElementById('quote-text');
+let index = 0;
+
+function typeWriter(){
+  if(index < text.length){
+    target.innerHTML += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 60); // speed of writing
+  }
+}
+typeWriter();
 </script>
 
 </body>
-    </html>
+</html>
