@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Thoughts</title>
-  
+
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
   <script>
@@ -17,6 +17,7 @@
       'anonymize_ip': false 
     });
 
+    // Instagram referral tracking
     document.addEventListener("DOMContentLoaded", () => {
       const ref = document.referrer.toLowerCase();
       if (ref.includes("instagram.com") || ref.includes("l.instagram.com")) {
@@ -58,66 +59,93 @@
   </script>
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Orbitron', sans-serif;
     }
 
     body {
-      background: linear-gradient(135deg, #1e1e2f, #3c3c52);
+      background: radial-gradient(circle at center, #0a0f1f 0%, #000 100%);
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 20px;
+      overflow: hidden;
+    }
+
+    /* Futuristic Grid Background */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(90deg, rgba(0,255,255,0.15) 1px, transparent 1px),
+                  linear-gradient(rgba(0,255,255,0.15) 1px, transparent 1px);
+      background-size: 40px 40px;
+      transform: rotateX(60deg) translateY(200px);
+      animation: gridMove 10s linear infinite;
+    }
+
+    @keyframes gridMove {
+      from { transform: rotateX(60deg) translateY(200px); }
+      to   { transform: rotateX(60deg) translateY(-200px); }
     }
 
     .quote-box {
-      border: 2px solid transparent;
-      border-radius: 20px;
-      padding: 25px 30px;
-      max-width: 500px;
-      text-align: center;
-      background: rgba(0,0,0,0.3);
       position: relative;
-      animation: neon-border 3s linear infinite;
-    }
-
-    @keyframes neon-border {
-      0% { border-color: #ff0080; }
-      50% { border-color: #00ffe7; }
-      100% { border-color: #ff0080; }
+      padding: 30px 40px;
+      border: 2px solid #0ff;
+      border-radius: 15px;
+      box-shadow: 0 0 25px #0ff, inset 0 0 15px #0ff;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      z-index: 10;
     }
 
     .quote-box h1 {
-      font-size: 26px;
-      margin-bottom: 15px;
+      font-size: 28px;
+      margin-bottom: 20px;
       color: #00ffe7;
-      text-transform: uppercase;
-      letter-spacing: 2px;
+      text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
     }
 
     .quote-box h3 {
       font-size: 20px;
-      line-height: 1.7;
-      white-space: nowrap;
-      overflow: hidden;
-      border-right: 3px solid #ff0080;
-      width: 0;
-      margin: 0 auto;
-      animation: typing 5s steps(50, end) forwards, blink 0.8s infinite;
+      line-height: 1.6;
+      color: #fff;
+      text-shadow: 0 0 5px #0ff, 0 0 15px #0ff;
+      letter-spacing: 2px;
+      animation: flicker 2s infinite alternate;
     }
 
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 100% }
+    @keyframes flicker {
+      0% { opacity: 1; }
+      45% { opacity: 0.8; }
+      50% { opacity: 0.3; }
+      55% { opacity: 0.9; }
+      100% { opacity: 1; }
     }
 
-    @keyframes blink {
-      50% { border-color: transparent }
+    /* Neon scan line effect */
+    .quote-box::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: 0;
+      width: 100%;
+      height: 200%;
+      background: linear-gradient(180deg, transparent, rgba(0,255,255,0.2), transparent);
+      animation: scan 4s linear infinite;
+    }
+
+    @keyframes scan {
+      from { transform: translateY(-100%); }
+      to   { transform: translateY(100%); }
     }
 
     @media (max-width: 600px) {
@@ -126,7 +154,7 @@
         max-width: 90%;
       }
       .quote-box h1 {
-        font-size: 20px;
+        font-size: 22px;
       }
       .quote-box h3 {
         font-size: 16px;
@@ -138,8 +166,8 @@
   <div class="quote-box">
     <h1>@nextgenn__word</h1>
     <h3>
-      I learn the lesson from Past.
-      <br> Jai-Jai will sent someone for me.
+      iF i LoSE yOU , I dEseRvE bEttEr..;<br>
+      IF yOU LosE mE , yOu LOsE eVeRytHinG.
     </h3>
   </div>
 </body>
