@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Coin Flip Game</title>
+<title>Luxury Coin Flip Game</title>
 <style>
   body {
     font-family: 'Poppins', sans-serif;
@@ -13,43 +13,62 @@
     justify-content:center;
     height:100vh;
     margin:0;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: linear-gradient(135deg, #000428, #004e92);
+    overflow:hidden;
     color:#fff;
   }
 
   h1 {
-    font-size:2rem;
-    margin-bottom:10px;
-    letter-spacing:1px;
-    text-shadow:0 0 10px rgba(0,255,255,0.6);
+    font-size:2.5rem;
+    margin-bottom:20px;
+    letter-spacing:2px;
+    text-shadow:0 0 20px #0ff, 0 0 40px #00f;
+  }
+
+  .glass-box {
+    background: rgba(255,255,255,0.08);
+    border-radius:20px;
+    padding:30px 40px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
+    text-align:center;
+    animation: fadeIn 1.5s ease;
+  }
+
+  @keyframes fadeIn {
+    from {opacity:0; transform:scale(0.8);}
+    to {opacity:1; transform:scale(1);}
   }
 
   .btn {
-    padding:12px 24px;
-    margin:8px;
+    padding:14px 28px;
+    margin:10px;
     border:none;
-    border-radius:10px;
+    border-radius:14px;
     cursor:pointer;
-    font-weight:600;
-    background:linear-gradient(45deg,#00f2fe,#4facfe);
-    color:#000;
+    font-weight:700;
+    font-size:1rem;
+    background:linear-gradient(45deg,#ff00cc,#3333ff);
+    color:#fff;
     transition:0.3s;
+    box-shadow:0 0 20px rgba(255,0,255,0.6);
   }
   .btn:hover {
-    transform:scale(1.05);
-    box-shadow:0 0 15px rgba(0,255,255,0.7);
+    transform:scale(1.1);
+    box-shadow:0 0 35px rgba(255,0,255,0.9);
   }
   .btn:disabled {
     opacity:0.4;
     cursor:not-allowed;
+    box-shadow:none;
   }
 
   /* Coin Styles */
   .coin {
-    width:120px;
-    height:120px;
-    margin:20px;
-    perspective:1000px;
+    width:160px;
+    height:160px;
+    margin:30px auto;
+    perspective:1200px;
   }
   .coin-inner {
     width:100%;
@@ -67,58 +86,85 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:1.5rem;
+    font-size:2rem;
     font-weight:700;
     color:#000;
-    box-shadow:inset 0 0 10px rgba(0,0,0,0.6);
+    box-shadow:inset 0 0 25px rgba(0,0,0,0.6), 0 0 25px rgba(255,255,255,0.5);
   }
   .front {
-    background: radial-gradient(circle at 30% 30%, #ffd700, #c5a600);
+    background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
   }
   .back {
-    background: radial-gradient(circle at 30% 30%, #eee, #bbb);
+    background: radial-gradient(circle at 30% 30%, #eee, #999);
     transform: rotateY(180deg);
   }
 
   #result {
     margin-top:20px;
-    font-size:1.3rem;
+    font-size:1.5rem;
     font-weight:bold;
-    text-shadow:0 0 10px #0ff;
+    text-shadow:0 0 15px #0ff;
   }
 
   #scoreboard {
     margin-top:15px;
-    font-size:1.2rem;
+    font-size:1.3rem;
     font-weight:600;
+    color:#fffa;
+  }
+
+  /* Animated background glow */
+  .bg-glow {
+    position:absolute;
+    width:450px;
+    height:450px;
+    background: radial-gradient(circle, rgba(0,255,255,0.3), transparent 70%);
+    border-radius:50%;
+    filter: blur(100px);
+    animation: float 10s infinite alternate ease-in-out;
+    z-index:-1;
+  }
+  @keyframes float {
+    0% { transform: translate(-150px,-80px);}
+    100% { transform: translate(150px,80px);}
   }
 </style>
 </head>
 <body>
 
-<h1>3D Coin Flip Game</h1>
+<div class="bg-glow"></div>
+<h1>💎 Luxury Coin Flip 💎</h1>
 
-<p>Guess your choice:</p>
-<div>
-  <button class="btn" onclick="setGuess('Head')">Head</button>
-  <button class="btn" onclick="setGuess('Tail')">Tail</button>
-</div>
-
-<button id="flipBtn" class="btn" onclick="flipCoin()" disabled>Flip Coin</button>
-
-<div class="coin" id="coin">
-  <div class="coin-inner" id="coinInner">
-    <div class="side front">H</div>
-    <div class="side back">T</div>
+<div class="glass-box">
+  <p>Guess your choice:</p>
+  <div>
+    <button class="btn" onclick="setGuess('Head')">Head</button>
+    <button class="btn" onclick="setGuess('Tail')">Tail</button>
   </div>
+
+  <button id="flipBtn" class="btn" onclick="flipCoin()" disabled>Flip Coin</button>
+  <button id="resetBtn" class="btn" onclick="resetGame()">Restart</button>
+
+  <div class="coin" id="coin">
+    <div class="coin-inner" id="coinInner">
+      <div class="side front">H</div>
+      <div class="side back">T</div>
+    </div>
+  </div>
+
+  <div id="result"></div>
+  <div id="scoreboard">Wins: <span id="wins">0</span> | Losses: <span id="losses">0</span></div>
 </div>
 
-<div id="result"></div>
-<div id="scoreboard">Wins: <span id="wins">0</span> | Losses: <span id="losses">0</span></div>
-
-<!-- Coin Flip Sound -->
+<!-- Sounds -->
 <audio id="flipSound">
   <source src="https://assets.mixkit.co/active_storage/sfx/2444/2444-preview.mp3" type="audio/mpeg">
+</audio>
+<audio id="winSound">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2011/2011-preview.mp3" type="audio/mpeg">
+</audio>
+<audio id="loseSound">
+  <source src="https://assets.mixkit.co/active_storage/sfx/1785/1785-preview.mp3" type="audio/mpeg">
 </audio>
 
 <script>
@@ -137,40 +183,49 @@ function flipCoin(){
   const coinInner = document.getElementById("coinInner");
   const resultDiv = document.getElementById("result");
   const outcome = Math.random() < 0.5 ? "Head" : "Tail";
-  const flipSound = document.getElementById("flipSound");
 
-  // Play sound
+  const flipSound = document.getElementById("flipSound");
+  const winSound = document.getElementById("winSound");
+  const loseSound = document.getElementById("loseSound");
+
+  // Play flip sound
   flipSound.currentTime = 0;
   flipSound.play();
 
-  // Start coin flip animation
+  // Spin animation
   coinInner.style.transform = "rotateY(1440deg)";
   
   setTimeout(()=>{
-    // Stop sound when result is shown
     flipSound.pause();
-
-    // Show final side
     coinInner.style.transform = outcome === "Head" ? "rotateY(0deg)" : "rotateY(180deg)";
     
     if(userGuess === outcome){
       wins++;
       resultDiv.innerHTML = `🎉 Congratulations Dear! It's <b>${outcome}</b>`;
       resultDiv.style.color = "#0f0";
+      winSound.currentTime = 0;
+      winSound.play();
     } else {
       losses++;
       resultDiv.innerHTML = `❌ Better luck next time! It was <b>${outcome}</b>`;
       resultDiv.style.color = "#ff4444";
+      loseSound.currentTime = 0;
+      loseSound.play();
     }
 
-    // Update scoreboard
     document.getElementById("wins").innerText = wins;
     document.getElementById("losses").innerText = losses;
-
-    // Disable flip until next guess
     document.getElementById("flipBtn").disabled = true;
 
   },1000);
+}
+
+function resetGame(){
+  userGuess = "";
+  document.getElementById("flipBtn").disabled = true;
+  document.getElementById("result").innerHTML = "";
+  const coinInner = document.getElementById("coinInner");
+  coinInner.style.transform = "rotateY(0deg)";
 }
 </script>
 
