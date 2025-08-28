@@ -3,63 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Dice Roll Game</title>
+  <title>Stylish 3D Dice Roll Game</title>
   <style>
     body {
       margin: 0;
       height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: center;
-      background: radial-gradient(circle at center, #111, #000);
-      color: #fff;
-      font-family: Arial, sans-serif;
+      background: #fff;
+      color: #111;
+      font-family: 'Poppins', sans-serif;
       overflow: hidden;
     }
     h2 {
-      margin-bottom: 10px;
-      font-size: 2rem;
+      margin: 20px 0 10px;
+      font-size: 2.5rem;
+      color: #222;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
     #dice-container {
-      margin-bottom: 20px;
+      margin-top: 10px;
     }
     #numbers {
-      display: flex;
-      gap: 20px;
-      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 20px;
+      margin-top: 25px;
     }
     .num-btn {
-      width: 70px;
-      height: 70px;
+      width: 100px;
+      height: 100px;
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 2rem;
       font-weight: bold;
-      background: #0ff;
-      color: #000;
-      border-radius: 15px;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: #fff;
+      border-radius: 20px;
       cursor: pointer;
       transition: 0.3s;
+      box-shadow: 0px 8px 15px rgba(0,0,0,0.2);
     }
     .num-btn:hover {
-      background: #0cc;
-      transform: scale(1.1);
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0px 12px 20px rgba(0,0,0,0.3);
     }
     #result {
-      margin-top: 20px;
-      font-size: 1.5rem;
+      margin-top: 25px;
+      font-size: 1.8rem;
       font-weight: bold;
+      color: #333;
     }
     canvas {
-      width: 400px !important;
-      height: 400px !important;
+      width: 500px !important;
+      height: 500px !important;
     }
   </style>
 </head>
 <body>
-  <h2>🎲 3D Dice Roll Game</h2>
+  <h2>🎲 Stylish Dice Roll</h2>
   <div id="dice-container"></div>
 
   <div id="numbers">
@@ -83,16 +88,16 @@
     camera.position.set(4, 4, 6);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(400, 400);
+    renderer.setSize(500, 500);
     document.getElementById("dice-container").appendChild(renderer.domElement);
 
     // Lights
-    const light = new THREE.PointLight(0xffffff, 2, 100);
+    const light = new THREE.PointLight(0xffffff, 1.5, 100);
     light.position.set(10, 10, 10);
     scene.add(light);
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 
-    // Dice textures
+    // Dice textures (white dice with black dots)
     const diceMaterials = [];
     for (let i = 1; i <= 6; i++) {
       const texture = new THREE.TextureLoader().load(
@@ -118,7 +123,7 @@
       const resultDiv = document.getElementById("result");
 
       let frames = 0;
-      let totalFrames = 100; // slow + smooth animation
+      let totalFrames = 120; // smooth + slow animation
       let xRot = (Math.random() * 6 + 4) * Math.PI;
       let yRot = (Math.random() * 6 + 4) * Math.PI;
 
@@ -138,9 +143,11 @@
           if (roll === 6) dice.rotation.set(Math.PI, 0, 0);
 
           if (guess === roll) {
-            resultDiv.innerHTML = `🎉 You guessed ${guess}, Dice shows ${roll} → WIN ✅`;
+            resultDiv.innerHTML = `🎉 You picked ${guess}, Dice shows ${roll} → WIN ✅`;
+            resultDiv.style.color = "green";
           } else {
-            resultDiv.innerHTML = `❌ You guessed ${guess}, Dice shows ${roll} → LOSE`;
+            resultDiv.innerHTML = `❌ You picked ${guess}, Dice shows ${roll} → LOSE`;
+            resultDiv.style.color = "red";
           }
         }
       }
@@ -148,4 +155,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
