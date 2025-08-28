@@ -1,43 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dice Roll Game</title>
-<style>
-  body { font-family: Arial, sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; background:#1a1a1a; color:#fff; }
-  input { padding:8px; width:60px; margin-right:8px; border-radius:6px; border:none; text-align:center; font-weight:700; }
-  .btn { padding:10px 18px; margin-top:10px; border:none; border-radius:8px; cursor:pointer; font-weight:700; background:#0ff; color:#000; }
-  .btn:hover { background:#0cc; }
-  #result { margin-top:20px; font-size:1.3rem; font-weight:bold; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Dice Roll Game</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, #111, #000);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    #game {
+      text-align: center;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .btn {
+      padding: 12px 22px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      background: cyan;
+      color: #000;
+      transition: 0.3s;
+    }
+    .btn:hover {
+      background: #0cc;
+    }
+    canvas {
+      width: 300px !important;
+      height: 300px !important;
+    }
+  </style>
 </head>
 <body>
+  <div id="game">
+    <h2>3D Dice Roll Game 🎲</h2>
+    <p>Guess a number (1-6):</p>
+    <input type="number" id="diceGuess" min="1" max="6" />
+    <button class="btn" onclick="rollDice()">Roll Dice</button>
+    <div id="result"></div>
+  </div>
 
-<h2>Dice Roll Game 🎲</h2>
-<p>Guess a number (1-6):</p>
-<input type="number" id="diceGuess" min="1" max="6" />
-<button class="btn" onclick="rollDice()">Roll Dice</button>
+  <!-- Three.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-<div id="result"></div>
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    camera.position.set(3, 3, 5);
 
-<script>
-function rollDice(){
-  const guess = parseInt(document.getElementById('diceGuess').value);
-  if(!guess || guess < 1 || guess > 6){
-    alert('Enter a number between 1 and 6');
-    return;
-  }
-  const roll = Math.floor(Math.random()*6)+1;
-  const resultDiv = document.getElementById('result');
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(300, 300);
+    document.getElementById("game").appendChild(renderer.domElement);
 
-  if(guess === roll){
-    resultDiv.innerHTML = `🎉 Congratulations! Dice shows ${roll}`;
-  } else {
-    resultDiv.innerHTML = `❌ Dice shows ${roll}. Better luck next time.`;
-  }
-}
-</script>
+    // Light
+    const light = new THREE.PointLight(0xffffff, 2, 100);
+    light.position.set(10, 10, 10);
+    scene.add(light);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
+    // Dice geometry
+    const diceMaterials = [];
+    for (let i = 1; i <= 6; i++) {
+      const texture = new THREE.TextureLoader().load(`https://raw.githubusercontent.com/rolling-dice-textures/main/dice${i}.png`);
+      diceMaterials.push(new THREE.MeshPhongMaterial({ map: texture }));
+    }
+    const dice = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), diceMaterials);
+    scene.add(dice);
+
+    // Controls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Roll Dice Function
+    function rollDice() {
+      const guess = parseInt(document.getElementById("diceGuess").value);
+      if (!guess || guess < 1 || guess > 6) {
+        alert("Enter a number between 1 and 6");
+        return;
+      }
+
+      const roll = Math.floor(Math.random() * 6) + 1;
+
+      // Random rotation animation
+      let xRot = (Math.random() * 6 + 3) * Math.PI;
+      let yRot = (Math.random() * 6 + 3) * Math.PI;
+
+      let frame = 0;
+      function rotateAnimation() {
+        if (frame < 60) {
+          dice.rotation.x += xRot / 60;
+          dice.rotation.y += yRot / 60;
+          frame++;
+          requestAnimationFrame(rotateAnimation);
+        } else {
+          // Fix dice to correct face
+          if (roll === 1) dice.rotation.set(0, 0, 0);
+          if (roll === 2) dice.rotation.set(0, Math.PI / 2, 0);
+          if (roll === 3) dice.rotation.set(-Math.PI / 2, 0, 0);
+          if (roll === 4) dice.rotation.set(Math.PI / 2, 0, 0);
+          if (roll === 5) dice.rotation.set(0, -Math.PI / 2, 0);
+          if (roll === 6) dice.rotation.set(Math.PI, 0, 0);
+
+          // Result
+          const resultDiv = document.getElementById("result");
+          if (guess === roll) {
+            resultDiv.innerHTML = `🎉 Congratulations! Dice shows ${roll}`;
+          } else {
+            resultDiv.innerHTML = `❌ Dice shows ${roll}. Better luck next time.`;
+          }
+        }
+      }
+      rotateAnimation();
+    }
+  </script>
 </body>
 </html>
