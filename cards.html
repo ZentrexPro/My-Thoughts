@@ -1,190 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Casino Card Guessing</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at center, #111 0%, #222 100%);
-      color: #fff;
-      text-align: center;
-    }
-    h1 {
-      margin: 20px 0;
-      font-size: 2rem;
-      color: #ffcc00;
-      text-shadow: 0 0 12px #ff6600;
-    }
-    #controls { margin: 15px 0; }
-    select, button {
-      padding: 10px 14px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: none;
-      margin: 5px;
-      cursor: pointer;
-    }
-    button {
-      background: linear-gradient(145deg,#ff6600,#ffcc00);
-      color: #111;
-      font-weight: bold;
-    }
-    #timer {
-      font-size: 1.4rem;
-      margin: 10px;
-      color: #0ff;
-      text-shadow: 0 0 8px #0ff;
-    }
-    #cards {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-top: 20px;
-      perspective: 1000px;
-    }
-    .card {
-      width: 100px;
-      height: 140px;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform .6s;
-      cursor: pointer;
-    }
-    .card.flipped { transform: rotateY(180deg); }
-    .card-face {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 10px;
-      backface-visibility: hidden;
-      overflow: hidden;
-      box-shadow: 0 0 15px rgba(255,255,255,.3);
-    }
-    .card-face img { width: 100%; height: 100%; object-fit: cover; }
-    .back { transform: rotateY(180deg); }
-    #result {
-      font-size: 1.6rem;
-      margin-top: 18px;
-      font-weight: bold;
-    }
-    .win { color: #0f0; text-shadow: 0 0 8px #0f0; }
-    .loss { color: #f33; text-shadow: 0 0 8px #f33; }
-    .back-btn {
-      position: absolute;
-      top: 10px; left: 12px;
-    }
-    .back-btn a { color: #9fe; text-decoration: none; font-weight: 600; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Casino Card Guessing — Offline</title>
+<style>
+  :root{
+    --bg:#0b0f14; --accent:#ffcc00; --neon:#00f0ea;
+    --card-w:120px; --card-h:168px;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Poppins",sans-serif}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 20% 10%, #14171a 0%, #07080a 60%);
+    color:#e6f0f2;
+    padding:28px;
+  }
+
+  .app {
+    width:min(980px,96vw);
+    text-align:center;
+  }
+  .top {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin-bottom:18px;
+  }
+  .title {
+    display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+  }
+  h1{margin:0;font-size:20px;color:var(--accent); text-shadow:0 0 12px #ff7a00}
+  .subtitle{margin:0;color:#9fb2be;font-size:13px}
+
+  .controls {
+    display:flex; gap:8px; align-items:center; justify-content:flex-end;
+  }
+  select, button {
+    padding:9px 12px; border-radius:10px; border:0; font-weight:600;
+    background:#122028; color:#e6f0f2; outline:none; box-shadow:0 6px 18px rgba(0,0,0,.6);
+  }
+  button.primary{
+    background:linear-gradient(145deg,#ff7a00,#ffd44a); color:#0b0b0b; cursor:pointer;
+  }
+
+  #timer { color:var(--neon); font-weight:700; font-size:16px; margin-top:8px; }
+
+  .cards-area {
+    margin-top:18px; display:flex; gap:14px; justify-content:center; flex-wrap:wrap;
+    perspective:1200px;
+  }
+
+  .card {
+    width:var(--card-w); height:var(--card-h); position:relative;
+    transform-style:preserve-3d; transition:transform .7s cubic-bezier(.2,.9,.25,1);
+    border-radius:var(--radius); cursor:default;
+  }
+  .card.flipped{ transform:rotateY(180deg); }
+
+  .face {
+    position:absolute; inset:0; border-radius:inherit; backface-visibility:hidden;
+    display:flex; align-items:stretch; justify-content:center; overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.02);
+  }
+
+  /* front style (generated card face) */
+  .front {
+    background: linear-gradient(180deg,#ffffff,#f3f4f6);
+    color:#111; transform:translateZ(0);
+    padding:10px;
+    border:2px solid rgba(0,0,0,0.06);
+  }
+  .front .corner {
+    width:100%; display:flex; justify-content:space-between; align-items:flex-start;
+    margin-bottom:auto;
+  }
+  .corner .val { font-weight:800; font-size:18px; line-height:1; }
+  .corner .suit { font-size:18px; opacity:0.95; margin-left:6px; }
+
+  .big-suit {
+    flex:1; display:flex; align-items:center; justify-content:center;
+    font-size:48px; opacity:.92;
+    transform:translateY(6px);
+  }
+  .red { color:#d33; }
+  .black { color:#0b1720; }
+
+  /* back style (flower pattern SVG embedded) */
+  .back {
+    transform:rotateY(180deg);
+    background: linear-gradient(180deg,#011317,#062023);
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* inner card border to give premium look */
+  .front::after, .back::after{
+    content:""; position:absolute; inset:6px; border-radius:8px;
+    pointer-events:none; box-shadow: inset 0 0 40px rgba(0,0,0,0.12);
+  }
+
+  /* result */
+  #result { margin-top:14px; font-size:18px; font-weight:700; min-height:34px; }
+
+  /* small helpers */
+  .controls-row { display:flex; gap:8px; align-items:center; justify-content:center; margin-top:6px; }
+  .small { font-size:13px; color:#9fb2be; }
+
+  /* responsive */
+  @media (max-width:520px){
+    .cards-area { gap:10px; }
+    :root{ --card-w:92px; --card-h:130px; }
+    .big-suit { font-size:36px; }
+  }
+</style>
 </head>
 <body>
-  <div class="back-btn"><a href="games.html">← Back</a></div>
-  <h1>🎴 Casino Card Guessing 🎲</h1>
+  <div class="app">
+    <div class="top">
+      <div class="title">
+        <h1>🎴 Casino Card Guessing</h1>
+        <div class="subtitle">Guess one card — 7 cards will be shown. Timer चलने पर cards flip होंगे.</div>
+      </div>
 
-  <div id="controls">
-    <select id="guess"><option disabled selected>Select Your Card</option></select>
-    <button onclick="startGame()">Start Game</button>
-  </div>
+      <div class="controls">
+        <div id="timer">⏳ 20</div>
+      </div>
+    </div>
 
-  <div id="timer">⏳ 20</div>
-  <div id="cards"></div>
-  <div id="result"></div>
-
-  <audio id="flipSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-card-flip-2110.mp3"></audio>
-  <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3"></audio>
-  <audio id="loseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-game-notification-212.mp3"></audio>
-
-  <script>
-    const suits = ['♠','♥','♦','♣'];
-    const values = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-    let deck = [], timerInterval;
-
-    function createDeck() {
-      deck = [];
-      for (let s of suits) {
-        for (let v of values) { deck.push(v + s); }
-      }
-    }
-
-    function loadGuessOptions() {
-      const select = document.getElementById('guess');
-      select.innerHTML = '<option disabled selected>Select Your Card</option>';
-      deck.forEach(c=>{
-        let opt=document.createElement("option");
-        opt.value=c; opt.innerText=c;
-        select.appendChild(opt);
-      });
-    }
-
-    function shuffle(arr){
-      for(let i=arr.length-1;i>0;i--){
-        let j=Math.floor(Math.random()*(i+1));
-        [arr[i],arr[j]]=[arr[j],arr[i]];
-      }
-      return arr;
-    }
-
-    function startGame(){
-      let guess=document.getElementById('guess').value;
-      if(!guess||guess==="Select Your Card"){ alert("Please select a card!"); return; }
-
-      document.getElementById('result').innerHTML="";
-      let cardsDiv=document.getElementById('cards'); cardsDiv.innerHTML="";
-      let picked=shuffle([...deck]).slice(0,7);
-
-      picked.forEach(card=>{
-        let div=document.createElement('div'); div.className="card";
-        div.innerHTML=`
-          <div class="card-face front">
-            <img src="https://deckofcardsapi.com/static/img/${mapCardImage(card)}" alt="${card}">
-          </div>
-          <div class="card-face back">
-            <img src="https://i.ibb.co/fnKmd4H/flower-back.jpg" alt="Back">
-          </div>`;
-        cardsDiv.appendChild(div);
-      });
-
-      let time=20;
-      document.getElementById('timer').innerText="⏳ "+time;
-      clearInterval(timerInterval);
-      timerInterval=setInterval(()=>{
-        time--;
-        document.getElementById('timer').innerText="⏳ "+time;
-        document.querySelectorAll('.card').forEach(c=>{
-          if(Math.random()>0.5){
-            c.classList.toggle('flipped');
-            document.getElementById('flipSound').play();
-          }
-        });
-        if(time<=0){ clearInterval(timerInterval); checkResult(guess,picked); }
-      },1000);
-    }
-
-    function checkResult(guess,picked){
-      let resultDiv=document.getElementById('result');
-      if(picked.includes(guess)){
-        resultDiv.innerHTML="🎉 You WIN! 🎉<br><button onclick='startGame()'>Play Again</button>";
-        resultDiv.className="win";
-        document.getElementById('winSound').play();
-      } else {
-        resultDiv.innerHTML="❌ You LOSE!<br><button onclick='startGame()'>Try Again</button>";
-        resultDiv.className="loss";
-        document.getElementById('loseSound').play();
-      }
-    }
-
-    function mapCardImage(card){
-      let value=card.slice(0,-1);
-      let suit=card.slice(-1);
-      let suitLetter={'♠':'S','♥':'H','♦':'D','♣':'C'}[suit];
-      if(value==="10") value="0"; // API fix for 10
-      return value+suitLetter+".png";
-    }
-
-    createDeck(); loadGuessOptions();
-  </script>
-</body>
-  </html>
+    <div style="display
