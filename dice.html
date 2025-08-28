@@ -3,105 +3,116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Neon Gloss Dice Game</title>
+<title>Neon Dice Game</title>
 <style>
   body {
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    margin:0;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
     background: radial-gradient(circle at center, #111 0%, #000 100%);
-    background-attachment: fixed;
-    font-family: 'Segoe UI', sans-serif;
-    overflow: hidden;
-    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    overflow:hidden;
+    color:#fff;
   }
 
   /* Counters */
   .counters {
-    position: absolute;
-    top: 15px;
-    width: 90%;
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-shadow: 0 0 8px cyan;
+    position:absolute;
+    top:15px;
+    width:90%;
+    display:flex;
+    justify-content:space-between;
+    font-size:1.2rem;
+    font-weight:bold;
+    text-shadow:0 0 10px #0ff;
   }
 
-  /* Dice */
+  /* Dice container */
+  .dice-container {
+    perspective: 1000px;
+    margin-bottom:20px;
+  }
+
   .dice {
+    width:120px;
+    height:120px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(0) rotateY(0);
+    margin:auto;
+  }
+
+  .face {
+    position: absolute;
     width: 120px;
     height: 120px;
-    margin-bottom: 30px;
-    background: linear-gradient(145deg, #ffd700, #b8860b);
-    border-radius: 20px;
-    display: grid;
-    grid-template: repeat(3, 1fr)/repeat(3, 1fr);
-    gap: 10px;
-    padding: 10px;
-    box-shadow: 
-      0 0 15px #ff0,
-      0 0 25px #ff8c00,
-      0 0 40px #ff0;
-    position: relative;
+    background: linear-gradient(145deg,#222,#111);
+    border:4px solid gold;
+    border-radius:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    box-shadow:inset 0 0 20px rgba(255,215,0,0.7),
+               0 0 25px rgba(255,215,0,0.5);
   }
 
-  .dice .dot {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #fff, #ff00ff);
-    box-shadow: 0 0 15px #ff00ff, 0 0 25px cyan;
-    margin: auto;
+  /* Dice positions */
+  .front  { transform: rotateY(0deg) translateZ(60px);}
+  .back   { transform: rotateY(180deg) translateZ(60px);}
+  .right  { transform: rotateY(90deg) translateZ(60px);}
+  .left   { transform: rotateY(-90deg) translateZ(60px);}
+  .top    { transform: rotateX(90deg) translateZ(60px);}
+  .bottom { transform: rotateX(-90deg) translateZ(60px);}
+
+  /* Dice dots */
+  .dot {
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    background: radial-gradient(circle,#fff,#0ff,#00f);
+    box-shadow:0 0 10px #0ff;
+  }
+  .face {
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(3,1fr);
+  }
+  .face div { display:flex; justify-content:center; align-items:center; }
+
+  /* Number buttons */
+  .numbers {
+    display:grid;
+    grid-template-columns:repeat(3,100px);
+    grid-gap:15px;
+    justify-content:center;
   }
 
-  .rolling {
-    animation: spin 3s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+  .num-btn {
+    padding:25px;
+    font-size:1.5rem;
+    font-weight:bold;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    background:linear-gradient(145deg,#0ff,#09f);
+    color:#000;
+    box-shadow:0 0 20px #0ff, inset 0 0 10px #fff;
+    transition:0.2s;
   }
 
-  @keyframes spin {
-    0% { transform: rotateX(0deg) rotateY(0deg); }
-    25% { transform: rotateX(360deg) rotateY(0deg); }
-    50% { transform: rotateX(360deg) rotateY(360deg); }
-    75% { transform: rotateX(0deg) rotateY(360deg); }
-    100% { transform: rotateX(0deg) rotateY(0deg); }
-  }
-
-  /* Buttons */
-  .buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 90px);
-    grid-gap: 15px;
-    margin-top: 10px;
-  }
-
-  .buttons button {
-    padding: 15px;
-    font-size: 1.3rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    color: #fff;
-    background: linear-gradient(145deg, #111, #333);
-    box-shadow: 0 0 10px #0ff, 0 0 20px #0ff inset;
-    transition: 0.2s;
-  }
-
-  .buttons button:hover {
-    background: linear-gradient(145deg, #0ff, #00f);
-    box-shadow: 0 0 20px #0ff, 0 0 40px #00f;
-    transform: scale(1.1);
+  .num-btn:hover {
+    transform:scale(1.1);
+    box-shadow:0 0 30px #0ff, inset 0 0 15px #fff;
   }
 
   #result {
-    margin-top: 20px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-shadow: 0 0 10px #f0f, 0 0 20px cyan;
+    margin-top:25px;
+    font-size:1.4rem;
+    font-weight:bold;
+    text-shadow:0 0 15px #0ff;
   }
 </style>
 </head>
@@ -112,77 +123,95 @@
   <div id="losses">Losses: 0</div>
 </div>
 
-<div class="dice" id="dice"></div>
+<div class="dice-container">
+  <div class="dice" id="dice">
+    <!-- Faces -->
+    <div class="face front" id="face1"></div>
+    <div class="face back" id="face6"></div>
+    <div class="face right" id="face3"></div>
+    <div class="face left" id="face4"></div>
+    <div class="face top" id="face5"></div>
+    <div class="face bottom" id="face2"></div>
+  </div>
+</div>
 
-<div class="buttons">
-  <button onclick="makeGuess(1)">1</button>
-  <button onclick="makeGuess(2)">2</button>
-  <button onclick="makeGuess(3)">3</button>
-  <button onclick="makeGuess(4)">4</button>
-  <button onclick="makeGuess(5)">5</button>
-  <button onclick="makeGuess(6)">6</button>
+<div class="numbers">
+  <button class="num-btn" onclick="rollDice(1)">1</button>
+  <button class="num-btn" onclick="rollDice(2)">2</button>
+  <button class="num-btn" onclick="rollDice(3)">3</button>
+  <button class="num-btn" onclick="rollDice(4)">4</button>
+  <button class="num-btn" onclick="rollDice(5)">5</button>
+  <button class="num-btn" onclick="rollDice(6)">6</button>
 </div>
 
 <div id="result"></div>
 
-<audio id="rollSound" src="https://www.soundjay.com/misc/sounds/dice-roll-1.mp3"></audio>
-<audio id="winSound" src="https://www.soundjay.com/human/sounds/applause-8.mp3"></audio>
-<audio id="loseSound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+<!-- Sounds -->
+<audio id="roll-sound" src="https://www.soundjay.com/misc/sounds/dice-roll-1.mp3"></audio>
+<audio id="win-sound" src="https://www.soundjay.com/human/sounds/applause-8.mp3"></audio>
+<audio id="lose-sound" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
 
 <script>
-  const dice = document.getElementById("dice");
-  const resultDiv = document.getElementById("result");
-  const rollSound = document.getElementById("rollSound");
-  const winSound = document.getElementById("winSound");
-  const loseSound = document.getElementById("loseSound");
-  let wins = 0, losses = 0;
+let wins=0, losses=0;
 
-  function makeGuess(guess) {
-    navigator.vibrate(100);
-    dice.classList.add("rolling");
-    dice.innerHTML = "";
-    rollSound.currentTime = 0;
-    rollSound.play();
-
-    setTimeout(() => {
-      dice.classList.remove("rolling");
-      const roll = Math.floor(Math.random() * 6) + 1;
-      showDiceFace(roll);
-
-      if (roll === guess) {
-        wins++;
-        winSound.play();
-        navigator.vibrate([200, 100, 200]);
-        resultDiv.innerHTML = `🎉 You guessed right! It's ${roll}`;
-      } else {
-        losses++;
-        loseSound.play();
-        navigator.vibrate([300]);
-        resultDiv.innerHTML = `❌ Wrong guess! It was ${roll}`;
-      }
-
-      document.getElementById("wins").textContent = `Wins: ${wins}`;
-      document.getElementById("losses").textContent = `Losses: ${losses}`;
-    }, 3000);
-  }
-
-  function showDiceFace(num) {
-    dice.innerHTML = "";
-    const positions = {
-      1: [5],
-      2: [1, 9],
-      3: [1, 5, 9],
-      4: [1, 3, 7, 9],
-      5: [1, 3, 5, 7, 9],
-      6: [1, 3, 4, 6, 7, 9],
-    };
-    positions[num].forEach(pos => {
-      const dot = document.createElement("div");
-      dot.classList.add("dot");
-      dice.appendChild(dot);
+function createDots(){
+  // Dice faces with classic dot positions
+  const layouts = {
+    1:[[1,1,1],[1,0,1],[1,1,1]],
+    2:[[0,0,1],[1,1,1],[1,0,0]],
+    3:[[0,0,1],[1,0,1],[1,0,0]],
+    4:[[1,0,1],[1,1,1],[1,0,1]],
+    5:[[1,0,1],[0,1,0],[1,0,1]],
+    6:[[1,0,1],[1,0,1],[1,0,1]]
+  };
+  for(let i=1;i<=6;i++){
+    const face=document.getElementById("face"+i);
+    face.innerHTML="";
+    layouts[i].forEach(row=>{
+      row.forEach(dot=>{
+        const cell=document.createElement("div");
+        if(dot===0){
+          const d=document.createElement("div");
+          d.className="dot";
+          cell.appendChild(d);
+        }
+        face.appendChild(cell);
+      });
     });
   }
-</script>
+}
+createDots();
 
+function rollDice(guess){
+  navigator.vibrate([80]); // vibration on press
+  const dice=document.getElementById("dice");
+  const rollSound=document.getElementById("roll-sound");
+  rollSound.currentTime=0; rollSound.play();
+
+  const result=Math.floor(Math.random()*6)+1;
+
+  let x=360*4 + (result===1?0:result===2?90:result===3?0:result===4?-90:result===5?-90:90);
+  let y=360*4 + (result===1?0:result===2?0:result===3?-90:result===4?90:result===5?180:180);
+
+  dice.style.transition="transform 3s cubic-bezier(0.25,1,0.5,1)";
+  dice.style.transform=`rotateX(${x}deg) rotateY(${y}deg)`;
+
+  setTimeout(()=>{
+    if(guess===result){
+      wins++;
+      document.getElementById("wins").textContent="Wins: "+wins;
+      document.getElementById("result").textContent="🎉 You Won! Dice shows "+result;
+      navigator.vibrate([200,100,200]);
+      document.getElementById("win-sound").play();
+    }else{
+      losses++;
+      document.getElementById("losses").textContent="Losses: "+losses;
+      document.getElementById("result").textContent="❌ You Lost! Dice shows "+result;
+      navigator.vibrate([120,60,120]);
+      document.getElementById("lose-sound").play();
+    }
+  },3000);
+}
+</script>
 </body>
 </html>
