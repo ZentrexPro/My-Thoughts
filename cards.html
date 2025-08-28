@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Casino Card Guessing Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Casino Card Guessing</title>
   <style>
     body {
       margin: 0;
@@ -10,70 +11,50 @@
       background: radial-gradient(circle at center, #111 0%, #222 100%);
       color: #fff;
       text-align: center;
-      overflow-x: hidden;
     }
-
     h1 {
-      margin-top: 20px;
-      font-size: 2.5rem;
+      margin: 20px 0;
+      font-size: 2rem;
       color: #ffcc00;
-      text-shadow: 0 0 15px #ff6600;
+      text-shadow: 0 0 12px #ff6600;
     }
-
-    #controls {
-      margin: 15px 0;
-    }
-
+    #controls { margin: 15px 0; }
     select, button {
-      padding: 10px 15px;
-      font-size: 1.1rem;
+      padding: 10px 14px;
+      font-size: 1rem;
       border-radius: 8px;
       border: none;
       margin: 5px;
       cursor: pointer;
     }
-
     button {
-      background: linear-gradient(145deg, #ff6600, #ffcc00);
+      background: linear-gradient(145deg,#ff6600,#ffcc00);
       color: #111;
       font-weight: bold;
-      box-shadow: 0 0 15px #ff6600;
     }
-
-    button:hover {
-      transform: scale(1.05);
-    }
-
     #timer {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       margin: 10px;
       color: #0ff;
-      text-shadow: 0 0 10px #0ff;
+      text-shadow: 0 0 8px #0ff;
     }
-
     #cards {
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 15px;
       margin-top: 20px;
-      perspective: 1200px;
-      flex-wrap: wrap;
+      perspective: 1000px;
     }
-
     .card {
       width: 100px;
       height: 140px;
-      border-radius: 10px;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 0.8s;
+      transition: transform .6s;
       cursor: pointer;
     }
-
-    .card.flipped {
-      transform: rotateY(180deg);
-    }
-
+    .card.flipped { transform: rotateY(180deg); }
     .card-face {
       position: absolute;
       width: 100%;
@@ -81,51 +62,35 @@
       border-radius: 10px;
       backface-visibility: hidden;
       overflow: hidden;
-      box-shadow: 0 0 15px rgba(255,255,255,0.4);
+      box-shadow: 0 0 15px rgba(255,255,255,.3);
     }
-
-    .front img, .back img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .back {
-      transform: rotateY(180deg);
-      background: #fff;
-    }
-
+    .card-face img { width: 100%; height: 100%; object-fit: cover; }
+    .back { transform: rotateY(180deg); }
     #result {
-      font-size: 1.8rem;
-      margin-top: 20px;
+      font-size: 1.6rem;
+      margin-top: 18px;
       font-weight: bold;
     }
-
-    .win {
-      color: #0f0;
-      text-shadow: 0 0 10px #0f0;
+    .win { color: #0f0; text-shadow: 0 0 8px #0f0; }
+    .loss { color: #f33; text-shadow: 0 0 8px #f33; }
+    .back-btn {
+      position: absolute;
+      top: 10px; left: 12px;
     }
-
-    .loss {
-      color: #f00;
-      text-shadow: 0 0 10px #f00;
-    }
+    .back-btn a { color: #9fe; text-decoration: none; font-weight: 600; }
   </style>
 </head>
 <body>
+  <div class="back-btn"><a href="games.html">← Back</a></div>
   <h1>🎴 Casino Card Guessing 🎲</h1>
 
   <div id="controls">
-    <select id="guess">
-      <option disabled selected>Select Your Card</option>
-    </select>
+    <select id="guess"><option disabled selected>Select Your Card</option></select>
     <button onclick="startGame()">Start Game</button>
   </div>
 
   <div id="timer">⏳ 20</div>
-
   <div id="cards"></div>
-
   <div id="result"></div>
 
   <audio id="flipSound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-card-flip-2110.mp3"></audio>
@@ -133,130 +98,93 @@
   <audio id="loseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-retro-game-notification-212.mp3"></audio>
 
   <script>
-    const suits = ['♠', '♥', '♦', '♣'];
+    const suits = ['♠','♥','♦','♣'];
     const values = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-    let deck = [];
-    let timerInterval;
+    let deck = [], timerInterval;
 
-    // Create Deck
     function createDeck() {
       deck = [];
       for (let s of suits) {
-        for (let v of values) {
-          deck.push(v + s);
-        }
+        for (let v of values) { deck.push(v + s); }
       }
     }
 
-    // Populate guess dropdown
     function loadGuessOptions() {
       const select = document.getElementById('guess');
       select.innerHTML = '<option disabled selected>Select Your Card</option>';
-      deck.forEach(card => {
-        let opt = document.createElement("option");
-        opt.value = card;
-        opt.innerText = card;
+      deck.forEach(c=>{
+        let opt=document.createElement("option");
+        opt.value=c; opt.innerText=c;
         select.appendChild(opt);
       });
     }
 
-    // Shuffle
-    function shuffleDeck(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    function shuffle(arr){
+      for(let i=arr.length-1;i>0;i--){
+        let j=Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
       }
-      return array;
+      return arr;
     }
 
-    function startGame() {
-      let guess = document.getElementById('guess').value;
-      if (!guess || guess === "Select Your Card") {
-        alert("Please select a card to guess!");
-        return;
-      }
+    function startGame(){
+      let guess=document.getElementById('guess').value;
+      if(!guess||guess==="Select Your Card"){ alert("Please select a card!"); return; }
 
-      document.getElementById('result').innerHTML = "";
-      let cardsDiv = document.getElementById('cards');
-      cardsDiv.innerHTML = "";
+      document.getElementById('result').innerHTML="";
+      let cardsDiv=document.getElementById('cards'); cardsDiv.innerHTML="";
+      let picked=shuffle([...deck]).slice(0,7);
 
-      // Shuffle deck
-      let shuffled = shuffleDeck([...deck]);
-
-      // Pick 7 cards
-      let picked = shuffled.slice(0, 7);
-
-      picked.forEach(card => {
-        let div = document.createElement('div');
-        div.className = "card";
-
-        div.innerHTML = `
+      picked.forEach(card=>{
+        let div=document.createElement('div'); div.className="card";
+        div.innerHTML=`
           <div class="card-face front">
             <img src="https://deckofcardsapi.com/static/img/${mapCardImage(card)}" alt="${card}">
           </div>
           <div class="card-face back">
-            <img src="https://i.ibb.co/fnKmd4H/flower-back.jpg" alt="Flower Back">
-          </div>
-        `;
+            <img src="https://i.ibb.co/fnKmd4H/flower-back.jpg" alt="Back">
+          </div>`;
         cardsDiv.appendChild(div);
       });
 
-      // Timer setup
-      let time = 20;
-      document.getElementById('timer').innerText = "⏳ " + time;
+      let time=20;
+      document.getElementById('timer').innerText="⏳ "+time;
       clearInterval(timerInterval);
-
-      timerInterval = setInterval(() => {
+      timerInterval=setInterval(()=>{
         time--;
-        document.getElementById('timer').innerText = "⏳ " + time;
-
-        // Flip all cards randomly once per tick
-        document.querySelectorAll('.card').forEach(c => {
-          if (Math.random() > 0.5) {
+        document.getElementById('timer').innerText="⏳ "+time;
+        document.querySelectorAll('.card').forEach(c=>{
+          if(Math.random()>0.5){
             c.classList.toggle('flipped');
             document.getElementById('flipSound').play();
           }
         });
-
-        if (time <= 0) {
-          clearInterval(timerInterval);
-          checkResult(guess, picked);
-        }
-      }, 1000);
+        if(time<=0){ clearInterval(timerInterval); checkResult(guess,picked); }
+      },1000);
     }
 
-    function checkResult(guess, picked) {
-      let resultDiv = document.getElementById('result');
-      if (picked.includes(guess)) {
-        resultDiv.innerHTML = "🎉 You WIN! 🎉 <br><button onclick='startGame()'>Play Again</button>";
-        resultDiv.className = "win";
+    function checkResult(guess,picked){
+      let resultDiv=document.getElementById('result');
+      if(picked.includes(guess)){
+        resultDiv.innerHTML="🎉 You WIN! 🎉<br><button onclick='startGame()'>Play Again</button>";
+        resultDiv.className="win";
         document.getElementById('winSound').play();
-        vibrate();
       } else {
-        resultDiv.innerHTML = "❌ You LOSE! <br><button onclick='startGame()'>Try Again</button>";
-        resultDiv.className = "loss";
+        resultDiv.innerHTML="❌ You LOSE!<br><button onclick='startGame()'>Try Again</button>";
+        resultDiv.className="loss";
         document.getElementById('loseSound').play();
-        vibrate();
       }
     }
 
-    function mapCardImage(card) {
-      let value = card.slice(0, -1);
-      let suit = card.slice(-1);
-      let suitLetter = { '♠':'S', '♥':'H', '♦':'D', '♣':'C' }[suit];
-      if (value === "10") value = "0"; // API special case
-      return value + suitLetter + ".png";
+    function mapCardImage(card){
+      let value=card.slice(0,-1);
+      let suit=card.slice(-1);
+      let suitLetter={'♠':'S','♥':'H','♦':'D','♣':'C'}[suit];
+      if(value==="10") value="0"; // API fix for 10
+      return value+suitLetter+".png";
     }
 
-    function vibrate() {
-      if (navigator.vibrate) {
-        navigator.vibrate(200);
-      }
-    }
-
-    // Initialize
-    createDeck();
-    loadGuessOptions();
+    createDeck(); loadGuessOptions();
   </script>
 </body>
-</html>
+  </html>
