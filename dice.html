@@ -1,310 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Stylish 3D Dice Roll (No Scroll, Smooth)</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dice Roll Game 🎲</title>
 <style>
-  :root{
-    --gap: 16px;
-  }
-  *{box-sizing:border-box}
-  html,body{
-    margin:0; padding:0; height:100%;
-    background:#ffffff; color:#111; font-family: 'Poppins', system-ui, Arial, sans-serif;
-    overflow:hidden; /* No scroll */
-  }
-  .wrap{
-    height:100vh; width:100vw;
-    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
-    padding: clamp(8px, 2vw, 18px);
-    gap: clamp(8px, 2vh, 16px);
-  }
-  h2{
+  body {
+    font-family: Arial, sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
     margin:0;
-    font-size:clamp(20px, 3.2vw, 34px);
-    letter-spacing:0.5px;
-    text-align:center;
+    background:#fff;
+    color:#000;
+    overflow:hidden;
   }
-
-  /* Dice area stays top/center and resizes to fit without scrolling */
-  #dice-area{
-    display:flex; align-items:center; justify-content:center;
-    width:100%;
+  h2 {
+    margin-bottom:20px;
+    font-size:2rem;
+    color:#333;
   }
-  canvas{ display:block }
-
-  /* Number grid: two rows -> 123 / 456 */
-  #numbers{
+  .choices {
     display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: clamp(10px, 2vw, 18px);
-    width: min(540px, 92vw);
+    grid-template-columns: repeat(3, 80px);
+    gap:15px;
+    margin-bottom:30px;
   }
-  .num-btn{
-    user-select:none;
-    height: clamp(68px, 12vw, 96px);
-    border-radius: 18px;
-    font-weight: 800;
-    font-size: clamp(22px, 5vw, 34px);
-    display:flex; align-items:center; justify-content:center;
+  .choice {
+    background:linear-gradient(135deg,#00c6ff,#0072ff);
+    border:none;
+    border-radius:15px;
+    font-size:1.5rem;
+    font-weight:bold;
+    color:white;
+    padding:20px;
     cursor:pointer;
-    background: linear-gradient(135deg, #0ea5e9, #6366f1);
-    color:#fff;
-    box-shadow: 0 12px 24px rgba(0,0,0,.12);
-    transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    transition:0.2s;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
   }
-  .num-btn:hover{ transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 28px rgba(0,0,0,.15); }
-  .num-btn:active{ transform: translateY(0) scale(0.98); filter: brightness(0.95); }
+  .choice:hover {
+    transform:scale(1.1);
+    background:linear-gradient(135deg,#ff416c,#ff4b2b);
+  }
+  .dice {
+    width:120px;
+    height:120px;
+    transform-style:preserve-3d;
+    transform:rotateX(0deg) rotateY(0deg);
+    transition:transform 1.5s ease-in-out;
+    position:relative;
+  }
+  .face {
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:white;
+    border:3px solid #333;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2.5rem;
+    font-weight:bold;
+  }
+  .front { transform:rotateY(0deg) translateZ(60px); }
+  .back { transform:rotateY(180deg) translateZ(60px); }
+  .right { transform:rotateY(90deg) translateZ(60px); }
+  .left { transform:rotateY(-90deg) translateZ(60px); }
+  .top { transform:rotateX(90deg) translateZ(60px); }
+  .bottom { transform:rotateX(-90deg) translateZ(60px); }
 
-  #result{
-    min-height: 36px;
-    font-size: clamp(16px, 2.6vw, 20px);
-    font-weight:700;
-    text-align:center;
+  #result {
+    margin-top:20px;
+    font-size:1.3rem;
+    font-weight:bold;
   }
-
-  /* Simple status chip */
-  .chip{
-    padding: 6px 12px;
-    border-radius: 999px;
-    display:inline-block;
-  }
-  .chip.win{ background:#e6ffed; color:#0f7a2e; border:1px solid #baf5c4; }
-  .chip.lose{ background:#ffefef; color:#a50808; border:1px solid #ffc7c7; }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <h2>🎲 Stylish 3D Dice Roll</h2>
 
-    <div id="dice-area">
-      <!-- Canvas injected here -->
-    </div>
+<h2>🎲 Dice Roll Game 🎲</h2>
 
-    <div id="numbers" aria-label="Choose a number">
-      <div class="num-btn" data-n="1">1</div>
-      <div class="num-btn" data-n="2">2</div>
-      <div class="num-btn" data-n="3">3</div>
-      <div class="num-btn" data-n="4">4</div>
-      <div class="num-btn" data-n="5">5</div>
-      <div class="num-btn" data-n="6">6</div>
-    </div>
+<div class="choices">
+  <button class="choice" onclick="rollDice(1)">1</button>
+  <button class="choice" onclick="rollDice(2)">2</button>
+  <button class="choice" onclick="rollDice(3)">3</button>
+  <button class="choice" onclick="rollDice(4)">4</button>
+  <button class="choice" onclick="rollDice(5)">5</button>
+  <button class="choice" onclick="rollDice(6)">6</button>
+</div>
 
-    <div id="result"></div>
-  </div>
+<div class="dice" id="dice">
+  <div class="face front">1</div>
+  <div class="face back">2</div>
+  <div class="face right">3</div>
+  <div class="face left">4</div>
+  <div class="face top">5</div>
+  <div class="face bottom">6</div>
+</div>
 
-  <!-- Three.js (no extra addons needed) -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-  <script>
-  (() => {
-    // ---------- Utils: easing + clamp ----------
-    const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+<div id="result"></div>
 
-    // ---------- Make dice face textures procedurally (no external images) ----------
-    function pipPositions(n){
-      // Positions for standard dice (coordinates in a -1..1 square)
-      const map = {
-        1: [[0,0]],
-        2: [[-0.5,-0.5],[0.5,0.5]],
-        3: [[-0.6,-0.6],[0,0],[0.6,0.6]],
-        4: [[-0.6,-0.6],[0.6,-0.6],[-0.6,0.6],[0.6,0.6]],
-        5: [[-0.6,-0.6],[0.6,-0.6],[0,0],[-0.6,0.6],[0.6,0.6]],
-        6: [[-0.6,-0.65],[0.6,-0.65],[-0.6,0],[0.6,0],[-0.6,0.65],[0.6,0.65]]
-      };
-      return map[n];
+<script>
+function rollDice(guess){
+  const roll = Math.floor(Math.random()*6)+1;
+  const dice = document.getElementById('dice');
+
+  // Random rotations to simulate rolling
+  const x = (Math.floor(Math.random()*4)+1)*90 + (roll===6? -90:0);
+  const y = (Math.floor(Math.random()*4)+1)*90 + (roll===3? 90:0);
+
+  dice.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
+
+  setTimeout(()=>{
+    const resultDiv=document.getElementById('result');
+    if(guess===roll){
+      resultDiv.innerHTML=`✅ You guessed ${guess}, Dice shows ${roll}! 🎉`;
+      resultDiv.style.color="green";
+    } else {
+      resultDiv.innerHTML=`❌ You guessed ${guess}, Dice shows ${roll}.`;
+      resultDiv.style.color="red";
     }
+  },1500);
+}
+</script>
 
-    function makeFaceTexture(n, size=512){
-      const c = document.createElement('canvas');
-      c.width = c.height = size;
-      const ctx = c.getContext('2d');
-
-      // Background (slightly off-white so it pops on white page)
-      ctx.fillStyle = '#f8f8f8';
-      ctx.fillRect(0,0,size,size);
-
-      // Subtle inner gradient for 3D-ish feel
-      const g = ctx.createRadialGradient(size*0.35, size*0.35, size*0.1, size*0.5, size*0.5, size*0.8);
-      g.addColorStop(0, 'rgba(255,255,255,0.9)');
-      g.addColorStop(1, 'rgba(230,230,230,0.9)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,size,size);
-
-      // Border
-      ctx.strokeStyle = '#d0d0d0';
-      ctx.lineWidth = Math.max(2, size*0.02);
-      ctx.strokeRect(ctx.lineWidth/2, ctx.lineWidth/2, size-ctx.lineWidth, size-ctx.lineWidth);
-
-      // Pips
-      const pipRadius = size*0.085;
-      const pts = pipPositions(n);
-      ctx.fillStyle = '#111';
-      pts.forEach(([nx, ny])=>{
-        const x = size/2 + nx*size*0.31;
-        const y = size/2 + ny*size*0.31;
-        ctx.beginPath();
-        ctx.arc(x, y, pipRadius, 0, Math.PI*2);
-        ctx.fill();
-      });
-
-      const tex = new THREE.CanvasTexture(c);
-      tex.anisotropy = 16;
-      tex.minFilter = THREE.LinearMipmapLinearFilter;
-      tex.magFilter = THREE.LinearFilter;
-      tex.generateMipmaps = true;
-      return tex;
-    }
-
-    // ---------- Three.js scene ----------
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-    camera.position.set(3.6, 3.8, 5.2);
-
-    const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
-    const area = document.getElementById('dice-area');
-    area.appendChild(renderer.domElement);
-
-    // Lights tuned for white page
-    const hemi = new THREE.HemisphereLight(0xffffff, 0xdddddd, 0.9);
-    scene.add(hemi);
-    const key = new THREE.DirectionalLight(0xffffff, 0.8);
-    key.position.set(3,6,4);
-    scene.add(key);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.4);
-    fill.position.set(-4,3,-2);
-    scene.add(fill);
-
-    // Dice materials mapped to BoxGeometry order: +X, -X, +Y, -Y, +Z, -Z
-    // We'll map numbers so opposite sides sum to 7:
-    // +X: 3, -X: 4, +Y(top): 1, -Y(bottom): 6, +Z(front): 2, -Z(back): 5
-    const mats = [
-      new THREE.MeshPhongMaterial({map: makeFaceTexture(3)}),
-      new THREE.MeshPhongMaterial({map: makeFaceTexture(4)}),
-      new THREE.MeshPhongMaterial({map: makeFaceTexture(1)}),
-      new THREE.MeshPhongMaterial({map: makeFaceTexture(6)}),
-      new THREE.MeshPhongMaterial({map: makeFaceTexture(2)}),
-      new THREE.MeshPhongMaterial({map: makeFaceTexture(5)}),
-    ];
-
-    const dice = new THREE.Mesh(new THREE.BoxGeometry(2,2,2), mats);
-    scene.add(dice);
-
-    // Nice idle orientation
-    dice.rotation.set(0.6, 0.9, -0.2);
-
-    // ---------- Responsive sizing: keep everything in one screen, no scroll ----------
-    function resize(){
-      // Reserve vertical space for title + numbers + result without scrolling
-      const vh = window.innerHeight;
-      const vw = window.innerWidth;
-
-      // Approx space (in px) used by UI below/above canvas
-      const titleH = Math.max(40, vh*0.06);
-      const numbersH = Math.max(160, Math.min(220, vh*0.28));
-      const resultH = 40;
-      const padding = Math.max(12, vh*0.02);
-
-      // Compute best square size for canvas
-      const maxCanvasH = vh - (titleH + numbersH + resultH + padding*3);
-      const size = Math.max(360, Math.min(600, Math.min(maxCanvasH, vw - padding*2)));
-
-      renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
-      renderer.setSize(size, size, false);
-      camera.aspect = 1;
-      camera.updateProjectionMatrix();
-    }
-    window.addEventListener('resize', resize);
-    resize();
-
-    // ---------- Animation loop ----------
-    let raf;
-    function loop(){ raf = requestAnimationFrame(loop); renderer.render(scene, camera); }
-    loop();
-
-    // ---------- Roll logic ----------
-    function targetRotationForTop(n){
-      // Based on our face mapping above; returns Euler to put "n" on top (+Y).
-      switch(n){
-        case 1: return new THREE.Euler(0, 0, 0);
-        case 6: return new THREE.Euler(Math.PI, 0, 0);
-        case 2: return new THREE.Euler(Math.PI/2, 0, 0);      // +Z -> +Y
-        case 5: return new THREE.Euler(-Math.PI/2, 0, 0);     // -Z -> +Y
-        case 3: return new THREE.Euler(0, 0, Math.PI/2);      // +X -> +Y (rotate +90° around Z)
-        case 4: return new THREE.Euler(0, 0, -Math.PI/2);     // -X -> +Y (rotate -90° around Z)
-      }
-      return new THREE.Euler(0,0,0);
-    }
-
-    let rolling = false;
-
-    function rollDice(guess){
-      if(rolling) return;
-      rolling = true;
-
-      const result = Math.floor(Math.random()*6) + 1;
-      const resDiv = document.getElementById('result');
-      resDiv.textContent = 'Rolling…';
-
-      // Create a random tumble, then slerp to the exact face
-      const startQ = dice.quaternion.clone();
-
-      // Random big spin
-      const randAxis = new THREE.Vector3(Math.random(), Math.random(), Math.random()).normalize();
-      const randAngle = (Math.PI*2) * (2 + Math.random()*2); // 2–4 full turns
-      const spinQ = new THREE.Quaternion().setFromAxisAngle(randAxis, randAngle);
-
-      // Mid orientation after spin
-      const midQ = startQ.clone().multiply(spinQ);
-
-      // Final exact orientation for the result
-      const targetEuler = targetRotationForTop(result);
-      const endQ = new THREE.Quaternion().setFromEuler(targetEuler);
-
-      const startTime = performance.now();
-      const spinDuration = 900;   // ms (smooth, slightly slow)
-      const settleDuration = 600; // ms (ease into final)
-      const total = spinDuration + settleDuration;
-
-      function animateRoll(t){
-        const now = performance.now();
-        const elapsed = now - t;
-
-        if(elapsed < spinDuration){
-          // Phase 1: big spin (linear time but visual looks smooth)
-          const p = clamp(elapsed/spinDuration, 0, 1);
-          THREE.Quaternion.slerp(startQ, midQ, dice.quaternion, p);
-          requestAnimationFrame(()=>animateRoll(t));
-        } else if(elapsed < total){
-          // Phase 2: settle to exact face (ease out)
-          const p = clamp((elapsed - spinDuration)/settleDuration, 0, 1);
-          const e = easeOutCubic(p);
-          THREE.Quaternion.slerp(midQ, endQ, dice.quaternion, e);
-          requestAnimationFrame(()=>animateRoll(t));
-        } else {
-          // Done
-          dice.quaternion.copy(endQ);
-          rolling = false;
-
-          if(guess === result){
-            resDiv.innerHTML = `<span class="chip win">WIN ✅ — You picked ${guess}, rolled ${result}</span>`;
-          } else {
-            resDiv.innerHTML = `<span class="chip lose">LOSE ❌ — You picked ${guess}, rolled ${result}</span>`;
-          }
-        }
-      }
-      animateRoll(startTime);
-    }
-
-    // Bind buttons
-    document.querySelectorAll('.num-btn').forEach(btn=>{
-      btn.addEventListener('click', () => {
-        const n = Number(btn.getAttribute('data-n'));
-        rollDice(n);
-      });
-    });
-  })();
-  </script>
 </body>
-      </html>
+</html>
