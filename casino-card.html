@@ -180,11 +180,11 @@
       let cardsDiv = document.getElementById('cards');
       cardsDiv.innerHTML = "";
 
-      // Shuffle deck
+      // Shuffle full deck (52 cards)
       let shuffled = shuffleDeck([...deck]);
 
-      // Pick 7 cards
-      let picked = shuffled.slice(0, 7);
+      // Pick all 52 cards
+      let picked = shuffled;  
 
       picked.forEach(card => {
         let div = document.createElement('div');
@@ -259,4 +259,4 @@
     loadGuessOptions();
   </script>
 </body>
-</html>
+  </html>
