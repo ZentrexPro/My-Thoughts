@@ -140,24 +140,28 @@
       display:none;
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,0.8);
+      background:rgba(0,0,0,0.9);
       z-index:1000;
       align-items:center;
       justify-content:center;
     }
     .video-container{
       position:relative;
+      width:90%;
+      max-width:400px;
+      aspect-ratio:9/16;   /* Portrait Ratio */
       background:#000;
       border-radius:20px;
       overflow:hidden;
-      max-width:90%;
-      max-height:80%;
       box-shadow:0 10px 40px rgba(0,0,0,0.9);
+      display:flex;
+      justify-content:center;
+      align-items:center;
     }
     .video-container video{
       width:100%;
-      height:auto;
-      display:block;
+      height:100%;
+      object-fit:cover; /* Insta Story style */
       border-radius:20px;
     }
     .close-btn{
@@ -169,6 +173,7 @@
       background:rgba(0,0,0,0.5);
       border-radius:50%;
       padding:4px 10px;
+      z-index:1100;
     }
 
     @media (max-width:520px){
@@ -313,4 +318,4 @@
     }
   </script>
 </body>
-  </html>
+      </html>
