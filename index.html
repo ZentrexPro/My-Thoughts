@@ -1,321 +1,345 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Love Quotes & Messages</title>
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="utf-8" />  
+  <meta name="viewport" content="width=device-width,initial-scale=1" />  
+  <title>Love Quotes & Messages</title>    
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&display=swap" rel="stylesheet">
+  <!-- Fonts -->    
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&display=swap" rel="stylesheet">    
 
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-WYSBQ3FW82');
-  </script>
+  <!-- Google Analytics -->    
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>    
+  <script>  
+    window.dataLayer = window.dataLayer || [];  
+    function gtag(){ dataLayer.push(arguments); }  
+    gtag('js', new Date());  
+    gtag('config', 'G-WYSBQ3FW82');  
+  </script>    
 
-  <style>
-    :root{
-      --glass-bg: rgba(255,255,255,0.08);
-      --accent:#00fff0;
-      --pink:#ff4db6;
-    }
-    html,body{
-      height:100%;
-      margin:0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: url("bg.jpg") no-repeat center center/cover;
-      background-attachment: fixed;
-      color: #fff;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      padding:32px 18px;
-      box-sizing:border-box;
-    }
-    body::after{
-      content:"";
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,0.45);
-      z-index:0;
-      pointer-events:none;
-    }
+  <style>  
+    :root{  
+      --glass-bg: rgba(255,255,255,0.08);  
+      --accent:#00fff0;  
+      --pink:#ff4db6;  
+    }  
+    html,body{  
+      height:100%;  
+      margin:0;  
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;  
+      background: url("bg.jpg") no-repeat center center/cover;  
+      background-attachment: fixed;  
+      color: #fff;  
+      display:flex;  
+      flex-direction:column;  
+      align-items:center;  
+      padding:32px 18px;  
+      box-sizing:border-box;  
+    }  
+    body::after{  
+      content:"";  
+      position:fixed;  
+      inset:0;  
+      background: rgba(0,0,0,0.45);  
+      z-index:0;  
+      pointer-events:none;  
+    }  
 
-    /* Quote Card */
-    .quote-card{
-      position:relative;
-      z-index:1;
-      width:min(92%,540px);
-      padding:28px;
-      border-radius:18px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(10px) saturate(120%);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-      text-align:center;
-      margin-bottom:20px;
-    }
-    .quote-text{
-      font-family: 'Great Vibes', cursive;
-      font-size: 28px;
-      line-height:1.2;
-      color: #fff;
-      text-shadow: 0 4px 18px rgba(0,0,0,0.6);
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
-    .typing-caret{
-      border-right: 3px solid rgba(255,255,255,0.95);
-      padding-right:6px;
-      animation: blinkCaret 0.8s step-end infinite;
-    }
-    @keyframes blinkCaret{ 50%{ border-color: transparent; } }
+    /* Quote Card */  
+    .quote-card{  
+      position:relative;  
+      z-index:1;  
+      width:min(92%,540px);  
+      padding:28px;  
+      border-radius:18px;  
+      background: var(--glass-bg);  
+      backdrop-filter: blur(10px) saturate(120%);  
+      border: 1px solid rgba(255,255,255,0.12);  
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);  
+      text-align:center;  
+      margin-bottom:20px;  
+    }  
+    .quote-text{  
+      font-family: 'Great Vibes', cursive;  
+      font-size: 28px;  
+      line-height:1.2;  
+      color: #fff;  
+      text-shadow: 0 4px 18px rgba(0,0,0,0.6);  
+      white-space:pre-wrap;  
+      word-break:break-word;  
+    }  
+    .typing-caret{  
+      border-right: 3px solid rgba(255,255,255,0.95);  
+      padding-right:6px;  
+      animation: blinkCaret 0.8s step-end infinite;  
+    }  
+    @keyframes blinkCaret{ 50%{ border-color: transparent; } }  
 
-    /* Messages box */
-    .message-panel{
-      z-index:1;
-      width:min(92%,820px);
-      margin-top:12px;
-      background: rgba(0,0,0,0.45);
-      border-radius:14px;
-      padding:14px;
-      box-shadow: 0 8px 26px rgba(0,0,0,0.6);
-      border:1px solid rgba(255,255,255,0.06);
-      backdrop-filter: blur(6px);
-    }
-    .message-panel h3{
-      margin:0 0 8px 0;
-      font-family:'Audiowide',sans-serif;
-      color:var(--accent);
-      font-size:16px;
-    }
-    .compose{ display:flex; gap:10px; margin-bottom:12px; }
-    .compose textarea{
-      flex:1; min-height:72px; resize:vertical;
-      padding:10px 12px; border-radius:8px; border:none;
-      font-size:15px; background:#fff; color:#111;
-    }
-    .compose button{
-      min-width:110px; padding:10px 12px;
-      background: linear-gradient(180deg,var(--pink),#d1007a);
-      border:none; color:#fff; border-radius:10px;
-      font-weight:700; cursor:pointer;
-    }
-    #messagesList{ max-height:320px; overflow:auto; padding-right:6px; }
-    .msg-item{
-      background: linear-gradient(90deg, rgba(0,255,240,0.06), rgba(255,255,255,0.02));
-      border-radius:10px; padding:10px 12px; margin-bottom:10px;
-      display:flex; justify-content:space-between;
-    }
-    .msg-text{ flex:1; color:#fff; word-break:break-word; white-space:pre-wrap; }
-    .msg-wand{ margin-left:12px; cursor:pointer; font-size:20px; }
+    /* Messages box */  
+    .message-panel{  
+      z-index:1;  
+      width:min(92%,820px);  
+      margin-top:12px;  
+      background: rgba(0,0,0,0.45);  
+      border-radius:14px;  
+      padding:14px;  
+      box-shadow: 0 8px 26px rgba(0,0,0,0.6);  
+      border:1px solid rgba(255,255,255,0.06);  
+      backdrop-filter: blur(6px);  
+    }  
+    .message-panel h3{  
+      margin:0 0 8px 0;  
+      font-family:'Audiowide',sans-serif;  
+      color:var(--accent);  
+      font-size:16px;  
+    }  
+    .compose{ display:flex; gap:10px; margin-bottom:12px; }  
+    .compose textarea{  
+      flex:1; min-height:72px; resize:vertical;  
+      padding:10px 12px; border-radius:8px; border:none;  
+      font-size:15px; background:#fff; color:#111;  
+    }  
+    .compose button{  
+      min-width:110px; padding:10px 12px;  
+      background: linear-gradient(180deg,var(--pink),#d1007a);  
+      border:none; color:#fff; border-radius:10px;  
+      font-weight:700; cursor:pointer;  
+    }  
+    #messagesList{ max-height:320px; overflow:auto; padding-right:6px; }  
+    .msg-item{  
+      background: linear-gradient(90deg, rgba(0,255,240,0.06), rgba(255,255,255,0.02));  
+      border-radius:10px; padding:10px 12px; margin-bottom:10px;  
+      display:flex; justify-content:space-between;  
+    }  
+    .msg-text{ flex:1; color:#fff; word-break:break-word; white-space:pre-wrap; }  
+    .msg-wand{ margin-left:12px; cursor:pointer; font-size:20px; }  
 
-    /* Games button */
-    .games-btn{
-      z-index:1; margin-top:18px; padding:14px 26px;
-      border-radius:26px; border:none;
-      background:linear-gradient(90deg,var(--accent),#0072ff);
-      color:#001; font-weight:800; cursor:pointer;
-    }
+    /* Games button */  
+    .games-btn{  
+      z-index:1; margin-top:18px; padding:14px 26px;  
+      border-radius:26px; border:none;  
+      background:linear-gradient(90deg,var(--accent),#0072ff);  
+      color:#001; font-weight:800; cursor:pointer;  
+    }  
 
-    /* ===== STATUS BUTTON + OVERLAY ===== */
-    .status-btn{
-      z-index:1;
-      margin-top:18px;
-      padding:14px 26px;
-      border-radius:26px;
-      border:none;
-      background:linear-gradient(90deg,#ff00cc,#3333ff);
-      color:#fff;
-      font-weight:700;
-      cursor:pointer;
-      box-shadow:0 8px 30px rgba(0,0,0,0.5);
-      font-size:16px;
-    }
-    .overlay{
-      display:none;
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.9);
-      z-index:1000;
-      align-items:center;
-      justify-content:center;
-    }
-    .video-container{
-      position:relative;
-      width:90%;
-      max-width:400px;
-      aspect-ratio:9/16;   /* Portrait Ratio */
-      background:#000;
-      border-radius:20px;
-      overflow:hidden;
-      box-shadow:0 10px 40px rgba(0,0,0,0.9);
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-    .video-container video{
-      width:100%;
-      height:100%;
-      object-fit:cover; /* Insta Story style */
-      border-radius:20px;
-    }
-    .close-btn{
-      position:absolute;
-      top:10px; right:14px;
-      font-size:28px;
-      color:#fff;
-      cursor:pointer;
-      background:rgba(0,0,0,0.5);
-      border-radius:50%;
-      padding:4px 10px;
-      z-index:1100;
-    }
+    /* ===== STATUS BUTTON + OVERLAY ===== */  
+    .status-btn{  
+      z-index:1;  
+      margin-top:18px;  
+      padding:14px 26px;  
+      border-radius:26px;  
+      border:none;  
+      background:linear-gradient(90deg,#ff00cc,#3333ff);  
+      color:#fff;  
+      font-weight:700;  
+      cursor:pointer;  
+      box-shadow:0 8px 30px rgba(0,0,0,0.5);  
+      font-size:16px;  
+    }  
+    .overlay{  
+      display:none;  
+      position:fixed;  
+      inset:0;  
+      background:rgba(0,0,0,0.9);  
+      z-index:1000;  
+      align-items:center;  
+      justify-content:center;  
+    }  
+    .video-container{  
+      position:relative;  
+      width:90%;  
+      max-width:400px;  
+      aspect-ratio:9/16;   /* Portrait Ratio */  
+      background:#000;  
+      border-radius:20px;  
+      overflow:hidden;  
+      box-shadow:0 10px 40px rgba(0,0,0,0.9);  
+      display:flex;  
+      justify-content:center;  
+      align-items:center;  
+    }  
+    .video-container video{  
+      width:100%;  
+      height:100%;  
+      object-fit:cover; /* Insta Story style */  
+      border-radius:20px;  
+    }  
 
-    @media (max-width:520px){
-      .quote-text{ font-size:22px; }
-      .compose button{ min-width:86px; }
-    }
-  </style>
-</head>
-<body>
-  <!-- Quote card -->
-  <div class="quote-card"><div id="quoteEl" class="quote-text"></div></div>
+    /* 👁️ play count style */  
+    .play-count{  
+      position:absolute;  
+      top:14px; left:14px;  
+      font-size:18px;  
+      color:#fff;  
+      background:rgba(0,0,0,0.5);  
+      padding:4px 12px;  
+      border-radius:20px;  
+      box-shadow:0 4px 12px rgba(0,0,0,0.5);  
+      user-select:none;  
+      z-index:1100;  
+    }  
 
-  <!-- Messages -->
-  <div class="message-panel">
-    <h3>Message for me without your identity</h3>
-    <div class="compose">
-      <textarea id="newMsg" placeholder="Write your secret message..."></textarea>
-      <button id="sendBtn" type="button">Send</button>
-    </div>
-    <div id="messagesList"></div>
-  </div>
+    @media (max-width:520px){  
+      .quote-text{ font-size:22px; }  
+      .compose button{ min-width:86px; }  
+    }  
+  </style>  
+</head>  
+<body>  
+  <!-- Quote card -->  
+  <div class="quote-card"><div id="quoteEl" class="quote-text"></div></div>    
 
-  <!-- Games -->
+  <!-- Messages -->    
+  <div class="message-panel">  
+    <h3>Message for me without your identity</h3>  
+    <div class="compose">  
+      <textarea id="newMsg" placeholder="Write your secret message..."></textarea>  
+      <button id="sendBtn" type="button">Send</button>  
+    </div>  
+    <div id="messagesList"></div>  
+  </div>    
+
+  <!-- Games -->  
   <button class="games-btn" onclick="location.href='games.html'">🎮 Play Mini Games</button>
 
-  <!-- Status Button -->
+  <!-- Status Button -->  
   <button class="status-btn" onclick="openOverlay()">📷 View Status</button>
 
-  <!-- Overlay -->
-  <div class="overlay" id="videoOverlay">
-    <div class="video-container">
-      <span class="close-btn" onclick="closeOverlay()">✖</span>
-      <video id="statusVideo" controls playsinline>
-        <source src="status.mp4" type="video/mp4">
-        Your browser does not support video.
-      </video>
-    </div>
-  </div>
+  <!-- Overlay -->    
+  <div class="overlay" id="videoOverlay">  
+    <div class="video-container">  
+      <!-- 👁️ play count -->  
+      <span class="play-count" id="playCount">👁️‍🗨️ 0</span>  
+      <video id="statusVideo" controls playsinline>  
+        <source src="status.mp4" type="video/mp4">  
+        Your browser does not support video.  
+      </video>  
+    </div>  
+  </div>    
 
-  <!-- Firebase + app logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
-    import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+  <!-- Firebase + app logic -->    
+  <script type="module">  
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";  
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";  
+    import { getDatabase, ref, push, onValue, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";  
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAkeirE4twM3J02JbDBnbdUw2G9yw8VVlw",
-      authDomain: "love-messages-cdee7.firebaseapp.com",
-      databaseURL: "https://love-messages-cdee7-default-rtdb.firebaseio.com",
-      projectId: "love-messages-cdee7",
-      storageBucket: "love-messages-cdee7.firebasestorage.app",
-      messagingSenderId: "670131200783",
-      appId: "1:670131200783:web:ea75b017acab258911547a",
-      measurementId: "G-WT5TKSRSLG"
-    };
+    const firebaseConfig = {  
+      apiKey: "AIzaSyAkeirE4twM3J02JbDBnbdUw2G9yw8VVlw",  
+      authDomain: "love-messages-cdee7.firebaseapp.com",  
+      databaseURL: "https://love-messages-cdee7-default-rtdb.firebaseio.com",  
+      projectId: "love-messages-cdee7",  
+      storageBucket: "love-messages-cdee7.firebasestorage.app",  
+      messagingSenderId: "670131200783",  
+      appId: "1:670131200783:web:ea75b017acab258911547a",  
+      measurementId: "G-WT5TKSRSLG"  
+    };  
 
-    const app = initializeApp(firebaseConfig);
-    try { getAnalytics(app); } catch(e){ console.warn('Analytics failed', e); }
-    const db = getDatabase(app);
-    const messagesRef = ref(db, 'messages');
-    const ADMIN_PASS = "0420";
+    const app = initializeApp(firebaseConfig);  
+    try { getAnalytics(app); } catch(e){ console.warn('Analytics failed', e); }  
+    const db = getDatabase(app);  
+    const messagesRef = ref(db, 'messages');  
+    const ADMIN_PASS = "0420";  
 
-    const quotes = [
-      "You are the reason behind my smile 💕",
-      "Every love story is beautiful, but ours is my favorite 🌹",
-      "In your arms, I’ve found my home ❤️",
-      "Forever is not long enough with you 💞"
-    ];
-    const quoteEl = document.getElementById('quoteEl');
-    function typeText(text, speed = 45) {
-      return new Promise(resolve => {
-        quoteEl.textContent = "";
-        quoteEl.classList.add('typing-caret');
-        let i = 0;
-        const interval = setInterval(() => {
-          quoteEl.textContent += text.charAt(i);
-          i++;
-          if (i >= text.length) {
-            clearInterval(interval);
-            setTimeout(() => quoteEl.classList.remove('typing-caret'), 400);
-            resolve();
-          }
-        }, speed);
-      });
-    }
-    (async function(){ try{ await typeText(quotes[0],45);}catch(e){quoteEl.textContent=quotes[0];}})();
+    /* === 👁️ PLAY COUNT SETUP === */  
+    const playCountRef = ref(db, 'statusPlayCount');  
+    const playCountEl = document.getElementById('playCount');  
 
-    const messagesListEl = document.getElementById('messagesList');
-    function renderSnapshot(snapshotVal){
-      messagesListEl.innerHTML = "";
-      if(!snapshotVal) return;
-      const arr = Object.keys(snapshotVal).map(id=>{
-        const it = snapshotVal[id];
-        return { id, text: it.text||'', ts: it.ts||0 };
-      }).sort((a,b)=>b.ts-a.ts);
-      arr.forEach(item=>{
-        const d=document.createElement('div');
-        d.className='msg-item';
-        const span=document.createElement('div');
-        span.className='msg-text';
-        span.textContent=item.text;
-        const wand=document.createElement('div');
-        wand.className='msg-wand';
-        wand.textContent='🪄';
-        wand.title='Remove (admin only)';
-        wand.addEventListener('click', async()=>{
-          const pass=prompt('Enter admin password to remove this message:');
-          if(pass===ADMIN_PASS){
-            try{ await remove(ref(db,'messages/'+item.id)); }catch(err){ alert('Delete failed'); }
-          } else if(pass!==null){ alert('❌ Wrong password!'); }
-        });
-        d.appendChild(span); d.appendChild(wand);
-        messagesListEl.appendChild(d);
-      });
-    }
-    onValue(messagesRef, snap=>renderSnapshot(snap.exists()?snap.val():null));
+    // Realtime show  
+    onValue(playCountRef, snap=>{  
+      if(snap.exists()){  
+        playCountEl.textContent = "👁️‍🗨️ " + snap.val();  
+      }  
+    });  
 
-    const sendBtn=document.getElementById('sendBtn');
-    const newMsgEl=document.getElementById('newMsg');
-    sendBtn.addEventListener('click', async()=>{
-      const text=(newMsgEl.value||"").trim();
-      if(!text){ alert('Please write something!'); return; }
-      try{ await push(messagesRef,{ text, ts:Date.now() }); newMsgEl.value=""; }
-      catch(err){ alert('Send failed'); }
-    });
-    newMsgEl.addEventListener('keydown', e=>{
-      if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) sendBtn.click();
-    });
-  </script>
+    // Increment counter  
+    function incrementPlayCount(){  
+      runTransaction(playCountRef, (current)=> (current||0) + 1);  
+    }  
 
-  <!-- Overlay script -->
-  <script>
-    function openOverlay(){
-      document.getElementById("videoOverlay").style.display="flex";
-      let vid=document.getElementById("statusVideo");
-      vid.currentTime=0;
-      vid.play();
-    }
-    function closeOverlay(){
-      document.getElementById("videoOverlay").style.display="none";
-      document.getElementById("statusVideo").pause();
-    }
-  </script>
-</body>
-      </html>
+    const quotes = [  
+      "You are the reason behind my smile 💕",  
+      "Every love story is beautiful, but ours is my favorite 🌹",  
+      "In your arms, I’ve found my home ❤️",  
+      "Forever is not long enough with you 💞"  
+    ];  
+    const quoteEl = document.getElementById('quoteEl');  
+    function typeText(text, speed = 45) {  
+      return new Promise(resolve => {  
+        quoteEl.textContent = "";  
+        quoteEl.classList.add('typing-caret');  
+        let i = 0;  
+        const interval = setInterval(() => {  
+          quoteEl.textContent += text.charAt(i);  
+          i++;  
+          if (i >= text.length) {  
+            clearInterval(interval);  
+            setTimeout(() => quoteEl.classList.remove('typing-caret'), 400);  
+            resolve();  
+          }  
+        }, speed);  
+      });  
+    }  
+    (async function(){ try{ await typeText(quotes[0],45);}catch(e){quoteEl.textContent=quotes[0];}})();  
+
+    const messagesListEl = document.getElementById('messagesList');  
+    function renderSnapshot(snapshotVal){  
+      messagesListEl.innerHTML = "";  
+      if(!snapshotVal) return;  
+      const arr = Object.keys(snapshotVal).map(id=>{  
+        const it = snapshotVal[id];  
+        return { id, text: it.text||'', ts: it.ts||0 };  
+      }).sort((a,b)=>b.ts-a.ts);  
+      arr.forEach(item=>{  
+        const d=document.createElement('div');  
+        d.className='msg-item';  
+        const span=document.createElement('div');  
+        span.className='msg-text';  
+        span.textContent=item.text;  
+        const wand=document.createElement('div');  
+        wand.className='msg-wand';  
+        wand.textContent='🪄';  
+        wand.title='Remove (admin only)';  
+        wand.addEventListener('click', async()=>{  
+          const pass=prompt('Enter admin password to remove this message:');  
+          if(pass===ADMIN_PASS){  
+            try{ await remove(ref(db,'messages/'+item.id)); }catch(err){ alert('Delete failed'); }  
+          } else if(pass!==null){ alert('❌ Wrong password!'); }  
+        });  
+        d.appendChild(span); d.appendChild(wand);  
+        messagesListEl.appendChild(d);  
+      });  
+    }  
+    onValue(messagesRef, snap=>renderSnapshot(snap.exists()?snap.val():null));  
+
+    const sendBtn=document.getElementById('sendBtn');  
+    const newMsgEl=document.getElementById('newMsg');  
+    sendBtn.addEventListener('click', async()=>{  
+      const text=(newMsgEl.value||"").trim();  
+      if(!text){ alert('Please write something!'); return; }  
+      try{ await push(messagesRef,{ text, ts:Date.now() }); newMsgEl.value=""; }  
+      catch(err){ alert('Send failed'); }  
+    });  
+    newMsgEl.addEventListener('keydown', e=>{  
+      if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) sendBtn.click();  
+    });  
+
+    // overlay functions में increment call करेंगे  
+    window.openOverlay = function(){  
+      document.getElementById("videoOverlay").style.display="flex";  
+      let vid=document.getElementById("statusVideo");  
+      vid.currentTime=0;  
+      vid.play();  
+      incrementPlayCount(); // 👁️ count बढ़ाओ  
+
+      // 🎬 Video ख़त्म होते ही auto close  
+      vid.onended = ()=>{  
+        window.closeOverlay();  
+      };  
+    }  
+    window.closeOverlay = function(){  
+      document.getElementById("videoOverlay").style.display="none";  
+      document.getElementById("statusVideo").pause();  
+    }  
+  </script>  
+</body>  
+  </html>
