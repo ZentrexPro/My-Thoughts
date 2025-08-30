@@ -331,13 +331,20 @@
       if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) sendBtn.click();    
     });    
 
-    // overlay functions में increment call करेंगे    
+    const bgm = document.getElementById("bgm");    
+    let resumeTimeout=null;    
+
+    // overlay functions    
     window.openOverlay = function(){    
       document.getElementById("videoOverlay").style.display="flex";    
       let vid=document.getElementById("statusVideo");    
       vid.currentTime=0;    
       vid.play();    
-      incrementPlayCount(); // 👁️ count बढ़ाओ    
+      incrementPlayCount();    
+
+      // 🎵 pause bgm immediately    
+      bgm.pause();    
+      if(resumeTimeout) clearTimeout(resumeTimeout);    
 
       // 🎬 Video ख़त्म होते ही auto close    
       vid.onended = ()=>{    
@@ -347,10 +354,15 @@
     window.closeOverlay = function(){    
       document.getElementById("videoOverlay").style.display="none";    
       document.getElementById("statusVideo").pause();    
+
+      // 🎵 Resume bgm after 5 seconds    
+      if(resumeTimeout) clearTimeout(resumeTimeout);    
+      resumeTimeout=setTimeout(()=>{    
+        bgm.play().catch(err=>console.warn("Resume bgm blocked:", err));    
+      },5000);    
     }    
 
     /* 🎵 Background music autoplay fix for browser restrictions */    
-    const bgm = document.getElementById("bgm");    
     function enableBgm(){    
       bgm.play().catch(err=>console.warn("Autoplay blocked:", err));    
       document.removeEventListener("click", enableBgm);    
@@ -361,4 +373,4 @@
 
   </script>    
 </body>    
-  </html>
+    </html>
