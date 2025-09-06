@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>1–100 Casino Wheel Game</title>
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#111826; --accent:#00e0ff; --accent2:#ff3d71; --text:#eaf2ff; --muted:#9db0c6;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 70% -200px, #132033 0%, #0b0f14 60%);
+      color:var(--text); min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .wrap{ width:min(1100px, 100%); display:grid; grid-template-columns:1.2fr 0.8fr; gap:24px; align-items:center; }
+    @media (max-width: 900px){ .wrap{ grid-template-columns:1fr; } }
+
+    .stage{ position:relative; background:linear-gradient(180deg,#0f1725, #0b0f14); border:1px solid #1f2b3d; border-radius:20px; padding:24px; box-shadow:0 10px 40px rgba(0,0,0,.5) inset, 0 10px 40px rgba(0,0,0,.25); }
+    canvas{ width:100%; height:auto; display:block; filter: drop-shadow(0 10px 30px rgba(0,0,0,.6)); }
+
+    .pointer{ position:absolute; left:50%; top:8px; transform:translateX(-50%); width:0; height:0; border-left:18px solid transparent; border-right:18px solid transparent; border-bottom:32px solid var(--accent); filter:drop-shadow(0 2px 8px rgba(0,224,255,.7)); }
+    .ball{ position:absolute; left:50%; top:50%; width:14px; height:14px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #fff, #cbe9ff 35%, #6aa7ff 70%, #003b72 100%); transform:translate(-50%, calc(-50% - 230px)); box-shadow:0 0 12px rgba(255,255,255,.7); }
+
+    .panel{ background:linear-gradient(180deg,#0f1725, #0b0f14); border:1px solid #1f2b3d; border-radius:20px; padding:22px; box-shadow:0 10px 40px rgba(0,0,0,.25); }
+    .panel h1{ font-size:22px; margin:0 0 12px; letter-spacing:.5px; }
+    .panel p{ color:var(--muted); margin:6px 0; }
+    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .full{ grid-column:1 / -1; }
+
+    .control{ display:flex; align-items:center; gap:10px; background:#0b1320; border:1px solid #26354d; padding:10px 12px; border-radius:12px; }
+    label{ font-size:14px; color:#bfd1ea; white-space:nowrap; }
+    input[type="number"], select{
+      flex:1; background:#0b1320; color:var(--text); border:1px solid #233149; border-radius:10px; padding:10px 12px; outline:none; font-size:16px;
+    }
+    input[type="number"]:focus, select:focus{ border-color:var(--accent); box-shadow:0 0 0 2px rgba(0,224,255,.15); }
+
+    .btns{ display:flex; gap:10px; }
+    button{
+      appearance:none; border:none; padding:12px 16px; border-radius:14px; font-weight:600; letter-spacing:.3px; cursor:pointer;
+      background:linear-gradient(180deg, var(--accent), #00b7ff); color:#00121e; text-shadow:0 1px 0 rgba(255,255,255,.5);
+      box-shadow:0 8px 20px rgba(0,224,255,.25), inset 0 -2px 0 rgba(0,0,0,.2);
+    }
+    button[disabled]{ opacity:.5; cursor:not-allowed; }
+    .ghost{ background:linear-gradient(180deg, #2a3752, #192338); color:#cfe6ff; box-shadow:none; border:1px solid #2a3752; }
+
+    .status{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px; }
+    .card{ background:#0b1320; border:1px solid #233149; border-radius:14px; padding:12px; text-align:center; }
+    .card h3{ margin:0; font-size:13px; color:#9db0c6; font-weight:600; letter-spacing:.4px; }
+    .card .v{ font-size:22px; margin-top:6px; font-weight:700; }
+    .win{ color:#00ffb2; }
+    .lose{ color:#ff6b6b; }
+
+    .hint{ font-size:12px; color:#8aa2c0; margin-top:6px; }
+
+    .footer{ text-align:center; margin-top:14px; font-size:12px; color:#7f93ad; }
+    .range{ font-weight:700; color:#cfe6ff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="stage">
+      <div class="pointer" aria-hidden="true"></div>
+      <canvas id="wheel" width="900" height="900" aria-label="Casino Wheel"></canvas>
+      <div class="ball" aria-hidden="true"></div>
+    </div>
+
+    <div class="panel" role="region" aria-label="Controls">
+      <h1>🎰 1–100 Casino Wheel</h1>
+      <p>एक नंबर चुनें (1–100). व्हील 30 सेकंड तक तेज़ घूमेगा और रुकते ही जिस <strong>10-number सेक्शन</strong> पर पॉइंटर होगा, वही जीत/हार तय करेगा।</p>
+
+      <div class="grid">
+        <div class="control full">
+          <label for="pick">आपका नंबर</label>
+          <input id="pick" type="number" min="1" max="100" value="7" />
+        </div>
+        <div class="btns full">
+          <button id="spinBtn">▶️ Spin (30s)</button>
+          <button class="ghost" id="resetBtn">↺ Reset</button>
+        </div>
+      </div>
+
+      <div class="status">
+        <div class="card"><h3>काउंटडाउन</h3><div class="v" id="countdown">—</div></div>
+        <div class="card"><h3>वर्तमान नंबर</h3><div class="v" id="currentNumber">—</div></div>
+        <div class="card"><h3>आपका सेक्शन</h3><div class="v" id="yourRange">1–10</div></div>
+        <div class="card"><h3>रिज़ल्ट</h3><div class="v" id="result">—</div></div>
+      </div>
+
+      <p class="hint">जीत की शर्त: यदि व्हील जिस नंबर पर रुके, वह आपके चुने हुए नंबर वाले <span class="range" id="rangeText">1–10</span> सेक्शन के भीतर हो, तो आप जीतेंगे।</p>
+      <div class="footer">Fair RNG • Single HTML file • Canvas rendering • Mobile friendly</div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const TWO_PI = Math.PI * 2;
+      const SEGMENTS = 100;               // 1..100
+      const GROUP = 10;                    // 10-number section size
+      const SPIN_DURATION = 30_000;        // 30 seconds
+      const MIN_ROTATIONS = 24;            // base full spins for drama
+      const MAX_ROTATIONS = 36;
+
+      const canvas = document.getElementById('wheel');
+      const ctx = canvas.getContext('2d');
+      const spinBtn = document.getElementById('spinBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const pickInput = document.getElementById('pick');
+      const countdownEl = document.getElementById('countdown');
+      const currentNumberEl = document.getElementById('currentNumber');
+      const yourRangeEl = document.getElementById('yourRange');
+      const rangeTextEl = document.getElementById('rangeText');
+      const resultEl = document.getElementById('result');
+
+      // High-DPI scaling
+      function scaleCanvas(){
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        const cssSize = canvas.clientWidth || 900;
+        canvas.width = cssSize * dpr;
+        canvas.height = cssSize * dpr;
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+      }
+
+      // Colors
+      const sectionColors = ['#0f2a4a','#093459']; // alternate per 10-group
+      const sliceLine = '#1f2b3d';
+      const ringOuter = '#00e0ff';
+      const ringInner = '#122134';
+      const numberColor = '#cfe6ff';
+
+      let angle = -Math.PI/2; // pointer is at -90deg (top). We rotate wheel under it.
+      let spinning = false;
+      let animId = null;
+      let startTime = 0;
+      let totalAngleTarget = 0;
+      let w0 = 0; // initial angular velocity (rad/ms)
+      let a = 0;  // deceleration (rad/ms^2)
+
+      function groupRangeOf(num){
+        const start = Math.floor((num-1)/GROUP) * GROUP + 1;
+        return [start, start + GROUP - 1];
+      }
+
+      function updateChosenRange(){
+        let val = clamp(parseInt(pickInput.value||'1',10), 1, 100);
+        pickInput.value = String(val);
+        const [s,e] = groupRangeOf(val);
+        yourRangeEl.textContent = s + '–' + e;
+        rangeTextEl.textContent = s + '–' + e;
+      }
+
+      function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+
+      function drawWheel(){
+        const size = Math.min(canvas.width, canvas.height);
+        const dpr = (canvas.width / (canvas.clientWidth || 900));
+        const R = (size/dpr)/2 - 20; // radius in CSS pixels
+        const cx = (canvas.width/dpr)/2, cy = (canvas.height/dpr)/2;
+
+        ctx.save();
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+
+        const slice = TWO_PI / SEGMENTS;
+
+        // base disc
+        ctx.beginPath();
+        ctx.arc(0,0,R,0,TWO_PI);
+        ctx.fillStyle = ringInner;
+        ctx.fill();
+
+        // draw 10-number blocks as wide bands
+        for(let g=0; g<SEGMENTS/GROUP; g++){
+          const startAng = g*GROUP*slice;
+          ctx.beginPath();
+          ctx.moveTo(0,0);
+          ctx.arc(0,0,R, startAng, startAng + GROUP*slice);
+          ctx.closePath();
+          ctx.fillStyle = sectionColors[g%2];
+          ctx.fill();
+        }
+
+        // radial lines each number
+        ctx.strokeStyle = sliceLine;
+        ctx.lineWidth = 1;
+        for(let i=0;i<SEGMENTS;i++){
+          const a0 = i*slice;
+          ctx.beginPath();
+          ctx.moveTo(0,0);
+          ctx.lineTo(Math.cos(a0)*R, Math.sin(a0)*R);
+          ctx.stroke();
+        }
+
+        // outer ring
+        ctx.beginPath();
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = ringOuter;
+        ctx.arc(0,0,R,0,TWO_PI);
+        ctx.stroke();
+
+        // numbers: to avoid clutter, render every 5th number bold and others as small dots
+        ctx.fillStyle = numberColor;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        for(let i=1;i<=SEGMENTS;i++){
+          const mid = (i-0.5)*slice;
+          const rr = R - 28;
+          const x = Math.cos(mid)*rr;
+          const y = Math.sin(mid)*rr;
+          if(i%5===0){
+            ctx.save();
+            ctx.translate(x,y);
+            ctx.rotate(-angle - mid); // keep upright
+            ctx.font = '700 14px system-ui';
+            ctx.fillText(String(i), 0, 0);
+            ctx.restore();
+          }else{
+            ctx.beginPath();
+            ctx.arc(x,y,1.8,0,TWO_PI);
+            ctx.fill();
+          }
+        }
+
+        ctx.restore();
+      }
+
+      function numberAtPointer(){
+        // Map current angle to a segment index under the fixed pointer at -90deg
+        const slice = TWO_PI / SEGMENTS;
+        // Effective angle of 0 corresponds to segment 1 start at x-axis; we set base to -PI/2 for pointer
+        // Convert to [0, TWO_PI)
+        const normalized = (TWO_PI - (angle % TWO_PI) + TWO_PI) % TWO_PI; // wheel rotation under fixed pointer
+        let idx = Math.floor(normalized / slice) + 1; // 1..100
+        if(idx>SEGMENTS) idx = SEGMENTS;
+        return idx;
+      }
+
+      function tick(now){
+        if(!spinning) return;
+        const t = now - startTime;
+        const elapsed = Math.min(t, SPIN_DURATION);
+
+        // Kinematics: angle(t) = angle0 + w0*t - 0.5*a*t^2
+        const theta = w0*elapsed - 0.5*a*elapsed*elapsed;
+        const current = angleStart + theta;
+        angle = current;
+
+        drawWheel();
+        currentNumberEl.textContent = numberAtPointer();
+        countdownEl.textContent = ((SPIN_DURATION - elapsed)/1000).toFixed(1) + 's';
+
+        if(t < SPIN_DURATION){
+          animId = requestAnimationFrame(tick);
+        } else {
+          spinning = false;
+          cancelAnimationFrame(animId);
+          countdownEl.textContent = '0.0s';
+          finalizeResult();
+          spinBtn.disabled = false;
+          pickInput.disabled = false;
+        }
+      }
+
+      function finalizeResult(){
+        const landed = numberAtPointer();
+        const [gs, ge] = groupRangeOf(landed);
+        const userPick = parseInt(pickInput.value,10);
+        const [us, ue] = groupRangeOf(userPick);
+        const win = (gs===us && ge===ue);
+        resultEl.textContent = win ? `✅ WIN (${gs}–${ge})` : `❌ LOSE (${gs}–${ge})`;
+        resultEl.className = 'v ' + (win ? 'win' : 'lose');
+      }
+
+      let angleStart = angle;
+
+      function spin(){
+        if(spinning) return;
+        updateChosenRange();
+        resultEl.textContent = '—';
+        resultEl.className = 'v';
+
+        // Choose a random landing angle independent of user choice (fair RNG)
+        const currentSeg = numberAtPointer();
+        const targetSeg = Math.floor(Math.random()*SEGMENTS) + 1; // 1..100
+        const slice = TWO_PI / SEGMENTS;
+
+        const targetAngleUnderPointer = (targetSeg-1)*slice; // angle such that pointer sits at targetSeg
+        const normalizedCurrent = (TWO_PI - (angle % TWO_PI) + TWO_PI) % TWO_PI;
+        const delta = ((targetAngleUnderPointer - normalizedCurrent) + TWO_PI) % TWO_PI; // shortest forward rotation to align
+
+        const extraRot = (Math.random()*(MAX_ROTATIONS-MIN_ROTATIONS) + MIN_ROTATIONS) * TWO_PI;
+        totalAngleTarget = delta + extraRot;
+
+        // Solve for w0 given a and T: we want theta(T) = totalAngleTarget with w(T)=0 => a = w0/T
+        const T = SPIN_DURATION;
+        // theta = 0.5 * w0 * T  => w0 = 2*theta/T
+        w0 = 2 * totalAngleTarget / T;
+        a = w0 / T;
+
+        angleStart = angle;
+        startTime = performance.now();
+        spinning = true;
+        spinBtn.disabled = true;
+        pickInput.disabled = true;
+        animId = requestAnimationFrame(tick);
+      }
+
+      function reset(){
+        spinning = false;
+        cancelAnimationFrame(animId);
+        angle = -Math.PI/2;
+        angleStart = angle;
+        drawWheel();
+        countdownEl.textContent = '—';
+        currentNumberEl.textContent = '—';
+        resultEl.textContent = '—';
+        resultEl.className = 'v';
+        spinBtn.disabled = false;
+        pickInput.disabled = false;
+        updateChosenRange();
+      }
+
+      // events
+      spinBtn.addEventListener('click', spin);
+      resetBtn.addEventListener('click', reset);
+      pickInput.addEventListener('input', updateChosenRange);
+      window.addEventListener('resize', () => { const prev = angle; scaleCanvas(); angle = prev; drawWheel(); });
+
+      // init
+      scaleCanvas();
+      updateChosenRange();
+      drawWheel();
+    })();
+  </script>
+</body>
+</html>
+
+
+ban gaya! 👇
+maine ek single-file HTML/CSS/JS game बना दिया—wheel 1–100, 10-number sections, 30 सेकंड spin, fair random stop, जीत/हार auto-check. आप ऊपर canvas में live चला सकते हैं।
+
+अगर आप चाहें तो मैं इसमें:
+
+सेक्शन के रंग/size बदल दूँ,
+
+हर नंबर का लेबल दिखा दूँ (अभी हर 5वें पर),
+
+स्पिन साउंड/क्लिक साउंड जोड़ दूँ,
+
+betting chips या payout logic (जैसे 10x on section win) लगा दूँ,
+
+मोबाइल haptics/वाइब्रेशन add कर दूँ।
+
+
+बताइए क्या tweak चाहिए—मैं कर देता हूँ।
+
