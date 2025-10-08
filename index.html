@@ -1,376 +1,478 @@
-<!DOCTYPE html
-html lang="en">    
-<head>    
-  <meta charset="utf-8" />    
-  <meta name="viewport" content="width=device-width,initial-scale=1" />    
-  <title>Love Quotes & Messages</title>    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Insta Thoughts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #262626;
+      --accent: #fd1d1d;
+      --gradient: linear-gradient(90deg, #fd1d1d, #fcb045, #833ab4);
+      --story-ring: linear-gradient(45deg, #fcb045, #fd1d1d, #833ab4, #fcb045);
+      --bg: #181818;
+      --white: #fff;
+      --gray: #aaa;
+      --card-bg: rgba(20,20,20,0.93);
+    }
+    html,body {
+      min-height:100%;
+      margin:0;
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Roboto', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+    }
+    body {
+      width: 100vw;
+      min-height: 100vh;
+      margin: 0;
+      padding-bottom: 72px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    /* --- Top bar --- */
+    .topbar {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      padding: 18px 12px 10px 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar h1 {
+      font-family: 'Audiowide', cursive;
+      font-size: 24px;
+      margin: 0;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .topbar .add-story-btn {
+      background: var(--gradient);
+      border: none;
+      color: #fff;
+      border-radius: 16px;
+      padding: 8px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+      transition: box-shadow .2s;
+      box-shadow: 0 2px 12px rgba(253,29,29,0.08);
+    }
+    /* --- Story bar --- */
+    .story-bar {
+      width: 100%;
+      max-width: 600px;
+      overflow-x: auto;
+      display: flex;
+      gap: 14px;
+      padding: 10px 0 10px 8px;
+      background: var(--bg);
+      border-bottom: 1px solid #292929;
+      position: sticky;
+      top: 54px;
+      z-index: 8;
+    }
+    .story-avatar {
+      flex: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .story-ring {
+      width: 62px; height: 62px;
+      border-radius: 50%;
+      padding: 3px;
+      background: var(--story-ring);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 20px #0004;
+      position: relative;
+    }
+    .story-ring.seen {
+      filter: grayscale(1) brightness(1.1);
+      opacity: 0.7;
+    }
+    .story-avatar img {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #232323;
+    }
+    .story-avatar .add {
+      background: var(--gradient);
+      color: #fff;
+      font-size: 26px;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      display: flex;align-items:center;justify-content:center;
+      border: none;
+      cursor: pointer;
+    }
+    .story-avatar .label {
+      font-size: 12px;
+      color: var(--gray);
+      margin-top: 2px;
+      text-align: center;
+      max-width: 62px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    /* --- Story Overlay --- */
+    .story-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .story-overlay.active {
+      display: flex;
+    }
+    .story-media {
+      width: 96vw; max-width: 420px;
+      height: 72vw; max-height: 720px;
+      background: #111;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px #000c;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      justify-content: center;
+    }
+    .story-media img, .story-media video {
+      width: 100%; height: 100%; object-fit:contain; background: #111; border-radius: 20px;
+    }
+    .story-media .close-btn {
+      position: absolute;
+      top: 12px; right: 12px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      border-radius: 50%;
+      width: 36px; height: 36px;
+      display: flex; align-items:center; justify-content:center;
+      cursor: pointer;
+      z-index: 10;
+    }
+    .story-media .play-count {
+      position: absolute; top: 12px; left: 12px;
+      background: rgba(0,0,0,0.55);
+      color: #fff; padding: 4px 14px;
+      border-radius: 18px; font-size: 15px; user-select: none;
+      z-index: 10;
+      display: flex; align-items: center; gap: 6px;
+    }
+    /* --- Message card --- */
+    .message-panel {
+      width: 100%;
+      max-width: 600px;
+      background: var(--card-bg);
+      margin: 26px auto 0 auto;
+      border-radius: 18px;
+      padding: 18px 16px 14px 16px;
+      box-shadow: 0 6px 24px #0005;
+    }
+    .message-panel h3 {
+      margin: 0 0 8px 0;
+      font-family: 'Audiowide',sans-serif;
+      color: var(--accent);
+      font-size: 17px;
+      letter-spacing: 1px;
+    }
+    .compose { display: flex; gap: 10px; margin-bottom: 12px; }
+    .compose textarea {
+      flex: 1; min-height: 56px; resize: vertical;
+      padding: 9px 12px; border-radius: 8px; border: none;
+      font-size: 15px; background: #232323; color: #fff;
+    }
+    .compose button {
+      min-width: 92px; padding: 10px 12px;
+      background: var(--gradient);
+      border: none; color: #fff; border-radius: 10px;
+      font-weight: 700; cursor: pointer;
+    }
+    #messagesList { max-height: 240px; overflow:auto; padding-right:6px; }
+    .msg-item {
+      background: #232323;
+      border-radius: 10px; padding: 8px 12px; margin-bottom: 8px;
+      color: #fff; word-break: break-word; white-space: pre-wrap;
+      font-size: 15px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .msg-wand {
+      margin-left: 12px; cursor: pointer; font-size: 18px;
+    }
+    /* --- Bottom nav --- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      width: 100vw;
+      height: 56px;
+      background: var(--card-bg);
+      border-top: 1px solid #292929;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 80;
+      box-shadow: 0 -2px 14px #0009;
+    }
+    .bottom-nav button {
+      background: none; border: none; color: #fff;
+      font-size: 24px; cursor: pointer;
+      transition: color .18s;
+      opacity: 0.8;
+    }
+    .bottom-nav button.active { color: var(--accent); opacity: 1; }
+    @media (max-width: 640px) {
+      .topbar, .story-bar, .message-panel { max-width: 100vw; }
+      .story-bar { gap: 10px; }
+      .story-ring { width: 54px; height: 54px;}
+      .story-avatar img { width: 48px; height: 48px;}
+      .story-avatar .add, .story-avatar img { width:48px; height:48px;}
+      .story-avatar .label { font-size: 11px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>Insta Thoughts</h1>
+    <button class="add-story-btn" onclick="document.getElementById('storyFile').click()">+ Add Story</button>
+    <input type="file" id="storyFile" accept="image/*,video/*" style="display:none"/>
+  </div>
+  <div class="story-bar" id="storyBar">
+    <!-- Story Avatars dynamically here -->
+  </div>
+  <!-- Story Overlay -->
+  <div class="story-overlay" id="storyOverlay">
+    <div class="story-media" id="storyMedia">
+      <button class="close-btn" onclick="closeStoryView()">&#10005;</button>
+      <span class="play-count" id="overlayPlayCount">👁️ 0</span>
+      <!-- Media here -->
+    </div>
+  </div>
+  <div class="message-panel">
+    <h3>Send me an anonymous message</h3>
+    <div class="compose">
+      <textarea id="newMsg" placeholder="Write your message..."></textarea>
+      <button id="sendBtn" type="button">Send</button>
+    </div>
+    <div id="messagesList"></div>
+  </div>
+  <nav class="bottom-nav">
+    <button class="active" title="Home">&#8962;</button>
+    <button title="Search">&#128269;</button>
+    <button title="Stories">&#128247;</button>
+    <button title="Messages">&#9993;</button>
+    <button title="Profile">&#128100;</button>
+  </nav>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getDatabase, ref, push, onValue, remove, runTransaction, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+    import { getStorage, ref as sRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
 
-  <!-- Fonts -->    
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&display=swap" rel="stylesheet">    
+    // === Firebase Config ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyAkeirE4twM3J02JbDBnbdUw2G9yw8VVlw",
+      authDomain: "love-messages-cdee7.firebaseapp.com",
+      databaseURL: "https://love-messages-cdee7-default-rtdb.firebaseio.com",
+      projectId: "love-messages-cdee7",
+      storageBucket: "love-messages-cdee7.appspot.com",
+      messagingSenderId: "670131200783",
+      appId: "1:670131200783:web:ea75b017acab258911547a",
+      measurementId: "G-WT5TKSRSLG"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const storage = getStorage(app);
 
-  <!-- Google Analytics -->    
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WYSBQ3FW82"></script>    
-  <script>    
-    window.dataLayer = window.dataLayer || [];    
-    function gtag(){ dataLayer.push(arguments); }    
-    gtag('js', new Date());    
-    gtag('config', 'G-WYSBQ3FW82');    
-  </script>    
+    // === Anonymous Stories ===
+    const storyBar = document.getElementById('storyBar');
+    const storyFileInput = document.getElementById('storyFile');
+    let storiesCache = [];
+    let seenStories = JSON.parse(localStorage.getItem('seenStories')||'{}');
 
-  <style>    
-    :root{    
-      --glass-bg: rgba(255,255,255,0.08);    
-      --accent:#00fff0;    
-      --pink:#ff4db6;    
-    }    
-    html,body{    
-      height:100%;    
-      margin:0;    
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;    
-      background: url("bg.jpg") no-repeat center center/cover;    
-      background-attachment: fixed;    
-      color: #fff;    
-      display:flex;    
-      flex-direction:column;    
-      align-items:center;    
-      padding:32px 18px;    
-      box-sizing:border-box;    
-    }    
-    body::after{    
-      content:"";    
-      position:fixed;    
-      inset:0;    
-      background: rgba(0,0,0,0.45);    
-      z-index:0;    
-      pointer-events:none;    
-    }    
+    function renderStories(storyArr) {
+      storyBar.innerHTML = '';
+      // Add "Your Story" always first
+      const myStory = document.createElement('div');
+      myStory.className = 'story-avatar';
+      myStory.innerHTML = `<div class="story-ring"><button class="add" onclick="document.getElementById('storyFile').click()">+</button></div><span class="label">Your Story</span>`;
+      storyBar.appendChild(myStory);
 
-    /* Quote Card */    
-    .quote-card{    
-      position:relative;    
-      z-index:1;    
-      width:min(92%,540px);    
-      padding:28px;    
-      border-radius:18px;    
-      background: var(--glass-bg);    
-      backdrop-filter: blur(10px) saturate(120%);    
-      border: 1px solid rgba(255,255,255,0.12);    
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);    
-      text-align:center;    
-      margin-bottom:20px;    
-    }    
-    .quote-text{    
-      font-family: 'Great Vibes', cursive;    
-      font-size: 28px;    
-      line-height:1.2;    
-      color: #fff;    
-      text-shadow: 0 4px 18px rgba(0,0,0,0.6);    
-      white-space:pre-wrap;    
-      word-break:break-word;    
-    }    
-    .typing-caret{    
-      border-right: 3px solid rgba(255,255,255,0.95);    
-      padding-right:6px;    
-      animation: blinkCaret 0.8s step-end infinite;    
-    }    
-    @keyframes blinkCaret{ 50%{ border-color: transparent; } }    
+      storyArr.forEach(story=>{
+        const div = document.createElement('div');
+        div.className = 'story-avatar';
+        div.innerHTML = `
+          <div class="story-ring${seenStories[story.id] ? ' seen':''}" data-storyid="${story.id}">
+            <img src="${story.thumb||story.url}" alt="story"/>
+          </div>
+          <span class="label">${story.name||'User'}</span>
+        `;
+        div.querySelector('.story-ring').onclick = ()=>openStoryView(story.id);
+        storyBar.appendChild(div);
+      });
+    }
 
-    /* Messages box */    
-    .message-panel{    
-      z-index:1;    
-      width:min(92%,820px);    
-      margin-top:12px;    
-      background: rgba(0,0,0,0.45);    
-      border-radius:14px;    
-      padding:14px;    
-      box-shadow: 0 8px 26px rgba(0,0,0,0.6);    
-      border:1px solid rgba(255,255,255,0.06);    
-      backdrop-filter: blur(6px);    
-    }    
-    .message-panel h3{    
-      margin:0 0 8px 0;    
-      font-family:'Audiowide',sans-serif;    
-      color:var(--accent);    
-      font-size:16px;    
-    }    
-    .compose{ display:flex; gap:10px; margin-bottom:12px; }    
-    .compose textarea{    
-      flex:1; min-height:72px; resize:vertical;    
-      padding:10px 12px; border-radius:8px; border:none;    
-      font-size:15px; background:#fff; color:#111;    
-    }    
-    .compose button{    
-      min-width:110px; padding:10px 12px;    
-      background: linear-gradient(180deg,var(--pink),#d1007a);    
-      border:none; color:#fff; border-radius:10px;    
-      font-weight:700; cursor:pointer;    
-    }    
-    #messagesList{ max-height:320px; overflow:auto; padding-right:6px; }    
-    .msg-item{    
-      background: linear-gradient(90deg, rgba(0,255,240,0.06), rgba(255,255,255,0.02));    
-      border-radius:10px; padding:10px 12px; margin-bottom:10px;    
-      display:flex; justify-content:space-between;    
-    }    
-    .msg-text{ flex:1; color:#fff; word-break:break-word; white-space:pre-wrap; }    
-    .msg-wand{ margin-left:12px; cursor:pointer; font-size:20px; }    
+    // Listen to stories
+    function listenStories() {
+      const storiesRef = ref(db, 'stories');
+      onValue(storiesRef, snap=>{
+        let arr = [];
+        if(snap.exists()){
+          arr = Object.entries(snap.val())
+            .map(([id, val])=>({...val, id}))
+            .filter(story=>Date.now() - story.ts < 86400000); // 24h
+          storiesCache = arr.sort((a,b)=>b.ts-a.ts);
+          renderStories(storiesCache);
+        }
+      });
+    }
+    listenStories();
 
-    /* Games button */    
-    .games-btn{    
-      z-index:1; margin-top:18px; padding:14px 26px;    
-      border-radius:26px; border:none;    
-      background:linear-gradient(90deg,var(--accent),#0072ff);    
-      color:#001; font-weight:800; cursor:pointer;    
-    }    
+    // Clean up expired stories
+    async function cleanOldStories() {
+      const storiesRef = ref(db, 'stories');
+      const snap = await get(storiesRef);
+      if (snap.exists()) {
+        for (let [id, val] of Object.entries(snap.val())) {
+          if (Date.now() - val.ts > 86400000) {
+            // Delete from DB & Storage
+            await remove(ref(db, 'stories/'+id));
+            if (val.storagePath) {
+              try { await deleteObject(sRef(storage, val.storagePath)); } catch(e){}
+            }
+          }
+        }
+      }
+    }
+    setInterval(cleanOldStories, 60*60*1000); // 1 hr
 
-    /* ===== STATUS BUTTON + OVERLAY ===== */    
-    .status-btn{    
-      z-index:1;    
-      margin-top:18px;    
-      padding:14px 26px;    
-      border-radius:26px;    
-      border:none;    
-      background:linear-gradient(90deg,#ff00cc,#3333ff);    
-      color:#fff;    
-      font-weight:700;    
-      cursor:pointer;    
-      box-shadow:0 8px 30px rgba(0,0,0,0.5);    
-      font-size:16px;    
-    }    
-    .overlay{    
-      display:none;    
-      position:fixed;    
-      inset:0;    
-      background:rgba(0,0,0,0.9);    
-      z-index:1000;    
-      align-items:center;    
-      justify-content:center;    
-    }    
-    .video-container{    
-      position:relative;    
-      width:90%;    
-      max-width:400px;    
-      aspect-ratio:9/16;   /* Portrait Ratio */    
-      background:#000;    
-      border-radius:20px;    
-      overflow:hidden;    
-      box-shadow:0 10px 40px rgba(0,0,0,0.9);    
-      display:flex;    
-      justify-content:center;    
-      align-items:center;    
-    }    
-    .video-container video{    
-      width:100%;    
-      height:100%;    
-      object-fit:cover; /* Insta Story style */    
-      border-radius:20px;    
-    }    
+    // Add story (image/video upload)
+    storyFileInput.onchange = async function(e) {
+      const file = e.target.files[0];
+      if(!file) return;
+      let ext = file.type.startsWith('image/') ? 'img' : file.type.startsWith('video/') ? 'vid' : '';
+      if(!ext) return alert('Only image/video allowed!');
+      let name = prompt("Your name (optional for story ring)?") || "Anonymous";
+      const id = Math.random().toString(36).slice(2);
+      const storagePath = `stories/${id}-${file.name}`;
+      const uploadRef = sRef(storage, storagePath);
+      const snapshot = await uploadBytes(uploadRef, file);
+      const url = await getDownloadURL(uploadRef);
+      let thumb = url;
+      if(ext==='vid') thumb="https://img.icons8.com/color/96/000000/video.png";
+      // Save to DB
+      await set(ref(db, 'stories/'+id), {url, ts: Date.now(), type: ext, name, storagePath, thumb});
+      alert('Story uploaded! Will expire in 24h.');
+      storyFileInput.value = '';
+    };
 
-    /* 👁️ play count style */    
-    .play-count{    
-      position:absolute;    
-      top:14px; left:14px;    
-      font-size:18px;    
-      color:#fff;    
-      background:rgba(0,0,0,0.5);    
-      padding:4px 12px;    
-      border-radius:20px;    
-      box-shadow:0 4px 12px rgba(0,0,0,0.5);    
-      user-select:none;    
-      z-index:1100;    
-    }    
+    // Story overlay logic
+    let currentStory = null;
+    window.openStoryView = async function(storyId) {
+      const story = storiesCache.find(s=>s.id===storyId);
+      if(!story) return;
+      currentStory = story;
+      // Mark as seen
+      seenStories[storyId] = Date.now();
+      localStorage.setItem('seenStories', JSON.stringify(seenStories));
+      // Overlay UI
+      document.getElementById('storyOverlay').classList.add('active');
+      const media = document.getElementById('storyMedia');
+      media.querySelectorAll('img,video').forEach(x=>x.remove());
+      let el;
+      if(story.type==='img') {
+        el = document.createElement('img');
+        el.src = story.url;
+      } else {
+        el = document.createElement('video');
+        el.src = story.url;
+        el.controls = true;
+        el.autoplay = true;
+        el.loop = false;
+      }
+      media.appendChild(el);
+      // Play count
+      incrementStoryView(storyId);
+      listenStoryViews(storyId);
 
-    @media (max-width:520px){    
-      .quote-text{ font-size:22px; }    
-      .compose button{ min-width:86px; }    
-    }    
-  </style>    
-</head>    
+      // Auto close after 12s (like Insta)
+      setTimeout(()=>{ if(document.getElementById('storyOverlay').classList.contains('active')) closeStoryView(); }, 12000);
+    }
+    window.closeStoryView = function() {
+      document.getElementById('storyOverlay').classList.remove('active');
+      // Remove play count listener?
+    }
 
-<body>    
+    // === Story View Count ===
+    function incrementStoryView(storyId) {
+      const viewsRef = ref(db, 'storyViews/'+storyId);
+      runTransaction(viewsRef, val=>(val||0)+1);
+    }
+    function listenStoryViews(storyId) {
+      const viewsRef = ref(db, 'storyViews/'+storyId);
+      onValue(viewsRef, snap=>{
+        document.getElementById('overlayPlayCount').innerHTML = `👁️ ${snap.exists()?snap.val():0}`;
+      });
+    }
 
-  <!-- 🎵 Background Music -->    
-  <audio id="bgm" autoplay loop>    
-    <source src="bgm.mp3" type="audio/mpeg">    
-    Your browser does not support the audio element.    
-  </audio>    
+    // === ANONYMOUS MESSAGES ===
+    const messagesRef = ref(db, 'messages');
+    const messagesListEl = document.getElementById('messagesList');
+    const ADMIN_PASS = "0420";
+    function renderSnapshot(snapshotVal) {
+      messagesListEl.innerHTML = "";
+      if(!snapshotVal) return;
+      const arr = Object.keys(snapshotVal).map(id=>{
+        const it = snapshotVal[id];
+        return { id, text: it.text||'', ts: it.ts||0 };
+      }).sort((a,b)=>b.ts-a.ts);
+      arr.forEach(item=>{
+        const d=document.createElement('div');
+        d.className='msg-item';
+        d.innerHTML = `<span>${item.text}</span>
+          <span class="msg-wand" title="Remove (admin)">🗑️</span>`;
+        d.querySelector('.msg-wand').onclick = async ()=>{
+          const pass=prompt('Admin password?');
+          if(pass===ADMIN_PASS){
+            try{ await remove(ref(db,'messages/'+item.id)); }catch(err){ alert('Delete failed'); }
+          } else if(pass!==null){ alert('❌ Wrong password!'); }
+        };
+        messagesListEl.appendChild(d);
+      });
+    }
+    onValue(messagesRef, snap=>renderSnapshot(snap.exists()?snap.val():null));
 
-  <!-- Quote card -->    
-  <div class="quote-card"><div id="quoteEl" class="quote-text"></div></div>    
-
-  <!-- Messages -->    
-  <div class="message-panel">    
-    <h3>Message for me without your identity</h3>    
-    <div class="compose">    
-      <textarea id="newMsg" placeholder="Write your secret message..."></textarea>    
-      <button id="sendBtn" type="button">Send</button>    
-    </div>    
-    <div id="messagesList"></div>    
-  </div>    
-
-  <!-- Games -->    
-  <button class="games-btn" onclick="location.href='games.html'">🎮 Play Mini Games</button>
-
-  <!-- Status Button -->    
-  <button class="status-btn" onclick="openOverlay()">📷 View Status</button>
-
-  <!-- Overlay -->    
-  <div class="overlay" id="videoOverlay">    
-    <div class="video-container">    
-      <!-- 👁️ play count -->    
-      <span class="play-count" id="playCount">👁️‍🗨️ 0</span>    
-      <video id="statusVideo" controls playsinline>    
-        <source src="status.mp4" type="video/mp4">    
-        Your browser does not support video.    
-      </video>    
-    </div>    
-  </div>    
-
-  <!-- Firebase + app logic -->    
-  <script type="module">    
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";    
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";    
-    import { getDatabase, ref, push, onValue, remove, runTransaction } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";    
-
-    const firebaseConfig = {    
-      apiKey: "AIzaSyAkeirE4twM3J02JbDBnbdUw2G9yw8VVlw",    
-      authDomain: "love-messages-cdee7.firebaseapp.com",    
-      databaseURL: "https://love-messages-cdee7-default-rtdb.firebaseio.com",    
-      projectId: "love-messages-cdee7",    
-      storageBucket: "love-messages-cdee7.firebasestorage.app",    
-      messagingSenderId: "670131200783",    
-      appId: "1:670131200783:web:ea75b017acab258911547a",    
-      measurementId: "G-WT5TKSRSLG"    
-    };    
-
-    const app = initializeApp(firebaseConfig);    
-    try { getAnalytics(app); } catch(e){ console.warn('Analytics failed', e); }    
-    const db = getDatabase(app);    
-    const messagesRef = ref(db, 'messages');    
-    const ADMIN_PASS = "0420";    
-
-    /* === 👁️ PLAY COUNT SETUP === */    
-    const playCountRef = ref(db, 'statusPlayCount');    
-    const playCountEl = document.getElementById('playCount');    
-
-    // Realtime show    
-    onValue(playCountRef, snap=>{    
-      if(snap.exists()){    
-        playCountEl.textContent = "👁️‍🗨️ " + snap.val();    
-      }    
-    });    
-
-    // Increment counter    
-    function incrementPlayCount(){    
-      runTransaction(playCountRef, (current)=> (current||0) + 1);    
-    }    
-
-    const quotes = [      
-      "Forever is not long enough with you 💞"    
-    ];    
-    const quoteEl = document.getElementById('quoteEl');    
-    function typeText(text, speed = 45) {    
-      return new Promise(resolve => {    
-        quoteEl.textContent = "";    
-        quoteEl.classList.add('typing-caret');    
-        let i = 0;    
-        const interval = setInterval(() => {    
-          quoteEl.textContent += text.charAt(i);    
-          i++;    
-          if (i >= text.length) {    
-            clearInterval(interval);    
-            setTimeout(() => quoteEl.classList.remove('typing-caret'), 400);    
-            resolve();    
-          }    
-        }, speed);    
-      });    
-    }    
-    (async function(){ try{ await typeText(quotes[0],45);}catch(e){quoteEl.textContent=quotes[0];}})();    
-
-    const messagesListEl = document.getElementById('messagesList');    
-    function renderSnapshot(snapshotVal){    
-      messagesListEl.innerHTML = "";    
-      if(!snapshotVal) return;    
-      const arr = Object.keys(snapshotVal).map(id=>{    
-        const it = snapshotVal[id];    
-        return { id, text: it.text||'', ts: it.ts||0 };    
-      }).sort((a,b)=>b.ts-a.ts);    
-      arr.forEach(item=>{    
-        const d=document.createElement('div');    
-        d.className='msg-item';    
-        const span=document.createElement('div');    
-        span.className='msg-text';    
-        span.textContent=item.text;    
-        const wand=document.createElement('div');    
-        wand.className='msg-wand';    
-        wand.textContent='🪄';    
-        wand.title='Remove (admin only)';    
-        wand.addEventListener('click', async()=>{    
-          const pass=prompt('Enter admin password to remove this message:');    
-          if(pass===ADMIN_PASS){    
-            try{ await remove(ref(db,'messages/'+item.id)); }catch(err){ alert('Delete failed'); }    
-          } else if(pass!==null){ alert('❌ Wrong password!'); }    
-        });    
-        d.appendChild(span); d.appendChild(wand);    
-        messagesListEl.appendChild(d);    
-      });    
-    }    
-    onValue(messagesRef, snap=>renderSnapshot(snap.exists()?snap.val():null));    
-
-    const sendBtn=document.getElementById('sendBtn');    
-    const newMsgEl=document.getElementById('newMsg');    
-    sendBtn.addEventListener('click', async()=>{    
-      const text=(newMsgEl.value||"").trim();    
-      if(!text){ alert('Please write something!'); return; }    
-      try{ await push(messagesRef,{ text, ts:Date.now() }); newMsgEl.value=""; }    
-      catch(err){ alert('Send failed'); }    
-    });    
-    newMsgEl.addEventListener('keydown', e=>{    
-      if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) sendBtn.click();    
-    });    
-
-    const bgm = document.getElementById("bgm");    
-    const vid = document.getElementById("statusVideo");    
-    let resumeTimeout=null;    
-
-    // 🎬 Video events handle bgm    
-    vid.addEventListener("play", ()=>{    
-      bgm.pause();    
-      if(resumeTimeout) clearTimeout(resumeTimeout);    
-    });    
-
-    vid.addEventListener("pause", ()=>{    
-      if(resumeTimeout) clearTimeout(resumeTimeout);    
-      resumeTimeout=setTimeout(()=>{    
-        bgm.play().catch(err=>console.warn("Resume bgm blocked:", err));    
-      },5000);    
-    });    
-
-    vid.addEventListener("ended", ()=>{    
-      window.closeOverlay();    
-    });    
-
-    // overlay functions    
-    window.openOverlay = function(){    
-      document.getElementById("videoOverlay").style.display="flex";    
-      vid.currentTime=0;    
-      vid.play();    
-      incrementPlayCount();    
-    }    
-
-    window.closeOverlay = function(){    
-      document.getElementById("videoOverlay").style.display="none";    
-      vid.pause();    
-    }    
-
-    /* 🎵 Background music autoplay fix for browser restrictions */    
-    function enableBgm(){    
-      bgm.play().catch(err=>console.warn("Autoplay blocked:", err));    
-      document.removeEventListener("click", enableBgm);    
-      document.removeEventListener("keydown", enableBgm);    
-    }    
-    document.addEventListener("click", enableBgm);    
-    document.addEventListener("keydown", enableBgm);    
-
-  </script>    
-body>    
-  html>
+    const sendBtn=document.getElementById('sendBtn');
+    const newMsgEl=document.getElementById('newMsg');
+    sendBtn.onclick = async ()=>{
+      const text=(newMsgEl.value||"").trim();
+      if(!text){ alert('Type something!'); return; }
+      try{ await push(messagesRef,{ text, ts:Date.now() }); newMsgEl.value=""; }
+      catch(err){ alert('Send failed'); }
+    };
+    newMsgEl.addEventListener('keydown', e=>{
+      if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) sendBtn.click();
+    });
+  </script>
+</body>
+  </html>
