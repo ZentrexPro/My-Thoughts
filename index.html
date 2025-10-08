@@ -19,7 +19,9 @@
       min-height:100vh;
       font-family:'Roboto', Arial, sans-serif;
       color:#eee;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,0.18), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat fixed;
+      background:
+        radial-gradient(ellipse at center, rgba(0,0,0,0.18), rgba(0,0,0,0.6)),
+        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
       -webkit-font-smoothing:antialiased;
       -moz-osx-font-smoothing:grayscale;
     }
@@ -81,7 +83,7 @@
     .story-ring.seen{border-color:#9b9b9b;opacity:.86;transform:scale(.98)}
     .story-ring img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#111}
     .label{margin-top:8px;color:#fff;font-size:.92rem;text-align:center;max-width:86px;word-break:break-word}
-    .add{font-size:1.9rem;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.45)}
+    .add{font-size:1.9rem;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
     /* overlay */
     .story-overlay{display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.86);align-items:center;justify-content:center;padding:20px}
     .story-overlay.active{display:flex;animation:fadein .2s ease}
@@ -103,7 +105,7 @@
     #messagesList{margin-top:12px;display:flex;flex-direction:column;gap:10px}
     .msg-item{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));padding:10px;border-radius:8px;color:#fff}
     .msg-left{display:flex;align-items:center;gap:12px}
-    .msg-avatar{width:42px;height:42px;background:linear-gradient(45deg,var(--accent),var(--accent-2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.45)}
+    .msg-avatar{width:42px;height:42px;background:linear-gradient(45deg,var(--accent),var(--accent-2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#111}
     .msg-text{max-width:520px;word-break:break-word}
     .msg-meta{display:flex;gap:8px;align-items:center}
     .msg-wand{cursor:pointer;color:var(--accent);font-size:1.2rem;padding:6px;border-radius:6px;border:none;background:transparent}
@@ -119,7 +121,7 @@
     .login-modal input[type="password"]{padding:8px 10px;border-radius:8px;border:none;background:#111;color:#fff}
     .error{color:#ff6b6b;min-height:20px}
     /* bgm */
-    .bgm-player{position:fixed;top:14px;right:22px;z-index:40;background:var(--glass-bg);border-radius:12px;padding:8px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+    .bgm-player{position:fixed;top:72px;right:22px;z-index:50;background:var(--glass-bg);border-radius:12px;padding:8px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.4)}
     .bgm-player button{background:none;border:none;color:var(--accent);font-size:1.4rem;cursor:pointer}
     .theme-toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:10px;color:#fff}
     @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -129,7 +131,7 @@
       .story-ring{width:54px;height:54px}
       .story-ring img{width:44px;height:44px}
       .message-panel{margin:12px auto 90px auto;padding:12px}
-      .bgm-player{top:8px;right:8px;padding:6px}
+      .bgm-player{top:64px;right:8px;padding:6px}
     }
 
     /* viewer name modal - small, unobtrusive */
@@ -143,8 +145,8 @@
 </head>
 <body>
   <!-- Background Music Player -->
-  <div class="bgm-player" id="bgmPlayer" aria-hidden="false">
-    <button id="bgmToggleBtn" title="Play/Pause Music" aria-label="Play or pause background music">&#127925;</button>
+  <div class="bgm-player" id="bgmPlayer" aria-hidden="false" role="region" aria-label="Background music controls">
+    <button id="bgmToggleBtn" title="Play/Pause Music" aria-label="Play or pause background music">🎵</button>
     <span id="bgmStatus">Play Music</span>
     <audio id="bgmAudio" src="https://cdn.pixabay.com/audio/2022/08/20/audio_12bfa0e4a1.mp3" loop preload="auto"></audio>
   </div>
@@ -248,7 +250,11 @@
     const themeToggle = document.getElementById('themeToggle');
 
     let bgmPlaying = false;
-    function updateBgmUI(){ bgmStatus.textContent = bgmPlaying ? 'Pause Music' : 'Play Music'; bgmBtn.style.color = bgmPlaying ? '#ff2e63' : '#ff7b18'; bgmBtn.innerHTML = bgmPlaying ? '&#9208;' : '&#127925;'; }
+    function updateBgmUI(){
+      bgmStatus.textContent = bgmPlaying ? 'Pause Music' : 'Play Music';
+      bgmBtn.style.color = bgmPlaying ? '#ff2e63' : '#ff7b18';
+      bgmBtn.textContent = bgmPlaying ? '⏸' : '🎵';
+    }
 
     bgmBtn.onclick = () => {
       if (bgmAudio.paused) { bgmAudio.play().catch(()=>{}); bgmPlaying = true; } else { bgmAudio.pause(); bgmPlaying = false; }
@@ -438,6 +444,8 @@
             } else {
               statusCount.textContent = "Stories: 0";
             }
+          }, err => {
+            console.warn('listenStories error', err);
           });
         }
         listenStories();
@@ -516,10 +524,11 @@
           let thumb = '';
           if(type.startsWith('image/')){
             thumb = await readImageThumb(file).catch(()=>'');
+
           } else {
             thumb = await generateVideoThumb(file).catch(()=>'');
             // fallback to generic video icon if no thumb
-            if(!thumb) thumb = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="#111"/><text x="50%" y="50%" fill="#fff" font-size="20" text-anchor="middle" dominant-baseline="middle">Video</text></svg>`);
+            if(!thumb) thumb = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="#111"/><text x="50%" y="50%" fill="#fff" font-size="24" text-anchor="middle" dy=".3em">VIDEO</text></svg>`);
           }
           // upload
           try{
@@ -535,7 +544,8 @@
               ts: Date.now(),
               views: 0,
               anonCount: 0,
-              caption: caption
+              caption: caption,
+              mime: file.type
             });
             alert('Story uploaded!');
             storyFileInput.value = '';
@@ -566,7 +576,6 @@
           viewerSkipBtn.onclick = async ()=> {
             viewerNameModal.classList.remove('active');
             viewerNameModal.setAttribute('aria-hidden','true');
-            // pass null to indicate anonymous -> server will produce Viewer.N
             openStoryView(storyId, null);
           };
         }
@@ -621,7 +630,7 @@
             overlay.setAttribute('aria-hidden','false');
 
             // show media (image/video)
-            if((story.url||'').match(/\.(mp4|webm|ogg)(\?|$)/i) || story.url && (story.mime && story.mime.startsWith('video/'))){
+            if((story.url||'').match(/\.(mp4|webm|ogg)(\?|$)/i) || (story.mime && story.mime.startsWith('video/'))){
               const v = document.createElement('video');
               v.src = story.url;
               v.controls = true;
@@ -749,7 +758,7 @@
               const local = JSON.parse(localStorage.getItem('localMessages') || '[]');
               renderMessages(local);
             }
-          });
+          }, err => { console.warn('listenMessages error', err); });
         }
         listenMessages();
 
@@ -821,4 +830,4 @@
 
   </script>
 </body>
-</html>
+      </html>
