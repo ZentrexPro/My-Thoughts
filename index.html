@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Insta Thoughts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --accent: #ff7b18;
+      --accent-2: #ff2e63;
+      --glass-bg: rgba(22,22,22,0.78);
+      --muted: #cfcfcf;
+      --success: #2ecc71;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;padding:0}
+    body{
+      min-height:100vh;
+      font-family:'Roboto', Arial, sans-serif;
+      color:#eee;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.18), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat fixed;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    body::before{
+      content:'';
+      position:fixed;inset:0;z-index:0;
+      background:linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.55) 100%);
+      pointer-events:none;
+    }
+
+    .topbar{
+      position:sticky;top:0;z-index:30;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 18px;
+      background:linear-gradient(90deg, rgba(0,0,0,0.22), rgba(0,0,0,0.08));
+      border-bottom: 1px solid rgba(255,123,24,0.14);
+      backdrop-filter: blur(6px);
+    }
+    .brand{
+      display:flex;align-items:center;gap:12px;
+    }
+    .brand h1{
+      margin:0;
+      font-family:'Great Vibes',cursive;
+      font-size:2.1rem;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.6);
+      letter-spacing:1px;
+    }
+    .brand .subtitle{
+      font-family:'Audiowide',cursive;color:var(--muted);font-size:0.9rem;margin-left:6px;
+    }
+    .controls{display:flex;align-items:center;gap:10px}
+    .btn{
+      font-family:'Audiowide',cursive;
+      border:none;padding:8px 14px;border-radius:12px;
+      cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      box-shadow:0 6px 18px rgba(0,0,0,0.35);
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:hover{transform:translateY(-2px)}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 10px;border-radius:10px}
+    /* story bar */
+    .story-bar-container{position:relative;z-index:10;padding:14px 10px 6px 10px}
+    .story-bar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding-left:3px}
+    .status-count{font-family:'Audiowide',cursive;color:#fff;opacity:0.95}
+    .story-bar{
+      display:flex;gap:16px;overflow-x:auto;padding:8px 4px 12px 4px;
+      scrollbar-width:thin;scrollbar-color: #ff7b18 transparent;
+      -webkit-overflow-scrolling:touch;
+    }
+    .story-avatar{display:flex;flex-direction:column;align-items:center;width:78px}
+    .story-ring{
+      width:68px;height:68px;border-radius:50%;
+      padding:4px;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(135deg, rgba(255,123,24,0.12), rgba(255,46,99,0.06));
+      box-shadow:0 6px 18px rgba(0,0,0,0.45);
+      border:3px solid var(--accent);transition:transform .15s, border-color .15s, opacity .15s;
+      cursor:pointer;overflow:hidden;
+    }
+    .story-ring.seen{border-color:#9b9b9b;opacity:.86;transform:scale(.98)}
+    .story-ring img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#111}
+    .label{margin-top:8px;color:#fff;font-size:.92rem;text-align:center;max-width:86px;word-break:break-word}
+    .add{font-size:1.9rem;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.45)}
+    /* overlay */
+    .story-overlay{display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.86);align-items:center;justify-content:center;padding:20px}
+    .story-overlay.active{display:flex;animation:fadein .2s ease}
+    .story-media{position:relative;background:var(--glass-bg);border-radius:16px;padding:18px;max-width:920px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .story-media .close-btn{position:absolute;top:10px;right:10px;background:var(--accent-2);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer}
+    .story-media img,.story-media video{display:block;max-width:100%;height:auto;border-radius:12px;margin:12px auto}
+    .story-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+    .story-info{display:flex;align-items:center;gap:12px}
+    .story-info .mini{width:48px;height:48px;border-radius:50%;overflow:hidden}
+    .play-count{background:rgba(0,0,0,.55);color:#fff;padding:6px 10px;border-radius:999px;font-family:'Audiowide',cursive}
+    .story-actions{display:flex;gap:8px;align-items:center}
+    .muted{opacity:.82;color:#cfcfcf}
+    /* messages */
+    .message-panel{background:var(--glass-bg);margin:22px auto 88px auto;max-width:640px;border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,.55);z-index:10;position:relative}
+    .message-panel h3{font-family:'Audiowide',cursive;margin:0 0 12px 0;color:var(--accent)}
+    .compose{display:flex;gap:10px;align-items:flex-start}
+    #newMsg{flex:1;border-radius:10px;border:none;padding:10px 12px;font-size:1rem;background:#0e0e0e;color:#fff;min-height:52px;max-height:140px;resize:vertical}
+    #sendBtn{min-width:110px;padding:10px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:700;cursor:pointer}
+    #messagesList{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+    .msg-item{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));padding:10px;border-radius:8px;color:#fff}
+    .msg-left{display:flex;align-items:center;gap:12px}
+    .msg-avatar{width:42px;height:42px;background:linear-gradient(45deg,var(--accent),var(--accent-2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.45)}
+    .msg-text{max-width:520px;word-break:break-word}
+    .msg-meta{display:flex;gap:8px;align-items:center}
+    .msg-wand{cursor:pointer;color:var(--accent);font-size:1.2rem;padding:6px;border-radius:6px;border:none;background:transparent}
+    .msg-delete{cursor:pointer;color:#ff6b6b;background:rgba(255,255,255,0.03);border:none;padding:6px 10px;border-radius:8px}
+    /* bottom nav */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:var(--glass-bg);display:flex;justify-content:space-evenly;padding:8px 6px;border-top:1px solid rgba(255,123,24,0.12)}
+    .bottom-nav button{background:none;border:none;color:#fff;font-size:1.35rem;opacity:.9;cursor:pointer}
+    .bottom-nav button.active{color:var(--accent)}
+    /* login modal */
+    .login-modal{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:flex;align-items:center;justify-content:center;z-index:2000}
+    .modal-box{background:#1d1d1d;padding:26px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);min-width:260px;display:flex;flex-direction:column;align-items:center;gap:10px}
+    .modal-box h2{margin:0;color:var(--accent);font-family:'Audiowide',cursive}
+    .login-modal input[type="password"]{padding:8px 10px;border-radius:8px;border:none;background:#111;color:#fff}
+    .error{color:#ff6b6b;min-height:20px}
+    /* bgm */
+    .bgm-player{position:fixed;top:14px;right:22px;z-index:40;background:var(--glass-bg);border-radius:12px;padding:8px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+    .bgm-player button{background:none;border:none;color:var(--accent);font-size:1.4rem;cursor:pointer}
+    .theme-toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:10px;color:#fff}
+    @keyframes fadein{from{opacity:0}to{opacity:1}}
+    @media (max-width:600px){
+      .brand h1{font-size:1.25rem}
+      .story-avatar{width:56px}
+      .story-ring{width:54px;height:54px}
+      .story-ring img{width:44px;height:44px}
+      .message-panel{margin:12px auto 90px auto;padding:12px}
+      .bgm-player{top:8px;right:8px;padding:6px}
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Music Player -->
+  <div class="bgm-player" id="bgmPlayer" aria-hidden="false">
+    <button id="bgmToggleBtn" title="Play/Pause Music" aria-label="Play or pause background music">&#127925;</button>
+    <span id="bgmStatus">Play Music</span>
+    <audio id="bgmAudio" src="https://cdn.pixabay.com/audio/2022/08/20/audio_12bfa0e4a1.mp3" loop preload="auto"></audio>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="login-modal" id="loginModal" aria-modal="true" role="dialog">
+    <div class="modal-box" id="modalBox">
+      <h2>Welcome</h2>
+      <div style="display:flex;gap:10px;flex-direction:column;width:100%;align-items:center">
+        <button class="btn" id="userLoginBtn">Continue as User</button>
+        <button class="btn ghost" id="adminLoginBtn">Login as Admin</button>
+        <div id="adminPassBox" style="display:none;width:100%;align-items:center;justify-content:center;">
+          <input type="password" id="adminPassInput" placeholder="Enter Admin Password" />
+          <button class="btn" id="adminPassSubmit">Submit</button>
+          <div class="error" id="adminPassError"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topbar" role="banner">
+    <div class="brand">
+      <h1>Insta Thoughts</h1>
+      <div class="subtitle">Anonymous stories & messages</div>
+    </div>
+    <div class="controls">
+      <button id="addStoryBtn" class="btn" style="display:none;">+ Add Story</button>
+      <input type="file" id="storyFile" accept="image/*,video/*" style="display:none"/>
+      <button id="themeToggle" class="theme-toggle" title="Toggle theme">Toggle</button>
+    </div>
+  </div>
+
+  <!-- Story bar container with count and names -->
+  <div class="story-bar-container">
+    <div class="story-bar-header">
+      <span class="status-count" id="statusCount">Stories: 0</span>
+      <div class="muted" id="lastUpdated">—</div>
+    </div>
+    <div class="story-bar" id="storyBar" aria-live="polite">
+      <!-- Story Avatars dynamically here -->
+    </div>
+  </div>
+
+  <!-- Story Overlay -->
+  <div class="story-overlay" id="storyOverlay" role="dialog" aria-hidden="true">
+    <div class="story-media" id="storyMedia" role="document">
+      <button class="close-btn" id="overlayCloseBtn" aria-label="Close story view">&#10005;</button>
+      <div class="story-top">
+        <div class="story-info">
+          <div class="mini" id="overlayMini"></div>
+          <div>
+            <div id="overlayName" style="font-weight:700"></div>
+            <div id="overlayTime" class="muted" style="font-size:.9rem"></div>
+          </div>
+        </div>
+        <div class="story-actions">
+          <div class="play-count" id="overlayPlayCount">👁️ 0</div>
+          <button id="deleteStoryBtn" class="msg-delete" style="display:none">Delete</button>
+        </div>
+      </div>
+      <div id="overlayMediaContainer" style="display:flex;align-items:center;justify-content:center"></div>
+      <div id="overlayCaption" style="margin-top:10px;color:#ddd"></div>
+    </div>
+  </div>
+
+  <div class="message-panel" role="region" aria-labelledby="messagesHeading">
+    <h3 id="messagesHeading">Send me an anonymous message</h3>
+    <div class="compose">
+      <textarea id="newMsg" placeholder="Write your message..." aria-label="Message"></textarea>
+      <button id="sendBtn" type="button">Send</button>
+    </div>
+    <div id="messagesList" aria-live="polite"></div>
+  </div>
+
+  <nav class="bottom-nav" role="navigation" aria-label="Primary">
+    <button class="active" title="Home">&#8962;</button>
+    <button title="Search">&#128269;</button>
+    <button title="Stories">&#128247;</button>
+    <button title="Messages">&#9993;</button>
+    <button title="Profile">&#128100;</button>
+  </nav>
+
+  <script type="module">
+    // ----- Basic UI interactions -----
+    const bgmAudio = document.getElementById('bgmAudio');
+    const bgmBtn = document.getElementById('bgmToggleBtn');
+    const bgmStatus = document.getElementById('bgmStatus');
+    const themeToggle = document.getElementById('themeToggle');
+
+    let bgmPlaying = false;
+    function updateBgmUI(){ bgmStatus.textContent = bgmPlaying ? 'Pause Music' : 'Play Music'; bgmBtn.style.color = bgmPlaying ? '#ff2e63' : '#ff7b18'; bgmBtn.innerHTML = bgmPlaying ? '&#9208;' : '&#127925;'; }
+
+    bgmBtn.onclick = () => {
+      if (bgmAudio.paused) { bgmAudio.play().catch(()=>{}); bgmPlaying = true; } else { bgmAudio.pause(); bgmPlaying = false; }
+      updateBgmUI();
+    };
+    bgmAudio.onplay = () => { bgmPlaying = true; updateBgmUI(); };
+    bgmAudio.onpause = () => { bgmPlaying = false; updateBgmUI(); };
+
+    // Theme toggle: small demo (invert colors a bit)
+    let dark = true;
+    function toggleTheme(){
+      dark = !dark;
+      if(!dark){
+        document.documentElement.style.setProperty('--glass-bg','rgba(250,250,250,0.88)');
+        document.documentElement.style.setProperty('--accent','#2b7cff');
+        document.documentElement.style.setProperty('--accent-2','#00c9a7');
+        document.body.style.color = '#111';
+        themeToggle.textContent = 'Light';
+      } else {
+        document.documentElement.style.setProperty('--glass-bg','rgba(22,22,22,0.78)');
+        document.documentElement.style.setProperty('--accent','#ff7b18');
+        document.documentElement.style.setProperty('--accent-2','#ff2e63');
+        document.body.style.color = '#eee';
+        themeToggle.textContent = 'Dark';
+      }
+    }
+    themeToggle.onclick = toggleTheme;
+
+    // ----- Login logic -----
+    let isAdmin = false;
+    let isLoggedIn = false;
+    let appInited = false;
+
+    const loginModal = document.getElementById('loginModal');
+    const userLoginBtn = document.getElementById('userLoginBtn');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminPassBox = document.getElementById('adminPassBox');
+    const adminPassInput = document.getElementById('adminPassInput');
+    const adminPassSubmit = document.getElementById('adminPassSubmit');
+    const adminPassError = document.getElementById('adminPassError');
+    const addStoryBtn = document.getElementById('addStoryBtn');
+    const storyFileInput = document.getElementById('storyFile');
+
+    userLoginBtn.onclick = ()=>{
+      isAdmin = false; isLoggedIn = true;
+      loginModal.style.display = 'none';
+      updateUIForRole();
+    };
+    adminLoginBtn.onclick = ()=>{
+      adminPassBox.style.display = 'flex';
+      adminPassInput.focus();
+    };
+    adminPassSubmit.onclick = ()=>{
+      // simple password gating. change as needed.
+      if(adminPassInput.value === "0420"){
+        isAdmin = true; isLoggedIn = true;
+        loginModal.style.display = 'none';
+        adminPassError.textContent = '';
+        updateUIForRole();
+      } else {
+        adminPassError.textContent = "Wrong password!";
+        adminPassInput.value = "";
+        adminPassInput.focus();
+      }
+    };
+    adminPassInput.addEventListener('keydown', e=>{ if(e.key === "Enter") adminPassSubmit.click(); });
+
+    function updateUIForRole(){
+      addStoryBtn.style.display = isAdmin ? 'inline-block' : 'none';
+      storyFileInput.disabled = !isAdmin;
+      // initialize firebase & listeners once logged in (prevent duplicate init)
+      if(isLoggedIn && !appInited){
+        afterLoginInit();
+        appInited = true;
+      }
+    }
+
+    // Global helper: format time ago
+    function timeAgo(ts){
+      const diff = Date.now() - ts;
+      if(diff < 60000) return Math.floor(diff/1000)+'s ago';
+      if(diff < 3600000) return Math.floor(diff/60000)+'m ago';
+      if(diff < 86400000) return Math.floor(diff/3600000)+'h ago';
+      return Math.floor(diff/86400000)+'d ago';
+    }
+
+    // ----- Firebase + App logic (run after login) -----
+    async function afterLoginInit(){
+      // dynamic import firebase modules
+      try{
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
+        const dbmod = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js");
+        const storagemod = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js");
+
+        const { getDatabase, ref, push, onValue, remove, runTransaction, set, get } = dbmod;
+        const { getStorage, ref: sRef, uploadBytes, getDownloadURL, deleteObject } = storagemod;
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyAkeirE4twM3J02JbDBnbdUw2G9yw8VVlw",
+          authDomain: "love-messages-cdee7.firebaseapp.com",
+          databaseURL: "https://love-messages-cdee7-default-rtdb.firebaseio.com",
+          projectId: "love-messages-cdee7",
+          storageBucket: "love-messages-cdee7.appspot.com",
+          messagingSenderId: "670131200783",
+          appId: "1:670131200783:web:ea75b017acab258911547a",
+          measurementId: "G-WT5TKSRSLG"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+
+        // Elements
+        const storyBar = document.getElementById('storyBar');
+        const statusCount = document.getElementById('statusCount');
+        const lastUpdatedEl = document.getElementById('lastUpdated');
+        const overlay = document.getElementById('storyOverlay');
+        const overlayCloseBtn = document.getElementById('overlayCloseBtn');
+        const overlayMediaContainer = document.getElementById('overlayMediaContainer');
+        const overlayPlayCount = document.getElementById('overlayPlayCount');
+        const overlayName = document.getElementById('overlayName');
+        const overlayMini = document.getElementById('overlayMini');
+        const overlayTime = document.getElementById('overlayTime');
+        const deleteStoryBtn = document.getElementById('deleteStoryBtn');
+        const overlayCaption = document.getElementById('overlayCaption');
+
+        const newMsgEl = document.getElementById('newMsg');
+        const sendBtn = document.getElementById('sendBtn');
+        const messagesList = document.getElementById('messagesList');
+
+        let storiesCache = [];
+        let seenStories = JSON.parse(localStorage.getItem('seenStories')||'{}');
+
+        // Render stories
+        function renderStories(storyArr){
+          storyBar.innerHTML = '';
+          // admin own story "Add" circle
+          if(isAdmin){
+            const myStory = document.createElement('div');
+            myStory.className = 'story-avatar';
+            myStory.innerHTML = `<div class="story-ring"><button class="add" id="addStoryCircle">+</button></div><span class="label">Your Story</span>`;
+            storyBar.appendChild(myStory);
+            setTimeout(()=>{ const btn = document.getElementById('addStoryCircle'); if(btn) btn.onclick = ()=>storyFileInput.click(); }, 80);
+          }
+          statusCount.textContent = `Stories: ${storyArr.length}`;
+          lastUpdatedEl.textContent = `Updated ${timeAgo(Date.now())}`;
+          storyArr.forEach(story=>{
+            const div = document.createElement('div');
+            div.className = 'story-avatar';
+            const seenClass = seenStories[story.id] ? ' seen' : '';
+            const thumb = story.thumb || story.url || '';
+            div.innerHTML = `
+              <div class="story-ring${seenClass}" data-storyid="${story.id}">
+                <img src="${thumb}" alt="story" loading="lazy"/>
+              </div>
+              <span class="label">${escapeHtml(story.name||'User')}</span>
+            `;
+            const ring = div.querySelector('.story-ring');
+            ring.onclick = ()=> openStoryView(story.id);
+            storyBar.appendChild(div);
+          });
+        }
+
+        // listen to stories (only keep last 24h)
+        function listenStories(){
+          const storiesRef = ref(db,'stories');
+          onValue(storiesRef, snap=>{
+            let arr = [];
+            if(snap.exists()){
+              arr = Object.entries(snap.val())
+                .map(([id,val])=>({...val,id}))
+                .filter(s=>Date.now() - (s.ts||0) < 24*60*60*1000);
+              storiesCache = arr.sort((a,b)=>b.ts - a.ts);
+              renderStories(storiesCache);
+            } else {
+              statusCount.textContent = "Stories: 0";
+            }
+          });
+        }
+        listenStories();
+
+        // Clean expired stories (1h interval)
+        async function cleanOldStories(){
+          const storiesRef = ref(db,'stories');
+          const snap = await get(storiesRef);
+          if(snap.exists()){
+            for(let [id,val] of Object.entries(snap.val())){
+              if(Date.now() - val.ts > 24*60*60*1000){
+                await remove(ref(db,'stories/'+id)).catch(()=>{});
+                if(val.storagePath){
+                  try{ await deleteObject(sRef(storage, val.storagePath)); }catch(e){}
+                }
+              }
+            }
+          }
+        }
+        setInterval(cleanOldStories, 60*60*1000);
+
+        // Upload helpers
+        function readImageThumb(file){
+          return new Promise((res,rej)=>{
+            const fr = new FileReader();
+            fr.onload = ()=>res(fr.result);
+            fr.onerror = rej;
+            fr.readAsDataURL(file);
+          });
+        }
+        function generateVideoThumb(file){
+          // capture first frame into canvas
+          return new Promise((res,rej)=>{
+            const url = URL.createObjectURL(file);
+            const v = document.createElement('video');
+            v.preload = 'metadata';
+            v.src = url;
+            v.muted = true;
+            v.playsInline = true;
+            v.currentTime = 0.5;
+            v.onloadeddata = ()=>{
+              try{
+                const canvas = document.createElement('canvas');
+                canvas.width = v.videoWidth || 320;
+                canvas.height = v.videoHeight || 180;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(v,0,0,canvas.width,canvas.height);
+                const data = canvas.toDataURL('image/jpeg',0.7);
+                URL.revokeObjectURL(url);
+                res(data);
+              }catch(e){
+                URL.revokeObjectURL(url);
+                res('');
+              }
+            };
+            v.onerror = ()=>{ URL.revokeObjectURL(url); res(''); };
+          });
+        }
+
+        // Add story (admin)
+        storyFileInput.onchange = async function(e){
+          if(!isAdmin) return;
+          const file = e.target.files[0];
+          if(!file) return;
+          const type = file.type || '';
+          if(!(type.startsWith('image/') || type.startsWith('video/'))){
+            alert('Only image/video allowed');
+            return;
+          }
+          const name = prompt("Name for the story (optional):") || "Anonymous";
+          const caption = prompt("Caption (optional):") || "";
+          const id = Math.random().toString(36).slice(2);
+          const storagePath = `stories/${id}-${Date.now()}-${file.name.replace(/\s+/g,'_')}`;
+          const uploadRef = sRef(storage, storagePath);
+          // create a thumbnail
+          let thumb = '';
+          if(type.startsWith('image/')){
+            thumb = await readImageThumb(file).catch(()=>'');
+          } else {
+            thumb = await generateVideoThumb(file).catch(()=>'');
+            // fallback to generic video icon if no thumb
+            if(!thumb) thumb = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="#111"/><text x="50%" y="50%" fill="#fff" font-size="20" text-anchor="middle" dominant-baseline="middle">Video</text></svg>`);
+          }
+          // upload
+          try{
+            await uploadBytes(uploadRef, file);
+            const url = await getDownloadURL(uploadRef);
+            // push to db
+            const storiesRef = ref(db,'stories/' + id);
+            await set(storiesRef, {
+              name: name,
+              url: url,
+              thumb: thumb,
+              storagePath: storagePath,
+              ts: Date.now(),
+              views: 0,
+              caption: caption
+            });
+            alert('Story uploaded!');
+            storyFileInput.value = '';
+          }catch(err){
+            console.error(err);
+            alert('Upload failed');
+          }
+        };
+
+        // Open story view + increment views with transaction
+        async function openStoryView(storyId){
+          const story = storiesCache.find(s=>s.id === storyId);
+          if(!story) return;
+          overlay.classList.add('active');
+          overlay.setAttribute('aria-hidden','false');
+          overlayMediaContainer.innerHTML = '';
+          overlayName.textContent = story.name || 'User';
+          overlayTime.textContent = timeAgo(story.ts || Date.now());
+          overlayMini.innerHTML = `<img src="${story.thumb||story.url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
+          overlayCaption.textContent = story.caption || '';
+          overlayPlayCount.textContent = `👁️ ${story.views||0}`;
+          deleteStoryBtn.style.display = isAdmin ? 'inline-block' : 'none';
+
+          // mark seen locally
+          seenStories[story.id] = true;
+          localStorage.setItem('seenStories', JSON.stringify(seenStories));
+          // update ring instantly
+          const ring = document.querySelector(`.story-ring[data-storyid="${story.id}"]`);
+          if(ring) ring.classList.add('seen');
+
+          // increment views in db (transaction)
+          const storyRef = ref(db, 'stories/' + story.id + '/views');
+          try{
+            await runTransaction(storyRef, cur => (cur || 0) + 1);
+            // get the latest value (we'll set overlayPlayCount after reading snapshot)
+            const snap = await get(ref(db, 'stories/' + story.id));
+            if(snap.exists()){
+              overlayPlayCount.textContent = `👁️ ${snap.val().views||0}`;
+            }
+          }catch(e){
+            console.warn('view increment failed', e);
+          }
+
+          // show media (image/video)
+          if((story.url||'').match(/\.(mp4|webm|ogg)(\?|$)/i) || story.url && (story.mime && story.mime.startsWith('video/'))){
+            const v = document.createElement('video');
+            v.src = story.url;
+            v.controls = true;
+            v.autoplay = true;
+            v.playsInline = true;
+            v.style.maxHeight = '72vh';
+            overlayMediaContainer.appendChild(v);
+          } else {
+            const img = document.createElement('img');
+            img.src = story.url || story.thumb;
+            img.alt = 'story';
+            overlayMediaContainer.appendChild(img);
+          }
+
+          // wire delete
+          deleteStoryBtn.onclick = async ()=>{
+            if(!confirm('Delete this story permanently?')) return;
+            try{
+              // remove storage if present
+              if(story.storagePath){
+                try{ await deleteObject(sRef(storage, story.storagePath)); } catch(e){}
+              }
+              await remove(ref(db,'stories/'+story.id));
+              overlay.classList.remove('active');
+              overlay.setAttribute('aria-hidden','true');
+            }catch(err){ console.error(err); alert('Delete failed') }
+          }
+        }
+
+        // close overlay
+        overlayCloseBtn.onclick = ()=>{
+          overlay.classList.remove('active');
+          overlay.setAttribute('aria-hidden','true');
+          overlayMediaContainer.innerHTML = '';
+        };
+        overlay.onclick = (e)=>{
+          if(e.target === overlay) overlayCloseBtn.click();
+        };
+
+        // ----- Messages -----
+        // send message (anonymous)
+        sendBtn.onclick = async ()=>{
+          const text = (newMsgEl.value || '').trim();
+          if(!text) return;
+          sendBtn.disabled = true;
+          const msgId = Math.random().toString(36).slice(2);
+          const payload = {
+            text: text,
+            ts: Date.now(),
+            id: msgId
+          };
+          try{
+            await set(ref(db, 'messages/' + msgId), payload);
+            newMsgEl.value = '';
+          }catch(err){
+            // fallback to localStorage messages
+            const local = JSON.parse(localStorage.getItem('localMessages') || '[]');
+            local.unshift(payload);
+            localStorage.setItem('localMessages', JSON.stringify(local));
+          } finally { sendBtn.disabled = false; }
+        };
+
+        // render messages
+        function renderMessages(arr){
+          messagesList.innerHTML = '';
+          if(!arr || arr.length === 0){
+            messagesList.innerHTML = `<div class="muted">No messages yet. Be the first to send one!</div>`;
+            return;
+          }
+          arr.sort((a,b)=>b.ts - a.ts);
+          arr.forEach(m=>{
+            const d = document.createElement('div');
+            d.className = 'msg-item';
+            d.innerHTML = `
+              <div class="msg-left">
+                <div class="msg-avatar">${(m.text||'').slice(0,1).toUpperCase()}</div>
+                <div class="msg-text">${escapeHtml(m.text)}</div>
+              </div>
+              <div class="msg-meta">
+                <div class="muted" style="font-size:.85rem">${timeAgo(m.ts)}</div>
+                <button class="msg-wand" title="Copy message">✂</button>
+                <button class="msg-delete" title="Delete message" style="display:${isAdmin ? 'inline-block':'none'}">Delete</button>
+              </div>
+            `;
+            // copy on wand click
+            d.querySelector('.msg-wand').onclick = ()=>{
+              navigator.clipboard?.writeText(m.text).then(()=>{ alert('Message copied') }).catch(()=>{ prompt('Copy this message', m.text) });
+            };
+            // delete (admin only)
+            const delBtn = d.querySelector('.msg-delete');
+            delBtn.onclick = async ()=>{
+              if(!confirm('Delete this message?')) return;
+              try{
+                await remove(ref(db, 'messages/' + m.id));
+              }catch(e){
+                // fallback local removal
+                const local = JSON.parse(localStorage.getItem('localMessages') || '[]').filter(mm=>mm.id !== m.id);
+                localStorage.setItem('localMessages', JSON.stringify(local));
+                loadLocalMessages();
+              }
+            };
+            messagesList.appendChild(d);
+          });
+        }
+
+        // listen messages from db + fallback to localStorage
+        function listenMessages(){
+          const msgsRef = ref(db,'messages');
+          onValue(msgsRef, snap=>{
+            let arr = [];
+            if(snap.exists()){
+              arr = Object.entries(snap.val()).map(([id,val])=>({...val,id}));
+              renderMessages(arr);
+            } else {
+              // load fallback local
+              const local = JSON.parse(localStorage.getItem('localMessages') || '[]');
+              renderMessages(local);
+            }
+          });
+        }
+        listenMessages();
+
+        // Local only messages load
+        function loadLocalMessages(){
+          const local = JSON.parse(localStorage.getItem('localMessages') || '[]');
+          renderMessages(local);
+        }
+
+        // helper: escape HTML
+        function escapeHtml(s){
+          return (s+'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
+        }
+
+        // initialize seenStories highlight on load
+        setTimeout(()=>{ document.querySelectorAll('.story-ring').forEach(r=>{ const sid = r.getAttribute('data-storyid'); if(sid && seenStories[sid]) r.classList.add('seen'); }); }, 300);
+
+        // optional: open first story on double click of header
+        document.querySelector('.brand h1').ondblclick = ()=>{ if(storiesCache[0]) openStoryView(storiesCache[0].id); };
+
+      }catch(err){
+        console.error('Firebase init failed, running limited offline mode', err);
+        // offline fallback: use local storage for messages/stories with simple renderers
+        offlineInit();
+      }
+    }
+
+    // Fallback limited offline mode (no firebase)
+    function offlineInit(){
+      // very simple: show saved localStories and localMessages
+      const storyBar = document.getElementById('storyBar');
+      const statusCount = document.getElementById('statusCount');
+      const localStories = JSON.parse(localStorage.getItem('localStories')||'[]');
+      statusCount.textContent = `Stories: ${localStories.length}`;
+      storyBar.innerHTML = '';
+      localStories.forEach(s=>{
+        const div = document.createElement('div');
+        div.className = 'story-avatar';
+        div.innerHTML = `<div class="story-ring"><img src="${s.thumb||s.url}" loading="lazy"/></div><span class="label">${s.name||'User'}</span>`;
+        storyBar.appendChild(div);
+      });
+      // messages
+      const messagesList = document.getElementById('messagesList');
+      const msgs = JSON.parse(localStorage.getItem('localMessages')||'[]');
+      if(msgs.length===0) messagesList.innerHTML = `<div class="muted">Offline mode: no messages</div>`;
+      else {
+        msgs.forEach(m=>{
+          const d = document.createElement('div');
+          d.className = 'msg-item';
+          d.innerHTML = `<div>${escapeHtml(m.text)}</div>`;
+          messagesList.appendChild(d);
+        });
+      }
+    }
+
+    // small utility used by fallback as well
+    function escapeHtml(s){
+      return (s+'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });
+    }
+
+    // start by showing login modal
+    (function init(){
+      loginModal.style.display = 'flex';
+      // quick UX: set theme label
+      themeToggle.textContent = 'Dark';
+    })();
+
+  </script>
+</body>
+</html>
