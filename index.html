@@ -6,16 +6,322 @@
   <title>Insta Thoughts</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* ... keep all your CSS here, unchanged ... */
+    :root {
+      --accent: #ff7b18;
+      --gradient: linear-gradient(90deg,#ff7b18,#ff2e63);
+      --glass-bg: rgba(28,28,28,0.78);
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat fixed;
+      position: relative;
+      font-family: 'Roboto', Arial, sans-serif;
+      color: #eeeeee;
+      margin: 0;
+    }
+    body::before {
+      /* Overlay for readability */
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(20,20,20,0.65);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      padding: 16px 22px 10px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #ff7b1860;
+    }
+    .topbar h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.5em;
+      margin: 0;
+      color: #fff;
+      letter-spacing: 2px;
+      text-shadow: 1px 2px 8px #0006;
+      flex: 1;
+    }
+    .add-story-btn {
+      font-family: 'Audiowide', cursive;
+      font-size: 1.15em;
+      padding: 9px 18px;
+      background: var(--gradient);
+      border: none;
+      border-radius: 13px;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: 24px;
+      box-shadow: 0 2px 9px #0005;
+      transition: background .2s;
+    }
+    .story-bar-container {
+      position: relative;
+      z-index: 2;
+      margin-top: 14px;
+      padding: 0 10px;
+    }
+    .story-bar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      padding-left: 3px;
+    }
+    .story-bar-header .status-count {
+      font-family: 'Audiowide', cursive;
+      color: #fff;
+      font-size: 1.03em;
+      letter-spacing: 1px;
+      opacity: 0.98;
+    }
+    .story-bar {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 8px 2px 14px 2px;
+      scrollbar-width: thin;
+      scrollbar-color: #ff7b18 #222;
+    }
+    .story-avatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 72px;
+      margin-right: 2px;
+      font-family: 'Roboto', Arial, sans-serif;
+    }
+    .story-ring {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      border: 3px solid #ff7b18;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.18);
+      box-shadow: 0 1px 8px #0006;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .18s;
+    }
+    .story-ring.seen {
+      border: 3px solid #999;
+      opacity: 0.8;
+    }
+    .story-ring img {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 50%;
+      background: #0e0e0e;
+    }
+    .add {
+      font-size: 2.2em;
+      background: var(--gradient);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 56px; height: 56px;
+      cursor: pointer;
+      box-shadow: 0 1px 5px #0007;
+    }
+    .label {
+      margin-top: 6px;
+      color: #fff;
+      font-size: 0.98em;
+      text-align: center;
+      text-shadow: 1px 1px 7px #0005;
+      word-break: break-word;
+      max-width: 80px;
+    }
+    .story-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      background: rgba(0,0,0,0.86);
+      align-items: center;
+      justify-content: center;
+      animation: fadein 0.24s;
+    }
+    .story-overlay.active {
+      display: flex;
+    }
+    .story-media {
+      position: relative;
+      background: var(--glass-bg);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px #000a;
+      min-width: 280px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 30px 20px 30px;
+    }
+    .story-media img,
+    .story-media video {
+      max-width: 360px; max-height: 380px;
+      margin: 0 auto;
+      border-radius: 13px;
+      box-shadow: 0 3px 15px #0007;
+      margin-bottom: 18px;
+    }
+    .story-media .close-btn {
+      position: absolute;
+      top: 12px; right: 14px;
+      background: #ff2e63e3;
+      color: #fff;
+      font-size: 1.5em;
+      border: none;
+      border-radius: 50%;
+      width: 38px; height: 38px;
+      cursor: pointer;
+      box-shadow: 0 2px 10px #0007;
+      z-index: 2;
+    }
+    .story-media .play-count {
+      position: absolute;
+      top: 16px; left: 16px;
+      background: rgba(0,0,0,0.55);
+      color: #fff;
+      font-size: 1.12em;
+      border-radius: 10px;
+      padding: 4px 13px;
+      font-family: 'Audiowide', cursive;
+      letter-spacing: 1px;
+      z-index: 1;
+      box-shadow: 0 1px 8px #0005;
+    }
+    .message-panel {
+      background: var(--glass-bg);
+      margin: 30px auto 32px auto;
+      max-width: 420px;
+      border-radius: 17px;
+      box-shadow: 0 2px 15px #0008;
+      padding: 19px 24px 20px 24px;
+      z-index: 2;
+      position: relative;
+    }
+    .message-panel h3 {
+      font-family: 'Audiowide', cursive;
+      font-size: 1.4em;
+      color: #ff7b18;
+      margin: 0 0 14px 0;
+      letter-spacing: 1px;
+    }
+    .compose {
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    #newMsg {
+      flex: 1;
+      border-radius: 8px;
+      border: none;
+      padding: 10px 11px;
+      font-size: 1.08em;
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #131313;
+      color: #eee;
+      resize: none;
+      height: 44px;
+      transition: box-shadow .15s;
+      box-shadow: 0 2px 8px #0003;
+    }
+    #sendBtn {
+      font-family: 'Audiowide', cursive;
+      font-size: 1.1em;
+      border-radius: 7px;
+      background: var(--gradient);
+      color: #fff;
+      border: none;
+      padding: 11px 21px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 7px #0003;
+      transition: background .18s;
+    }
+    #messagesList {
+      margin-top: 7px;
+    }
+    .msg-item {
+      background: rgba(32,32,32,0.72);
+      padding: 8px 13px 6px 13px;
+      border-radius: 5px;
+      margin-bottom: 7px;
+      color: #ffe;
+      font-size: 1.04em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      word-break: break-word;
+      box-shadow: 0 2px 7px #0004;
+    }
+    .msg-item .msg-wand {
+      margin-left: 13px;
+      font-size: 1.13em;
+      cursor: pointer;
+      color: #ff7b18;
+      opacity: 0.84;
+      transition: color .15s;
+    }
+    .msg-item .msg-wand:hover { color: #fd1d1d; }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 10;
+      background: var(--glass-bg);
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      padding: 8px 0 6px 0;
+      border-top: 2px solid #ff7b1860;
+      box-shadow: 0 -2px 10px #0003;
+    }
+    .bottom-nav button {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.45em;
+      opacity: 0.85;
+      padding: 8px 0;
+      cursor: pointer;
+      transition: color .15s, opacity .15s;
+    }
+    .bottom-nav button.active,
+    .bottom-nav button:focus {
+      color: #ff7b18;
+      opacity: 1;
+    }
+    /* Login Modal (unchanged except font) */
     .login-modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.94);
+      background: rgba(0,0,0,0.96);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 2000;
+      font-family: 'Roboto', Arial, sans-serif;
     }
     .login-modal .modal-box {
       background: #232323;
@@ -46,6 +352,7 @@
       cursor: pointer;
       transition: box-shadow .2s;
       box-shadow: 0 2px 8px #0003;
+      font-family: 'Audiowide', cursive;
     }
     .login-modal input[type="password"] {
       margin: 12px 0 0 0;
@@ -64,9 +371,59 @@
       margin-top: 8px;
       min-height: 22px;
     }
+    /* Music player styles */
+    .bgm-player {
+      position: fixed;
+      top: 14px;
+      right: 22px;
+      z-index: 30;
+      background: var(--glass-bg);
+      border-radius: 16px;
+      padding: 8px 14px 8px 12px;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 12px #0005;
+      backdrop-filter: blur(7px);
+      user-select: none;
+      gap: 10px;
+    }
+    .bgm-player button {
+      background: none;
+      border: none;
+      color: #ff7b18;
+      font-size: 1.6em;
+      cursor: pointer;
+      margin-right: 3px;
+      transition: color .2s;
+    }
+    .bgm-player span {
+      color: #fff;
+      font-size: 1.04em;
+      font-family: 'Audiowide', cursive;
+      letter-spacing: 1px;
+    }
+    @media (max-width: 600px) {
+      .topbar h1 { font-size: 1.5em; }
+      .story-ring, .story-ring img, .add { width: 44px; height: 44px; }
+      .story-avatar { width: 48px; }
+      .story-media img, .story-media video { max-width: 95vw; }
+      .message-panel { max-width: 96vw; }
+      .bgm-player { top: 9px; right: 5px; padding: 6px 9px; }
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
+  <!-- Background Music Player -->
+  <div class="bgm-player" id="bgmPlayer">
+    <button id="bgmToggleBtn" title="Play/Pause Music">&#127925;</button>
+    <span id="bgmStatus">Play Music</span>
+    <audio id="bgmAudio" src="https://cdn.pixabay.com/audio/2022/08/20/audio_12bfa0e4a1.mp3" loop preload="auto"></audio>
+  </div>
+
   <!-- Login Modal -->
   <div class="login-modal" id="loginModal">
     <div class="modal-box" id="modalBox">
@@ -86,9 +443,18 @@
     <button class="add-story-btn" id="addStoryBtn" style="display:none;">+ Add Story</button>
     <input type="file" id="storyFile" accept="image/*,video/*" style="display:none"/>
   </div>
-  <div class="story-bar" id="storyBar">
-    <!-- Story Avatars dynamically here -->
+
+  <!-- Story bar container with count and names -->
+  <div class="story-bar-container">
+    <div class="story-bar-header">
+      <span class="status-count" id="statusCount">Stories: 0</span>
+      <!-- Names shown on click, or you can style as tooltip or dropdown if needed -->
+    </div>
+    <div class="story-bar" id="storyBar">
+      <!-- Story Avatars dynamically here -->
+    </div>
   </div>
+
   <!-- Story Overlay -->
   <div class="story-overlay" id="storyOverlay">
     <div class="story-media" id="storyMedia">
@@ -113,7 +479,31 @@
     <button title="Profile">&#128100;</button>
   </nav>
   <script type="module">
-    // LOGIN MODAL LOGIC
+    // -- BGM Player Logic --
+    const bgmAudio = document.getElementById('bgmAudio');
+    const bgmBtn = document.getElementById('bgmToggleBtn');
+    const bgmStatus = document.getElementById('bgmStatus');
+
+    let bgmPlaying = false;
+    function updateBgmUI() {
+      bgmStatus.textContent = bgmPlaying ? 'Pause Music' : 'Play Music';
+      bgmBtn.style.color = bgmPlaying ? '#ff2e63' : '#ff7b18';
+      bgmBtn.innerHTML = bgmPlaying ? '&#9208;' : '&#127925;';
+    }
+    bgmBtn.onclick = function() {
+      if (bgmAudio.paused) {
+        bgmAudio.play();
+        bgmPlaying = true;
+      } else {
+        bgmAudio.pause();
+        bgmPlaying = false;
+      }
+      updateBgmUI();
+    };
+    bgmAudio.onplay = () => { bgmPlaying = true; updateBgmUI(); };
+    bgmAudio.onpause = () => { bgmPlaying = false; updateBgmUI(); };
+
+    // LOGIN MODAL LOGIC (Unchanged)
     let isAdmin = false;
     let isLoggedIn = false;
 
@@ -155,9 +545,7 @@
     });
 
     function updateUIForRole(){
-      // Only admin can see Add Story button
       addStoryBtn.style.display = isAdmin ? 'inline-block' : 'none';
-      // Only admin can click upload
       if(!isAdmin){
         storyFileInput.value = "";
         storyFileInput.disabled = true;
@@ -168,7 +556,6 @@
 
     // --- Page JS, run only after login ---
     function afterLoginInit(){
-      // --- All your Firebase code here ---
       import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js").then(({initializeApp})=>{
       import("https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js").then(dbmod=>{
       import("https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js").then(storagemod=>{
@@ -191,6 +578,7 @@
 
       // === Anonymous Stories ===
       const storyBar = document.getElementById('storyBar');
+      const statusCount = document.getElementById('statusCount');
       let storiesCache = [];
       let seenStories = JSON.parse(localStorage.getItem('seenStories')||'{}');
 
@@ -207,6 +595,8 @@
             if(btn) btn.onclick = ()=>storyFileInput.click();
           }, 100);
         }
+        // Show status count and names
+        statusCount.textContent = `Stories: ${storyArr.length}${storyArr.length>0?' ('+storyArr.map(s=>s.name||'User').join(', ')+')':''}`;
         storyArr.forEach(story=>{
           const div = document.createElement('div');
           div.className = 'story-avatar';
@@ -232,6 +622,8 @@
               .filter(story=>Date.now() - story.ts < 86400000); // 24h
             storiesCache = arr.sort((a,b)=>b.ts-a.ts);
             renderStories(storiesCache);
+          } else {
+            statusCount.textContent = "Stories: 0";
           }
         });
       }
@@ -244,7 +636,6 @@
         if (snap.exists()) {
           for (let [id, val] of Object.entries(snap.val())) {
             if (Date.now() - val.ts > 86400000) {
-              // Delete from DB & Storage
               await remove(ref(db, 'stories/'+id));
               if (val.storagePath) {
                 try { await deleteObject(sRef(storage, val.storagePath)); } catch(e){}
@@ -253,7 +644,7 @@
           }
         }
       }
-      setInterval(cleanOldStories, 60*60*1000); // 1 hr
+      setInterval(cleanOldStories, 60*60*1000);
 
       // Add story (image/video upload) - only admin
       storyFileInput.onchange = async function(e) {
@@ -265,120 +656,4 @@
         let name = prompt("Your name (optional for story ring)?") || "Anonymous";
         const id = Math.random().toString(36).slice(2);
         const storagePath = `stories/${id}-${file.name}`;
-        const uploadRef = sRef(storage, storagePath);
-        const snapshot = await uploadBytes(uploadRef, file);
-        const url = await getDownloadURL(uploadRef);
-        let thumb = url;
-        if(ext==='vid') thumb="https://img.icons8.com/color/96/000000/video.png";
-        // Save to DB
-        await set(ref(db, 'stories/'+id), {url, ts: Date.now(), type: ext, name, storagePath, thumb});
-        alert('Story uploaded! Will expire in 24h.');
-        storyFileInput.value = '';
-      };
-
-      // Story overlay logic
-      let currentStory = null;
-      window.openStoryView = async function(storyId) {
-        const story = storiesCache.find(s=>s.id===storyId);
-        if(!story) return;
-        currentStory = story;
-        // Mark as seen
-        seenStories[storyId] = Date.now();
-        localStorage.setItem('seenStories', JSON.stringify(seenStories));
-        // Overlay UI
-        document.getElementById('storyOverlay').classList.add('active');
-        const media = document.getElementById('storyMedia');
-        media.querySelectorAll('img,video').forEach(x=>x.remove());
-        let el;
-        if(story.type==='img') {
-          el = document.createElement('img');
-          el.src = story.url;
-        } else {
-          el = document.createElement('video');
-          el.src = story.url;
-          el.controls = true;
-          el.autoplay = true;
-          el.loop = false;
-        }
-        media.appendChild(el);
-        // Play count
-        incrementStoryView(storyId);
-        listenStoryViews(storyId);
-
-        // Auto close after 12s (like Insta)
-        setTimeout(()=>{ if(document.getElementById('storyOverlay').classList.contains('active')) window.closeStoryView(); }, 12000);
-      }
-      window.closeStoryView = function() {
-        document.getElementById('storyOverlay').classList.remove('active');
-      }
-
-      // === Story View Count ===
-      function incrementStoryView(storyId) {
-        const viewsRef = ref(db, 'storyViews/'+storyId);
-        runTransaction(viewsRef, val=>(val||0)+1);
-      }
-      function listenStoryViews(storyId) {
-        const viewsRef = ref(db, 'storyViews/'+storyId);
-        onValue(viewsRef, snap=>{
-          document.getElementById('overlayPlayCount').innerHTML = `👁️ ${snap.exists()?snap.val():0}`;
-        });
-      }
-
-      // === ANONYMOUS MESSAGES ===
-      const messagesRef = ref(db, 'messages');
-      const messagesListEl = document.getElementById('messagesList');
-      function renderSnapshot(snapshotVal) {
-        messagesListEl.innerHTML = "";
-        if(!snapshotVal) return;
-        const arr = Object.keys(snapshotVal).map(id=>{
-          const it = snapshotVal[id];
-          return { id, text: it.text||'', ts: it.ts||0 };
-        }).sort((a,b)=>b.ts-a.ts);
-        arr.forEach(item=>{
-          const d=document.createElement('div');
-          d.className='msg-item';
-          d.innerHTML = `<span>${item.text}</span>
-            <span class="msg-wand" title="Remove (admin)">🗑️</span>`;
-          d.querySelector('.msg-wand').onclick = async ()=>{
-            if(!isAdmin){
-              alert("Only admin can delete!");
-              return;
-            }
-            const pass=prompt('Admin password?');
-            if(pass==="0420"){
-              try{ await remove(ref(db,'messages/'+item.id)); }catch(err){ alert('Delete failed'); }
-            } else if(pass!==null){ alert('❌ Wrong password!'); }
-          };
-          messagesListEl.appendChild(d);
-        });
-      }
-      onValue(messagesRef, snap=>renderSnapshot(snap.exists()?snap.val():null));
-
-      const sendBtn=document.getElementById('sendBtn');
-      const newMsgEl=document.getElementById('newMsg');
-      sendBtn.onclick = async ()=>{
-        const text=(newMsgEl.value||"").trim();
-        if(!text){ alert('Type something!'); return; }
-        try{ await push(messagesRef,{ text, ts:Date.now() }); newMsgEl.value=""; }
-        catch(err){ alert('Send failed'); }
-      };
-      newMsgEl.addEventListener('keydown', e=>{
-        if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) sendBtn.click();
-      });
-
-      // -- End of Firebase logic --
-      });});});
-    }
-
-    // Wait for login before initializing everything else
-    function checkLoginAndInit(){
-      if(isLoggedIn){
-        afterLoginInit();
-      } else {
-        setTimeout(checkLoginAndInit, 200);
-      }
-    }
-    checkLoginAndInit();
-  </script>
-</body>
-</html>
+        const uploadRef = sR
