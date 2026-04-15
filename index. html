@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Royal NGL - Vijay's Insta Thoughts 👑</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500&display=swap');
+    body { font-family: 'Poppins', sans-serif; }
+    .royal-font { font-family: 'Playfair Display', serif; }
+    .floral-bg {
+      background: linear-gradient(135deg, #4b0082, #ff69b4);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+    }
+    @keyframes gradient { 0% {background-position:0% 50%} 50% {background-position:100% 50%} 100% {background-position:0% 50%} }
+    .butterfly { animation: fly 8s infinite linear; }
+  </style>
+</head>
+<body class="bg-[#1a0033] text-white min-h-screen floral-bg">
+
+  <!-- Navbar -->
+  <nav class="bg-black/50 backdrop-blur-md border-b border-pink-300 p-4 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl">👑</span>
+      <h1 class="royal-font text-3xl font-bold text-pink-300">Royal NGL</h1>
+    </div>
+    <div class="flex gap-6 text-lg">
+      <a onclick="showTab(0)" class="cursor-pointer hover:text-pink-300 flex items-center gap-2"><i class="fas fa-home"></i> Home</a>
+      <a onclick="showTab(1)" class="cursor-pointer hover:text-pink-300 flex items-center gap-2"><i class="fas fa-envelope"></i> Messages</a>
+      <a onclick="showTab(2)" class="cursor-pointer hover:text-pink-300 flex items-center gap-2"><i class="fas fa-scroll"></i> Stories</a>
+      <a onclick="showTab(3)" class="cursor-pointer hover:text-pink-300 flex items-center gap-2"><i class="fas fa-poll"></i> Polls</a>
+      <a onclick="showTab(4)" class="cursor-pointer hover:text-pink-300 flex items-center gap-2"><i class="fas fa-gamepad"></i> Games</a>
+    </div>
+    <button onclick="copyLink()" class="bg-pink-500 hover:bg-pink-600 px-6 py-2 rounded-full flex items-center gap-2 font-medium">
+      <i class="fas fa-share"></i> Share Link
+    </button>
+  </nav>
+
+  <!-- Hero -->
+  <div class="text-center py-12 px-6">
+    <h1 class="royal-font text-6xl mb-4">Hey Vijay 👑</h1>
+    <p class="text-2xl text-pink-200">Send me anything anonymously ✨</p>
+    <div class="mt-8 bg-white/10 backdrop-blur-md mx-auto max-w-md p-6 rounded-3xl border border-pink-300 flex flex-col items-center">
+      <p class="text-pink-200 mb-3">Tera Royal Link:</p>
+      <div id="shareLink" class="bg-black/70 px-8 py-4 rounded-2xl text-lg font-medium break-all cursor-pointer" onclick="copyLink()"></div>
+      <p class="text-xs text-pink-300 mt-4">Instagram Story / Bio mein daal do 🌸</p>
+    </div>
+  </div>
+
+  <!-- Tabs Content -->
+  <div id="tabContent" class="max-w-4xl mx-auto px-4 pb-20">
+
+    <!-- Tab 0: Home -->
+    <div id="tab0" class="tab">
+      <div class="text-center">
+        <div class="text-7xl mb-6 butterfly">🦋</div>
+        <h2 class="text-5xl royal-font mb-6">Welcome to your Royal Inbox ✨</h2>
+        <p class="text-xl text-pink-200">Koi bhi tere saath kuch bhi share kar sakta hai – bilkul anonymously</p>
+        <button onclick="showTab(1)" class="mt-10 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xl px-10 py-5 rounded-3xl font-medium hover:scale-105 transition">Send Anonymous Message</button>
+      </div>
+    </div>
+
+    <!-- Tab 1: Messages -->
+    <div id="tab1" class="tab hidden">
+      <h2 class="text-4xl royal-font mb-8 flex items-center gap-3"><i class="fas fa-envelope"></i> Anonymous Messages</h2>
+      <div class="bg-white/10 p-6 rounded-3xl mb-8">
+        <input id="msgInput" type="text" placeholder="Kuch bhi likh do... (anonymous)" 
+               class="w-full bg-black/50 rounded-2xl px-6 py-5 text-lg outline-none">
+        <button onclick="sendMessage()" class="mt-4 w-full bg-pink-500 py-4 rounded-2xl text-xl font-medium">Send Anonymously ✨</button>
+      </div>
+      <div id="messagesList" class="space-y-4"></div>
+    </div>
+
+    <!-- Tab 2: Stories -->
+    <div id="tab2" class="tab hidden">
+      <h2 class="text-4xl royal-font mb-8 flex items-center gap-3"><i class="fas fa-scroll"></i> Stories / Thoughts</h2>
+      <div class="bg-white/10 p-6 rounded-3xl mb-8">
+        <textarea id="storyInput" rows="3" placeholder="Apna thought/story likho..." class="w-full bg-black/50 rounded-2xl px-6 py-5 text-lg outline-none"></textarea>
+        <button onclick="addStory()" class="mt-4 w-full bg-pink-500 py-4 rounded-2xl text-xl font-medium">Add to Royal Feed 🌸</button>
+      </div>
+      <div id="storiesFeed" class="space-y-6"></div>
+    </div>
+
+    <!-- Tab 3: Polls -->
+    <div id="tab3" class="tab hidden">
+      <h2 class="text-4xl royal-font mb-8">Create Poll 📊</h2>
+      <div class="bg-white/10 p-8 rounded-3xl">
+        <input id="pollQuestion" placeholder="Poll ka sawal..." class="w-full bg-black/50 rounded-2xl px-6 py-5 mb-6 text-lg">
+        <button onclick="createPoll()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 py-4 rounded-3xl text-xl">Create Poll</button>
+      </div>
+      <div id="pollsList" class="mt-10 space-y-8"></div>
+    </div>
+
+    <!-- Tab 4: Games -->
+    <div id="tab4" class="tab hidden">
+      <h2 class="text-4xl royal-font mb-8 flex items-center gap-3"><i class="fas fa-gamepad"></i> Royal Games</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <button onclick="playGame(0)" class="bg-white/10 hover:bg-white/20 p-8 rounded-3xl text-left">Would You Rather</button>
+        <button onclick="playGame(1)" class="bg-white/10 hover:bg-white/20 p-8 rounded-3xl text-left">Never Have I Ever</button>
+        <button onclick="playGame(2)" class="bg-white/10 hover:bg-white/20 p-8 rounded-3xl text-left">Truth or Dare</button>
+        <button onclick="playGame(3)" class="bg-white/10 hover:bg-white/20 p-8 rounded-3xl text-left">3 Words Only</button>
+      </div>
+      <div id="gameArea" class="mt-10 bg-white/10 p-8 rounded-3xl min-h-64"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // Tailwind script
+    function initTailwind() {
+      tailwind.config = { content: ["*"], theme: { extend: {} } };
+    }
+
+    let messages = JSON.parse(localStorage.getItem('royalMessages')) || [
+      { text: "Tera style bahut royal hai bhai 👑", time: "2m ago" },
+      { text: "Jaipur wale king ko salam 🌸", time: "5m ago" }
+    ];
+
+    let stories = JSON.parse(localStorage.getItem('royalStories')) || [
+      { text: "Life is better with chai and dreams ☕✨", time: "Just now" }
+    ];
+
+    let polls = JSON.parse(localStorage.getItem('royalPolls')) || [];
+
+    function saveData() {
+      localStorage.setItem('royalMessages', JSON.stringify(messages));
+      localStorage.setItem('royalStories', JSON.stringify(stories));
+      localStorage.setItem('royalPolls', JSON.stringify(polls));
+    }
+
+    function showTab(n) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
+      document.getElementById('tab' + n).classList.remove('hidden');
+      if (n === 1) renderMessages();
+      if (n === 2) renderStories();
+      if (n === 3) renderPolls();
+    }
+
+    function copyLink() {
+      const link = window.location.href;
+      navigator.clipboard.writeText(link).then(() => {
+        alert('✅ Royal Link copied! Ab Instagram story mein daal do 🌸');
+      });
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('msgInput');
+      if (!input.value.trim()) return;
+      messages.unshift({ text: input.value, time: 'Just now' });
+      saveData();
+      input.value = '';
+      renderMessages();
+      alert('Message sent anonymously! ✨');
+    }
+
+    function renderMessages() {
+      const list = document.getElementById('messagesList');
+      list.innerHTML = messages.map(m => `
+        <div class="bg-white/10 p-6 rounded-3xl flex justify-between items-start">
+          <div>
+            <p class="text-lg">${m.text}</p>
+            <p class="text-pink-300 text-sm">${m.time}</p>
+          </div>
+          <i class="fas fa-heart text-pink-400 text-2xl"></i>
+        </div>
+      `).join('');
+    }
+
+    function addStory() {
+      const input = document.getElementById('storyInput');
+      if (!input.value.trim()) return;
+      stories.unshift({ text: input.value, time: 'Just now' });
+      saveData();
+      input.value = '';
+      renderStories();
+      alert('Story added to Royal Feed! 🌹');
+    }
+
+    function renderStories() {
+      const feed = document.getElementById('storiesFeed');
+      feed.innerHTML = stories.map(s => `
+        <div class="bg-white/10 p-6 rounded-3xl">
+          <p class="text-xl">${s.text}</p>
+          <p class="text-pink-300 text-sm mt-3">${s.time}</p>
+        </div>
+      `).join('');
+    }
+
+    function createPoll() {
+      const q = document.getElementById('pollQuestion').value;
+      if (!q) return;
+      polls.unshift({ question: q, votes: { yes: 0, no: 0 } });
+      saveData();
+      document.getElementById('pollQuestion').value = '';
+      renderPolls();
+    }
+
+    function renderPolls() {
+      const list = document.getElementById('pollsList');
+      list.innerHTML = polls.map((p, i) => `
+        <div class="bg-white/10 p-8 rounded-3xl">
+          <p class="text-2xl mb-6">${p.question}</p>
+          <div class="flex gap-6">
+            <button onclick="vote(${i}, 'yes')" class="flex-1 bg-green-500 py-4 rounded-2xl text-xl">Yes 👍 ${p.votes.yes}</button>
+            <button onclick="vote(${i}, 'no')" class="flex-1 bg-red-500 py-4 rounded-2xl text-xl">No 👎 ${p.votes.no}</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function vote(i, option) {
+      polls[i].votes[option]++;
+      saveData();
+      renderPolls();
+    }
+
+    // Simple Games
+    function playGame(n) {
+      const area = document.getElementById('gameArea');
+      if (n === 0) {
+        area.innerHTML = `<p class="text-3xl text-center">Would You Rather...<br><span class="text-pink-300">Eat 100 gulab jamun OR never eat sweets again?</span></p>`;
+      } else if (n === 1) {
+        area.innerHTML = `<p class="text-3xl text-center">Never Have I Ever...<br><span class="text-pink-300">Skipped a Royal wedding in Jaipur</span></p>`;
+      } else if (n === 2) {
+        area.innerHTML = `<p class="text-3xl text-center">Truth or Dare?<br><span class="text-pink-300">Choose one and reply in your mind 😉</span></p>`;
+      } else if (n === 3) {
+        area.innerHTML = `<p class="text-3xl text-center">Describe me in 3 words only...<br><span class="text-pink-300">Type your answer below 👇</span></p><input class="w-full mt-8 bg-black/50 rounded-3xl px-8 py-6 text-2xl" placeholder="Royal, Cool, King...">`;
+      }
+    }
+
+    // Init
+    window.onload = () => {
+      initTailwind();
+      document.getElementById('shareLink').textContent = window.location.href;
+      showTab(0);
+      renderMessages();
+      renderStories();
+      renderPolls();
+    };
+  </script>
+</body>
+</html>
