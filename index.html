@@ -1,1 +1,784 @@
-<!DOCTYPE html><html lang="hi"><head>  <meta charset="utf-8" />  <meta name="viewport" content="width=device-width,initial-scale=1" />  <title>Insta Thoughts</title>  <!-- Google Analytics (GA4) -->  <script async src="https://www.googletagmanager.com/gtag/js?id=G-G-WT5TKSRSLG"></script>  <script>    window.dataLayer = window.dataLayer || [];    function gtag(){dataLayer.push(arguments);}    gtag('js', new Date());    gtag('config', 'G-G-WT5TKSRSLG');  </script>  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Audiowide&family=Roboto:wght@400;700&display=swap" rel="stylesheet">  <style>    :root{      --accent: #ff7b18;      --accent-2: #ff2e63;      --glass-bg: rgba(22,22,22,0.78);      --muted: #cfcfcf;      --success: #2ecc71;    }    *{box-sizing:border-box}    html,body{height:100%;margin:0;padding:0}    body{      min-height:100vh;      font-family:'Roboto', Arial, sans-serif;      color:#eee;      background: radial-gradient(ellipse at center, rgba(0,0,0,0.18), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat fixed;      -webkit-font-smoothing:antialiased;      -moz-osx-font-smoothing:grayscale;    }    body::before{      content:'';      position:fixed;inset:0;z-index:0;      background:linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.55) 100%);      pointer-events:none;    }    .topbar{      position:sticky;top:0;z-index:30;      display:flex;align-items:center;justify-content:space-between;      padding:12px 18px;      background:linear-gradient(90deg, rgba(0,0,0,0.22), rgba(0,0,0,0.08));      border-bottom: 1px solid rgba(255,123,24,0.14);      backdrop-filter: blur(6px);    }    .brand{      display:flex;align-items:center;gap:12px;    }    .brand h1{      margin:0;      font-family:'Great Vibes',cursive;      font-size:2.1rem;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,0.6);      letter-spacing:1px;    }    .brand .subtitle{      font-family:'Audiowide',cursive;color:var(--muted);font-size:0.9rem;margin-left:6px;    }    .controls{display:flex;align-items:center;gap:10px}    .btn{      font-family:'Audiowide',cursive;      border:none;padding:8px 14px;border-radius:12px;      cursor:pointer;color:#fff;background:linear-gradient(90deg,var(--accent),var(--accent-2));      box-shadow:0 6px 18px rgba(0,0,0,0.35);      transition:transform .12s ease, box-shadow .12s ease;    }    .btn:hover{transform:translateY(-2px)}    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 10px;border-radius:10px}    /* story bar */    .story-bar-container{position:relative;z-index:10;padding:14px 10px 6px 10px}    .story-bar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding-left:3px}    .status-count{font-family:'Audiowide',cursive;color:#fff;opacity:0.95}    .story-bar{      display:flex;gap:16px;overflow-x:auto;padding:8px 4px 12px 4px;      scrollbar-width:thin;scrollbar-color: #ff7b18 transparent;      -webkit-overflow-scrolling:touch;    }    .story-avatar{display:flex;flex-direction:column;align-items:center;width:78px}    /* Instagram-like animated gradient ring */    .story-ring{      width:68px;height:68px;border-radius:50%;      display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;overflow:visible;    }    /* outer animated gradient */    .story-ring::before{      content:'';position:absolute;inset:-5px;border-radius:50%;padding:4px;      background:conic-gradient(from 120deg, #ff2e63, #ff7b18, #ffd166, #ff2e63);      filter:blur(6px);opacity:0.95;z-index:1;transition:transform .2s;    }    /* inner white ring to create separation */    .story-ring::after{      content:'';position:absolute;inset:4px;border-radius:50%;background:transparent;border:3px solid rgba(0,0,0,0.5);z-index:3;    }    .story-ring .avatar-wrap{position:relative;z-index:4;width:56px;height:56px;border-radius:50%;overflow:hidden;background:#111;border-radius:50%;}    .story-ring.seen::before{opacity:0.25;filter:grayscale(80%) blur(3px)}    .story-ring:active::before{transform:scale(.97)}    .story-ring img{width:56px;height:56px;border-radius:50%;object-fit:cover;background:#111}    .label{margin-top:8px;color:#fff;font-size:.92rem;text-align:center;max-width:86px;word-break:break-word}    .add{font-size:1.9rem;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.45)}    /* overlay */    .story-overlay{display:none;position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,0.86);align-items:center;justify-content:center;padding:20px}    .story-overlay.active{display:flex;animation:fadein .2s ease}    .story-media{position:relative;background:var(--glass-bg);border-radius:16px;padding:18px;max-width:920px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.6)}    .story-media .close-btn{position:absolute;top:10px;right:10px;background:var(--accent-2);border:none;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.2rem;cursor:pointer}    .story-media img,.story-media video{display:block;max-width:100%;height:auto;border-radius:12px;margin:12px auto}    .story-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}    .story-info{display:flex;align-items:center;gap:12px}    .story-info .mini{width:48px;height:48px;border-radius:50%;overflow:hidden}    .play-count{background:rgba(0,0,0,.55);color:#fff;padding:6px 10px;border-radius:999px;font-family:'Audiowide',cursive}    .story-actions{display:flex;gap:8px;align-items:center}    .muted{opacity:.82;color:#cfcfcf}    /* viewers list under story */    .viewer-list{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}    .viewer-pill{background:rgba(255,255,255,0.05);padding:6px 8px;border-radius:999px;color:#fff;font-size:.9rem}    /* messages */    .message-panel{background:var(--glass-bg);margin:22px auto 88px auto;max-width:640px;border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(0,0,0,.55);z-index:10;position:relative}    .message-panel h3{font-family:'Audiowide',cursive;margin:0 0 12px 0;color:var(--accent)}    .compose{display:flex;gap:10px;align-items:flex-start}    #newMsg{flex:1;border-radius:10px;border:none;padding:10px 12px;font-size:1rem;background:#0e0e0e;color:#fff;min-height:52px;max-height:140px;resize:vertical}    #sendBtn{min-width:110px;padding:10px 12px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:700;cursor:pointer}    #messagesList{margin-top:12px;display:flex;flex-direction:column;gap:10px}    .msg-item{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.18));padding:10px;border-radius:8px;color:#fff}    .msg-left{display:flex;align-items:center;gap:12px}    .msg-avatar{width:42px;height:42px;background:linear-gradient(45deg,var(--accent),var(--accent-2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,0.45)}    .msg-text{max-width:520px;word-break:break-word}    .msg-meta{display:flex;gap:8px;align-items:center}    .msg-wand{cursor:pointer;color:var(--accent);font-size:1.2rem;padding:6px;border-radius:6px;border:none;background:transparent}    .msg-delete{cursor:pointer;color:#ff6b6b;background:rgba(255,255,255,0.03);border:none;padding:6px 10px;border-radius:8px}    /* bottom nav */    .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:var(--glass-bg);display:flex;justify-content:space-evenly;padding:8px 6px;border-top:1px solid rgba(255,123,24,0.12)}    .bottom-nav button{background:none;border:none;color:#fff;font-size:1.35rem;opacity:.9;cursor:pointer}    .bottom-nav button.active{color:var(--accent)}    /* login modal */    .login-modal{position:fixed;inset:0;background:rgba(0,0,0,0.96);display:flex;align-items:center;justify-content:center;z-index:2000}    .modal-box{background:#1d1d1d;padding:26px;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);min-width:260px;display:flex;flex-direction:column;align-items:center;gap:10px}    .modal-box h2{margin:0;color:var(--accent);font-family:'Audiowide',cursive}    .login-modal input[type="password"]{padding:8px 10px;border-radius:8px;border:none;background:#111;color:#fff}    .error{color:#ff6b6b;min-height:20px}    /* bgm */    .bgm-player{position:fixed;top:14px;right:22px;z-index:40;background:var(--glass-bg);border-radius:12px;padding:8px 12px;display:flex;gap:10px;align-items:center;box-shadow:0 8px 20px rgba(0,0,0,.5)}    .bgm-player button{background:none;border:none;color:var(--accent);font-size:1.4rem;cursor:pointer}    .theme-toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px;border-radius:10px;color:#fff}    @keyframes fadein{from{opacity:0}to{opacity:1}}    @media (max-width:600px){      .brand h1{font-size:1.25rem}      .story-avatar{width:56px}      .story-ring{width:54px;height:54px}      .story-ring img{width:44px;height:44px}      .message-panel{margin:12px auto 90px auto;padding:12px}      .bgm-player{top:8px;right:8px;padding:6px}    }  </style></head><body>  <!-- Background Music Player -->  <div class="bgm-player" id="bgmPlayer" aria-hidden="false">    <button id="bgmToggleBtn" title="Play/Pause Music" aria-label="Play or pause background music">&#127925;</button>    <span id="bgmStatus">Play Music</span>    <audio id="bgmAudio" src="https://cdn.pixabay.com/audio/2022/08/20/audio_12bfa0e4a1.mp3" loop preload="auto"></audio>  </div>  <!-- Login Modal -->  <div class="login-modal" id="loginModal" aria-modal="true" role="dialog">    <div class="modal-box" id="modalBox">      <h2>Welcome</h2>      <div style="display:flex;gap:10px;flex-direction:column;width:100%;align-items:center">        <button class="btn" id="userLoginBtn">Continue as User</button>        <button class="btn ghost" id="adminLoginBtn">Login as Admin</button>        <div id="adminPassBox" style="display:none;width:100%;align-items:center;justify-content:center;">          <input type="password" id="adminPassInput" placeholder="Enter Admin Password" />          <button class="btn" id="adminPassSubmit">Submit</button>          <div class="error" id="adminPassError"></div>        </div>      </div>    </div>  </div>  <div class="topbar" role="banner">    <div class="brand">      <h1>Insta Thoughts</h1>      <div class="subtitle">Anonymous stories & messages</div>    </div>    <div class="controls">      <button id="addStoryBtn" class="btn" style="display:none;">+ Add Story</button>      <input type="file" id="storyFile" accept="image/*,video/*" style="display:none"/>      <button id="themeToggle" class="theme-toggle" title="Toggle theme">Toggle</button>    </div>  </div>  <!-- Story bar container with count and names -->  <div class="story-bar-container">    <div class="story-bar-header">      <span class="status-count" id="statusCount">Stories: 0</span>      <div class="muted" id="lastUpdated">—</div>    </div>    <div class="story-bar" id="storyBar" aria-live="polite">      <!-- Story Avatars dynamically here -->    </div>  </div>  <!-- Story Overlay -->  <div class="story-overlay" id="storyOverlay" role="dialog" aria-hidden="true">    <div class="story-media" id="storyMedia" role="document">      <button class="close-btn" id="overlayCloseBtn" aria-label="Close story view">&#10005;</button>      <div class="story-top">        <div class="story-info">          <div class="mini" id="overlayMini"></div>          <div>            <div id="overlayName" style="font-weight:700"></div>            <div id="overlayTime" class="muted" style="font-size:.9rem"></div>          </div>        </div>        <div class="story-actions">          <div class="play-count" id="overlayPlayCount">👁️ 0</div>          <button id="deleteStoryBtn" class="msg-delete" style="display:none">Delete</button>        </div>      </div>      <div id="overlayMediaContainer" style="display:flex;align-items:center;justify-content:center"></div>      <div id="overlayCaption" style="margin-top:10px;color:#ddd"></div>      <div id="overlayViewers" class="viewer-list" aria-live="polite"></div>    </div>  </div>  <div class="message-panel" role="region" aria-labelledby="messagesHeading">    <h3 id="messagesHeading">Send me an anonymous message</h3>    <div class="compose">      <textarea id="newMsg" placeholder="Write your message..." aria-label="Message"></textarea>      <button id="sendBtn" type="button">Send</button>    </div>    <div id="messagesList" aria-live="polite"></div>  </div>  <nav class="bottom-nav" role="navigation" aria-label="Primary">    <button class="active" title="Home">&#8962;</button>    <button title="Search">&#128269;</button>    <button title="Stories">&#128247;</button>    <button title="Messages">&#9993;</button>    <button title="Profile">&#128100;</button>  </nav>  <script type="module">    // ----- Basic UI interactions -----    const bgmAudio = document.getElementById('bgmAudio');    const bgmBtn = document.getElementById('bgmToggleBtn');    const bgmStatus = document.getElementById('bgmStatus');    const themeToggle = document.getElementById('themeToggle');    let bgmPlaying = false;    function updateBgmUI(){ bgmStatus.textContent = bgmPlaying ? 'Pause Music' : 'Play Music'; bgmBtn.style.color = bgmPlaying ? '#ff2e63' : '#ff7b18'; bgmBtn.innerHTML = bgmPlaying ? '&#9208;' : '&#127925;'; }    bgmBtn.onclick = () => {      if (bgmAudio.paused) { bgmAudio.play().catch(()=>{}); bgmPlaying = true; } else { bgmAudio.pause(); bgmPlaying = false; }      updateBgmUI();    };    bgmAudio.onplay = () => { bgmPlaying = true; updateBgmUI(); };    bgmAudio.onpause = () => { bgmPlaying = false; updateBgmUI(); };    // Theme toggle: small demo (invert colors a bit)    let dark = true;    function toggleTheme(){      dark = !dark;      if(!dark){        document.documentElement.style.setProperty('--glass-bg','rgba(250,250,250,0.88)');        document.documentElement.style.setProperty('--accent','#2b7cff');        document.documentElement.style.setProperty('--accent-2','#00c9a7');        document.body.style.color = '#111';        themeToggle.textContent = 'Light';      } else {        document.documentElement.style.setProperty('--glass-bg','rgba(22,22,22,0.78)');        document.documentElement.style.setProperty('--accent','#ff7b18');        document.documentElement.style.setProperty('--accent-2','#ff2e63');        document.body.style.color = '#eee';        themeToggle.textContent = 'Dark';      }    }    themeToggle.onclick = toggleTheme;    // ----- Login logic -----    let isAdmin = false;    let isLoggedIn = false;    let appInited = false;    const loginModal = document.getElementById('loginModal');    const userLoginBtn = document.getElementById('userLoginBtn');    const adminLoginBtn = document.getElementById('adminLoginBtn');    const adminPassBox = document.getElementById('adminPassBox');    const adminPassInput = document.getElementById('adminPassInput');    const adminPassSubmit = document.getElementById('adminPassSubmit');    const adminPassError = document.getElementById('adminPassError');    const addStoryBtn = document.getElementById('addStoryBtn');    const storyFileInput = document.getElementById('storyFile');    userLoginBtn.onclick = ()=>{      isAdmin = false; isLoggedIn = true;      loginModal.style.display = 'none';      updateUIForRole();    };    adminLoginBtn.onclick = ()=>{      adminPassBox.style.display = 'flex';      adminPassInput.focus();    };    adminPassSubmit.onclick = ()=>{      // simple password gating. change as needed.      if(adminPassInput.value === "0420"){        isAdmin = true; isLoggedIn = true;        loginModal.style.display = 'none';        adminPassError.textContent = '';        updateUIForRole();      } else {        adminPassError.textContent = "Wrong password!";        adminPassInput.value = "";        adminPassInput.focus();      }    };    adminPassInput.addEventListener('keydown', e=>{ if(e.key === "Enter") adminPassSubmit.click(); });    function updateUIForRole(){      addStoryBtn.style.display = isAdmin ? 'inline-block' : 'none';      storyFileInput.disabled = !isAdmin;      // initialize firebase & listeners once logged in (prevent duplicate init)      if(isLoggedIn && !appInited){        afterLoginInit();        appInited = true;      }    }    // Global helper: format time ago    function timeAgo(ts){      const diff = Date.now() - ts;      if(diff < 60000) return Math.floor(diff/1000)+'s ago';      if(diff < 3600000) return Math.floor(diff/60000)+'m ago';      if(diff < 86400000) return Math.floor(diff/3600000)+'h ago';      return Math.floor(diff/86400000)+'d ago';    }    // ----- App logic (Firebase + Local fallback + Static statuses support) -----    // If you host static status files (status.mp4, status1.mp4, ... status9.mp4)    // place them in a folder `statuses/` beside this index.html (or in your GitHub repo)    // The fallback will attempt to load up to 10 files automatically.    async function afterLoginInit(){      // Attempt to init Firebase. If fails -> fallback to static/local mode.      let firebaseAvailable = false;      let db = null, storage = null, dbmod = null, storagemod = null, app = null;      try{        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");        dbmod = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js");        storagemod = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js");        const { getDatabase, ref, push, onValue, remove, runTransaction, set, get } = dbmod;        const { getStorage, ref: sRef, uploadBytes, getDownloadURL, deleteObject } = storagemod;        const firebaseConfig = {          apiKey: "AIzaSyAkeirE4twM3J02JbDBnbdUw2G9yw8VVlw",          authDomain: "love-messages-cdee7.firebaseapp.com",          databaseURL: "https://love-messages-cdee7-default-rtdb.firebaseio.com",          projectId: "love-messages-cdee7",          storageBucket: "love-messages-cdee7.appspot.com",          messagingSenderId: "670131200783",          appId: "1:670131200783:web:ea75b017acab258911547a",          measurementId: "G-G-WT5TKSRSLG"        };        app = initializeApp(firebaseConfig);        db = getDatabase(app);        storage = getStorage(app);        firebaseAvailable = true;        // Assign to outer scope variables for use in other functions        window.__fb = { dbRefModule: dbmod, storageModule: storagemod, db, storage, sRef, ref, push, onValue, remove, runTransaction, set, get, uploadBytes, getDownloadURL, deleteObject };      }catch(err){        console.warn('Firebase init failed, fallback to static/local only mode', err);        firebaseAvailable = false;      }      // Elements      const storyBar = document.getElementById('storyBar');      const statusCount = document.getElementById('statusCount');      const lastUpdatedEl = document.getElementById('lastUpdated');      const overlay = document.getElementById('storyOverlay');      const overlayCloseBtn = document.getElementById('overlayCloseBtn');      const overlayMediaContainer = document.getElementById('overlayMediaContainer');      const overlayPlayCount = document.getElementById('overlayPlayCount');      const overlayName = document.getElementById('overlayName');      const overlayMini = document.getElementById('overlayMini');      const overlayTime = document.getElementById('overlayTime');      const deleteStoryBtn = document.getElementById('deleteStoryBtn');      const overlayCaption = document.getElementById('overlayCaption');      const overlayViewers = document.getElementById('overlayViewers');      const newMsgEl = document.getElementById('newMsg');      const sendBtn = document.getElementById('sendBtn');      const messagesList = document.getElementById('messagesList');      let storiesCache = [];      let seenStories = JSON.parse(localStorage.getItem('seenStories')||'{}');      // Helper to create story objects from static files      function buildStaticStories() {        // Attempt up to 10 files named status.mp4, status1.mp4, status2.mp4 ... status9.mp4        const arr = [];        const baseNames = ['status','status1','status2','status3','status4','status5','status6','status7','status8','status9'];        baseNames.forEach((b, idx) => {          // for each try mp4 and jpg fallback          const mp4 = `./statuses/${b}.mp4`;          const webm = `./statuses/${b}.webm`;          const jpg = `./statuses/${b}.jpg`;          // We'll create entries assuming they exist — later we will verify with fetch HEAD          arr.push({ id: 'static-'+idx, name: `Status ${idx+1}`, url: mp4, thumb: `./statuses/${b}.jpg`, ts: Date.now() - (idx*60000), isStatic: true, filenameBase: b, storagePath: null, caption: ''});        });        return arr;      }      // Validate static files existence (only include those which return ok)      async function validateStaticStories(arr){        const checked = [];        for(const s of arr){          try{            // try mp4 first            const res = await fetch(s.url, {method:'HEAD'}).catch(()=>null);            if(res && (res.ok || res.type === 'opaque')) {              checked.push(s);              continue;            }            // try webm            const res2 = await fetch(s.url.replace('.mp4','.webm'), {method:'HEAD'}).catch(()=>null);            if(res2 && (res2.ok || res2.type === 'opaque')) {              s.url = s.url.replace('.mp4','.webm'); checked.push(s); continue;            }            // try jpg (as image status)            const res3 = await fetch(s.thumb, {method:'HEAD'}).catch(()=>null);            if(res3 && (res3.ok || res3.type === 'opaque')) {              s.url = s.thumb; checked.push(s); continue;            }            // otherwise skip          }catch(e){}        }        return checked;      }      // Render stories (used both for firebase and static)      function renderStories(storyArr){        storyBar.innerHTML = '';        // admin own story "Add" circle        if(isAdmin){          const myStory = document.createElement('div');          myStory.className = 'story-avatar';          myStory.innerHTML = `<div class="story-ring"><button class="add" id="addStoryCircle">+</button></div><span class="label">Your Story</span>`;          storyBar.appendChild(myStory);          setTimeout(()=>{ const btn = document.getElementById('addStoryCircle'); if(btn) btn.onclick = ()=>storyFileInput.click(); }, 80);        }        statusCount.textContent = `Stories: ${storyArr.length}`;        lastUpdatedEl.textContent = `Updated ${timeAgo(Date.now())}`;        storyArr.forEach(story=>{          const div = document.createElement('div');          div.className = 'story-avatar';          const seenClass = seenStories[story.id] ? ' seen' : '';          const thumb = story.thumb || story.url || '';          div.innerHTML = `            <div class="story-ring${seenClass}" data-storyid="${story.id}">              <div class="avatar-wrap"><img src="${escapeHtml(thumb)}" alt="story" loading="lazy"/></div>            </div>            <span class="label">${escapeHtml(story.name||'User')}</span>          `;          const ring = div.querySelector('.story-ring');          // ensure click works for both admin and user          ring.onclick = ()=> openStoryView(story.id);          storyBar.appendChild(div);        });      }      // If firebase available listen stories from DB; otherwise load static      if(firebaseAvailable){        const { ref, onValue, get } = window.__fb;        const storiesRef = ref(window.__fb.db, 'stories');        onValue(storiesRef, async snap => {          let arr = [];          if(snap.exists()){            arr = Object.entries(snap.val())              .map(([id,val])=>({...val,id}))              .filter(s=>Date.now() - (s.ts||0) < 24*60*60*1000);            storiesCache = arr.sort((a,b)=>b.ts - a.ts);            renderStories(storiesCache);          } else {            // if no firebase stories, fallback to static detection            const staticGuess = buildStaticStories();            const good = await validateStaticStories(staticGuess);            storiesCache = good;            renderStories(storiesCache);          }        });      }else{        // static fallback mode        const staticGuess = buildStaticStories();        const good = await validateStaticStories(staticGuess);        storiesCache = good;        renderStories(storiesCache);      }      // Clean expired stories (only when firebase is available)      if(firebaseAvailable){        async function cleanOldStories(){          const { ref, get, remove } = window.__fb;          const storiesRef = ref(window.__fb.db,'stories');          const snap = await get(storiesRef);          if(snap.exists()){            for(let [id,val] of Object.entries(snap.val())){              if(Date.now() - val.ts > 24*60*60*1000){                await remove(ref(window.__fb.db,'stories/'+id)).catch(()=>{});                if(val.storagePath){                  try{ await window.__fb.deleteObject(window.__fb.sRef(window.__fb.storage, val.storagePath)); }catch(e){}                }              }            }          }        }        setInterval(cleanOldStories, 60*60*1000);      }      // Upload helpers (only works when firebaseAvailable)      function readImageThumb(file){        return new Promise((res,rej)=>{          const fr = new FileReader();          fr.onload = ()=>res(fr.result);          fr.onerror = rej;          fr.readAsDataURL(file);        });      }      function generateVideoThumb(file){        // capture first frame into canvas        return new Promise((res,rej)=>{          const url = URL.createObjectURL(file);          const v = document.createElement('video');          v.preload = 'metadata';          v.src = url;          v.muted = true;          v.playsInline = true;          v.currentTime = 0.5;          v.onloadeddata = ()=>{            try{              const canvas = document.createElement('canvas');              canvas.width = v.videoWidth || 320;              canvas.height = v.videoHeight || 180;              const ctx = canvas.getContext('2d');              ctx.drawImage(v,0,0,canvas.width,canvas.height);              const data = canvas.toDataURL('image/jpeg',0.7);              URL.revokeObjectURL(url);              res(data);            }catch(e){              URL.revokeObjectURL(url);              res('');            }          };          v.onerror = ()=>{ URL.revokeObjectURL(url); res(''); };        });      }      // Add story (admin) - Firebase upload only      storyFileInput.onchange = async function(e){        if(!isAdmin) return;        const file = e.target.files[0];        if(!file) return;        const type = file.type || '';        if(!(type.startsWith('image/') || type.startsWith('video/'))){          alert('Only image/video allowed');          return;        }        if(!firebaseAvailable){          alert('Upload requires Firebase enabled. For static/public files, add them in /statuses/ folder in your hosting/repo.');          storyFileInput.value = '';          return;        }        const name = prompt("Name for the story (optional):") || "Anonymous";        const caption = prompt("Caption (optional):") || "";        const id = Math.random().toString(36).slice(2);        const storagePath = `stories/${id}-${Date.now()}-${file.name.replace(/\s+/g,'_')}`;        const uploadRef = window.__fb.sRef(window.__fb.storage, storagePath);        // create a thumbnail        let thumb = '';        if(type.startsWith('image/')){          thumb = await readImageThumb(file).catch(()=>'');        } else {          thumb = await generateVideoThumb(file).catch(()=>'');          // fallback to generic video icon if no thumb          if(!thumb) thumb = 'data:image/svg+xml;utf8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"><rect width="100%" height="100%" fill="#111"/><text x="50%" y="50%" fill="#fff" font-size="20" text-anchor="middle" dominant-baseline="middle">Video</text></svg>`);        }        // upload        try{          await window.__fb.uploadBytes(uploadRef, file);          const url = await window.__fb.getDownloadURL(uploadRef);          // push to db          const storiesRef = window.__fb.ref(window.__fb.db,'stories/' + id);          await window.__fb.set(storiesRef, {            name: name,            url: url,            thumb: thumb,            storagePath: storagePath,            ts: Date.now(),            views: 0,            caption: caption          });          alert('Story uploaded!');          storyFileInput.value = '';        }catch(err){          console.error(err);          alert('Upload failed');        }      };      // Open story view + increment views with transaction and ask for viewer name      async function openStoryView(storyId){        const story = storiesCache.find(s=>s.id === storyId);        if(!story) return;        // BEFORE showing the story ask for viewer name (optional)        try{          const enteredNameRaw = prompt('Enter your name (optional):');          let enteredName = enteredNameRaw !== null ? enteredNameRaw.trim() : null;          // determine viewers array (from firebase or local)          let viewersArr = [];          let viewersRef = null;          if(firebaseAvailable){            viewersRef = window.__fb.ref(window.__fb.db, 'stories/' + story.id + '/viewers');            const viewersSnap = await window.__fb.get(viewersRef);            if(viewersSnap.exists()){              const obj = viewersSnap.val();              viewersArr = Object.values(obj).map(v=>v.name||v);            }          } else {            // local viewers stored in localStorage under key viewers_<storyid>            viewersArr = JSON.parse(localStorage.getItem('viewers_' + story.id) || '[]');          }          if(enteredName === null){            // user pressed Cancel — we'll treat as empty -> auto name            enteredName = '';          }          if(!enteredName){            // generate auto name like storycount.1,2,3            const idx = (viewersArr.length||0) + 1;            enteredName = `storycount.${idx}`;          }          // Save viewer          if(firebaseAvailable){            try{              await window.__fb.push(viewersRef, { name: enteredName, ts: Date.now() });            }catch(e){              console.warn('Viewer save failed', e);            }          } else {            viewersArr.unshift({ name: enteredName, ts: Date.now() });            localStorage.setItem('viewers_' + story.id, JSON.stringify(viewersArr));          }          // now show overlay          overlay.classList.add('active');          overlay.setAttribute('aria-hidden','false');          overlayMediaContainer.innerHTML = '';          overlayName.textContent = story.name || 'User';          overlayTime.textContent = timeAgo(story.ts || Date.now());          overlayMini.innerHTML = `<img src="${escapeHtml(story.thumb||story.url)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;          overlayCaption.textContent = story.caption || '';          overlayPlayCount.textContent = `👁️ ${story.views||0}`;          deleteStoryBtn.style.display = isAdmin ? 'inline-block' : 'none';          // mark seen locally          seenStories[story.id] = true;          localStorage.setItem('seenStories', JSON.stringify(seenStories));          // update ring instantly          const ring = document.querySelector(`.story-ring[data-storyid="${story.id}"]`);          if(ring) ring.classList.add('seen');          // increment views in db (transaction) if firebase available          if(firebaseAvailable){            try{              const storyRef = window.__fb.ref(window.__fb.db, 'stories/' + story.id + '/views');              await window.__fb.runTransaction(storyRef, cur => (cur || 0) + 1);              // get the latest value (we'll set overlayPlayCount after reading snapshot)              const snap = await window.__fb.get(window.__fb.ref(window.__fb.db, 'stories/' + story.id));              if(snap.exists()){                overlayPlayCount.textContent = `👁️ ${snap.val().views||0}`;              }            }catch(e){              console.warn('view increment failed', e);            }          } else {            // local increment (store in localStorage)            const key = 'local_views_' + story.id;            const cur = parseInt(localStorage.getItem(key) || '0', 10) + 1;            localStorage.setItem(key, String(cur));            overlayPlayCount.textContent = `👁️ ${cur}`;          }          // show media (image/video)          if((story.url||'').match(/\.(mp4|webm|ogg)(\?|$)/i) || story.url && (story.mime && story.mime.startsWith('video/'))){            const v = document.createElement('video');            v.src = story.url;            v.controls = true;            v.autoplay = true;            v.playsInline = true;            v.style.maxHeight = '72vh';            overlayMediaContainer.appendChild(v);          } else {            const img = document.createElement('img');            img.src = story.url || story.thumb;            img.alt = 'story';            overlayMediaContainer.appendChild(img);          }          // load viewers list into overlay          try{            overlayViewers.innerHTML = '';            if(firebaseAvailable){              const vSnap = await window.__fb.get(window.__fb.ref(window.__fb.db, 'stories/' + story.id + '/viewers'));              if(vSnap.exists()){                const vObj = vSnap.val();                const vList = Object.values(vObj).slice(-30); // last 30 viewers                vList.reverse(); // show newest first                vList.forEach(v=>{                  const pill = document.createElement('div');                  pill.className = 'viewer-pill';                  pill.textContent = v.name || ('viewer');                  overlayViewers.appendChild(pill);                });              } else {                overlayViewers.innerHTML = '<div class="muted">No viewers yet</div>';              }            } else {              const localViewers = JSON.parse(localStorage.getItem('viewers_' + story.id) || '[]');              if(localViewers.length){                localViewers.slice(0,30).forEach(v=>{                  const pill = document.createElement('div');                  pill.className = 'viewer-pill';                  pill.textContent = v.name || ('viewer');                  overlayViewers.appendChild(pill);                });              } else {                overlayViewers.innerHTML = '<div class="muted">No viewers yet</div>';              }            }          }catch(e){ console.warn('load viewers failed', e); overlayViewers.innerHTML = '<div class="muted">Unable to load viewers</div>'; }          // wire delete          deleteStoryBtn.onclick = async ()=>{            if(!confirm('Delete this story permanently?')) return;            if(!firebaseAvailable){              alert('Delete requires Firebase. For static files remove them from /statuses/ in hosting.');              return;            }            try{              // remove storage if present              if(story.storagePath){                try{ await window.__fb.deleteObject(window.__fb.sRef(window.__fb.storage, story.storagePath)); } catch(e){}              }              await window.__fb.remove(window.__fb.ref(window.__fb.db,'stories/'+story.id));              overlay.classList.remove('active');              overlay.setAttribute('aria-hidden','true');            }catch(err){ console.error(err); alert('Delete failed') }          }        }catch(err){          console.error('Open story failed', err);        }      }      // close overlay      overlayCloseBtn.onclick = ()=>{        overlay.classList.remove('active');        overlay.setAttribute('aria-hidden','true');        overlayMediaContainer.innerHTML = '';      };      overlay.onclick = (e)=>{        if(e.target === overlay) overlayCloseBtn.click();      };      // ----- Messages -----      // send message (anonymous)      sendBtn.onclick = async ()=>{        const text = (newMsgEl.value || '').trim();        if(!text) return;        sendBtn.disabled = true;        const msgId = Math.random().toString(36).slice(2);        const payload = {          text: text,          ts: Date.now(),          id: msgId        };        if(firebaseAvailable){          try{            await window.__fb.set(window.__fb.ref(window.__fb.db, 'messages/' + msgId), payload);            newMsgEl.value = '';          }catch(err){            // fallback to localStorage messages            const local = JSON.parse(localStorage.getItem('localMessages') || '[]');            local.unshift(payload);            localStorage.setItem('localMessages', JSON.stringify(local));          } finally { sendBtn.disabled = false; }        } else {          const local = JSON.parse(localStorage.getItem('localMessages') || '[]');          local.unshift(payload);          localStorage.setItem('localMessages', JSON.stringify(local));          newMsgEl.value = '';          sendBtn.disabled = false;          renderMessages(local);        }      };      // render messages      function renderMessages(arr){        messagesList.innerHTML = '';        if(!arr || arr.length === 0){          messagesList.innerHTML = `<div class="muted">No messages yet. Be the first to send one!</div>`;          return;        }        arr.sort((a,b)=>b.ts - a.ts);        arr.forEach(m=>{          const d = document.createElement('div');          d.className = 'msg-item';          d.innerHTML = `            <div class="msg-left">              <div class="msg-avatar">${(m.text||'').slice(0,1).toUpperCase()}</div>              <div class="msg-text">${escapeHtml(m.text)}</div>            </div>            <div class="msg-meta">              <div class="muted" style="font-size:.85rem">${timeAgo(m.ts)}</div>              <button class="msg-wand" title="Copy message">✂</button>              <button class="msg-delete" title="Delete message" style="display:${isAdmin ? 'inline-block':'none'}">Delete</button>            </div>          `;          // copy on wand click          d.querySelector('.msg-wand').onclick = ()=>{            navigator.clipboard?.writeText(m.text).then(()=>{ alert('Message copied') }).catch(()=>{ prompt('Copy this message', m.text) });          };          // delete (admin only)          const delBtn = d.querySelector('.msg-delete');          delBtn.onclick = async ()=>{            if(!confirm('Delete this message?')) return;            if(!firebaseAvailable){              const local = JSON.parse(localStorage.getItem('localMessages') || '[]').filter(mm=>mm.id !== m.id);              localStorage.setItem('localMessages', JSON.stringify(local));              loadLocalMessages();              return;            }            try{              await window.__fb.remove(window.__fb.ref(window.__fb.db, 'messages/' + m.id));            }catch(e){              // fallback local removal              const local = JSON.parse(localStorage.getItem('localMessages') || '[]').filter(mm=>mm.id !== m.id);              localStorage.setItem('localMessages', JSON.stringify(local));              loadLocalMessages();            }          };          messagesList.appendChild(d);        });      }      // listen messages from db + fallback to localStorage      if(firebaseAvailable){        const msgsRef = window.__fb.ref(window.__fb.db,'messages');        window.__fb.onValue(msgsRef, snap=>{          let arr = [];          if(snap.exists()){            arr = Object.entries(snap.val()).map(([id,val])=>({...val,id}));            renderMessages(arr);          } else {            const local = JSON.parse(localStorage.getItem('localMessages') || '[]');            renderMessages(local);          }        });      } else {        loadLocalMessages();      }      // Local only messages load      function loadLocalMessages(){        const local = JSON.parse(localStorage.getItem('localMessages') || '[]');        renderMessages(local);      }      // helper: escape HTML      function escapeHtml(s){        return (s+'').replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; });      }      // initialize seenStories highlight on load      setTimeout(()=>{ document.querySelectorAll('.story-ring').forEach(r=>{ const sid = r.getAttribute('data-storyid'); if(sid && seenStories[sid]) r.classList.add('seen'); }); }, 300);      // optional: open first story on double click of header      document.querySelector('.brand h1').ondblclick = ()=>{ if(storiesCache[0]) openStoryView(storiesCache[0].id); };    } // end afterLoginInit    // start by showing login modal    (function init(){      loginModal.style.display = 'flex';      // quick UX: set theme label      themeToggle.textContent = 'Dark';    })();  </script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Insta Thoughts – Royal Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #D4AF37;
+    --gold2: #FFD700;
+    --gold3: #B8860B;
+    --gold4: #FFF0A0;
+    --cream: #FDF6E3;
+    --dark: #1a0f00;
+    --dark2: #2d1a00;
+    --rose: #8B0000;
+    --rose2: #c0392b;
+    --shadow: 0 4px 40px rgba(212,175,55,0.25);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #0d0600;
+    min-height: 100vh;
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  /* ── FLORAL BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(212,175,55,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(139,0,0,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 50%, rgba(30,10,0,0.95) 0%, transparent 100%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* SVG floral overlay */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cdefs%3E%3Cstyle%3E.f%7Bfill:none;stroke:%23D4AF37;stroke-width:0.4;opacity:0.18%7D%3C/style%3E%3C/defs%3E%3Ccircle class='f' cx='200' cy='200' r='80'/%3E%3Ccircle class='f' cx='200' cy='200' r='120'/%3E%3Ccircle class='f' cx='200' cy='200' r='160'/%3E%3Cellipse class='f' cx='200' cy='200' rx='40' ry='80'/%3E%3Cellipse class='f' cx='200' cy='200' rx='80' ry='40'/%3E%3Cellipse class='f' cx='200' cy='200' rx='56' ry='80' transform='rotate(45 200 200)'/%3E%3Cellipse class='f' cx='200' cy='200' rx='56' ry='80' transform='rotate(-45 200 200)'/%3E%3Ccircle class='f' cx='200' cy='120' r='20'/%3E%3Ccircle class='f' cx='200' cy='280' r='20'/%3E%3Ccircle class='f' cx='120' cy='200' r='20'/%3E%3Ccircle class='f' cx='280' cy='200' r='20'/%3E%3Ccircle class='f' cx='144' cy='144' r='14'/%3E%3Ccircle class='f' cx='256' cy='144' r='14'/%3E%3Ccircle class='f' cx='144' cy='256' r='14'/%3E%3Ccircle class='f' cx='256' cy='256' r='14'/%3E%3Cpath class='f' d='M200 80 Q240 120 200 160 Q160 120 200 80Z'/%3E%3Cpath class='f' d='M200 320 Q240 280 200 240 Q160 280 200 320Z'/%3E%3Cpath class='f' d='M80 200 Q120 240 160 200 Q120 160 80 200Z'/%3E%3Cpath class='f' d='M320 200 Q280 240 240 200 Q280 160 320 200Z'/%3E%3C/svg%3E");
+    background-size: 400px 400px;
+    pointer-events: none; z-index: 0;
+    opacity: 0.6;
+  }
+
+  .container { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; padding: 20px 16px 80px; }
+
+  /* ── HEADER ── */
+  .royal-header {
+    text-align: center;
+    padding: 40px 0 30px;
+    position: relative;
+  }
+  .crown { font-size: 2.4rem; animation: floatCrown 3s ease-in-out infinite; display: block; }
+  @keyframes floatCrown { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  .brand-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #B8860B 0%, #FFD700 40%, #FFF0A0 60%, #D4AF37 80%, #B8860B 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    text-shadow: none;
+    filter: drop-shadow(0 0 12px rgba(212,175,55,0.5));
+    margin: 8px 0 4px;
+  }
+  .brand-sub {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    color: rgba(212,175,55,0.7);
+    font-size: 0.95rem;
+    letter-spacing: 3px;
+  }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 18px 0;
+  }
+  .divider-line { flex:1; height:1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .divider-gem { font-size: 1rem; color: var(--gold2); }
+
+  /* ── CARDS ── */
+  .royal-card {
+    background: linear-gradient(145deg, rgba(40,20,0,0.95), rgba(20,8,0,0.98));
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 20px;
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(212,175,55,0.2);
+  }
+  .royal-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold2), var(--gold), transparent);
+  }
+  /* Corner florals */
+  .royal-card::after {
+    content: '❧';
+    position: absolute; top: 10px; right: 14px;
+    color: rgba(212,175,55,0.25); font-size: 1.4rem;
+  }
+
+  .card-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.85rem;
+    color: var(--gold2);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ── SHARE LINK BOX ── */
+  .share-box {
+    background: rgba(212,175,55,0.06);
+    border: 1px dashed rgba(212,175,55,0.4);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .share-link { flex:1; font-size: 0.82rem; color: var(--gold4); word-break: break-all; font-family: monospace; }
+  .copy-btn {
+    background: linear-gradient(135deg, var(--gold3), var(--gold2));
+    border: none; border-radius: 8px;
+    padding: 8px 14px; cursor: pointer;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.65rem; font-weight: 700;
+    color: var(--dark); letter-spacing: 1px;
+    white-space: nowrap;
+    transition: all 0.3s;
+  }
+  .copy-btn:hover { transform: scale(1.05); box-shadow: 0 0 16px rgba(255,215,0,0.5); }
+
+  /* Share options */
+  .share-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .share-opt {
+    flex:1; min-width: 80px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.75rem;
+    color: rgba(212,175,55,0.8);
+  }
+  .share-opt:hover { background: rgba(212,175,55,0.12); border-color: var(--gold); transform: translateY(-2px); }
+  .share-opt .icon { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+  /* ── REACTION ROW ── */
+  .reaction-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .react-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 20px; padding: 6px 14px;
+    cursor: pointer; font-size: 0.85rem;
+    color: var(--cream); transition: all 0.25s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .react-btn:hover, .react-btn.active { background: rgba(212,175,55,0.15); border-color: var(--gold); transform: scale(1.08); }
+  .react-count { font-size: 0.75rem; color: var(--gold2); }
+
+  /* ── MESSAGE INPUT ── */
+  .royal-input {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 14px;
+    padding: 14px 16px;
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    resize: none; outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    min-height: 100px;
+  }
+  .royal-input::placeholder { color: rgba(212,175,55,0.4); font-style: italic; }
+  .royal-input:focus { border-color: var(--gold2); box-shadow: 0 0 20px rgba(255,215,0,0.12); }
+
+  .char-count { text-align: right; font-size: 0.75rem; color: rgba(212,175,55,0.5); margin-top: 6px; }
+
+  /* ── MOOD SELECTOR ── */
+  .mood-row { display: flex; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+  .mood-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 20px; padding: 5px 12px;
+    cursor: pointer; font-size: 0.8rem;
+    color: rgba(212,175,55,0.7);
+    transition: all 0.25s;
+  }
+  .mood-btn:hover, .mood-btn.active { background: rgba(212,175,55,0.15); border-color: var(--gold); color: var(--gold2); }
+
+  /* ── SEND BUTTON ── */
+  .royal-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #7a5c00, #D4AF37, #FFD700, #D4AF37, #7a5c00);
+    background-size: 200% auto;
+    border: none; border-radius: 14px;
+    padding: 15px;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--dark); letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.4s;
+    margin-top: 14px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+  }
+  .royal-btn:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,175,55,0.5); }
+  .royal-btn:active { transform: translateY(0); }
+
+  /* ── MESSAGES FEED ── */
+  .messages-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 0.8rem;
+    color: var(--gold2);
+    letter-spacing: 3px;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .msg-count-badge {
+    background: rgba(212,175,55,0.2);
+    border: 1px solid var(--gold3);
+    border-radius: 20px; padding: 2px 10px;
+    font-size: 0.7rem; color: var(--gold2);
+  }
+
+  .message-item {
+    background: linear-gradient(145deg, rgba(50,25,0,0.8), rgba(25,10,0,0.9));
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 16px;
+    padding: 18px 18px 14px;
+    margin-bottom: 14px;
+    position: relative;
+    animation: fadeSlideIn 0.5s ease;
+    transition: border-color 0.3s;
+  }
+  .message-item:hover { border-color: rgba(212,175,55,0.45); }
+  @keyframes fadeSlideIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+  .msg-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .anon-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold3), var(--rose2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; border: 1px solid rgba(212,175,55,0.4);
+    flex-shrink: 0;
+  }
+  .anon-label { font-size: 0.75rem; color: rgba(212,175,55,0.6); font-style: italic; }
+  .msg-time { font-size: 0.7rem; color: rgba(212,175,55,0.4); margin-left: auto; }
+  .msg-mood { font-size: 0.7rem; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.2); border-radius: 10px; padding: 2px 8px; color: var(--gold2); }
+
+  .msg-text { font-size: 1.05rem; line-height: 1.6; color: var(--cream); margin-bottom: 12px; font-style: italic; }
+
+  .msg-actions { display: flex; gap: 8px; align-items: center; }
+  .msg-react {
+    background: none; border: 1px solid rgba(212,175,55,0.15); border-radius: 14px;
+    padding: 4px 10px; cursor: pointer; font-size: 0.8rem; color: rgba(212,175,55,0.7);
+    transition: all 0.2s; display: flex; align-items: center; gap: 4px;
+  }
+  .msg-react:hover { background: rgba(212,175,55,0.1); border-color: var(--gold); }
+  .reply-btn { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 4px 12px; cursor: pointer; font-size: 0.75rem; color: rgba(255,255,255,0.5); transition: all 0.2s; }
+  .reply-btn:hover { border-color: rgba(212,175,55,0.3); color: var(--gold2); }
+
+  /* TRUTH or DARE */
+  .tod-row { display: flex; gap: 10px; margin-top: 10px; }
+  .tod-btn {
+    flex:1; padding: 10px; border-radius: 12px; border: none; cursor: pointer;
+    font-family: 'Cinzel Decorative', serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px;
+    transition: all 0.3s;
+  }
+  .truth-btn { background: linear-gradient(135deg, #1a3a4a, #2a6a8a); color: #a0d8ef; border: 1px solid #2a8aaa; }
+  .dare-btn { background: linear-gradient(135deg, #4a1a1a, #8a2a2a); color: #f0a0a0; border: 1px solid #aa2a2a; }
+  .truth-btn:hover { box-shadow: 0 0 16px rgba(42,138,170,0.4); transform: translateY(-2px); }
+  .dare-btn:hover { box-shadow: 0 0 16px rgba(170,42,42,0.4); transform: translateY(-2px); }
+
+  /* POLL */
+  .poll-opt {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 10px; padding: 10px 14px;
+    margin-bottom: 8px; cursor: pointer;
+    transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .poll-opt:hover { border-color: var(--gold); }
+  .poll-bar { position: absolute; left:0; top:0; bottom:0; background: rgba(212,175,55,0.1); border-radius: 10px; transition: width 0.6s; }
+  .poll-label { position: relative; z-index: 1; font-size: 0.9rem; display: flex; justify-content: space-between; }
+  .poll-pct { color: var(--gold2); font-size: 0.8rem; }
+
+  /* ── TABS ── */
+  .tab-row { display: flex; gap: 4px; background: rgba(0,0,0,0.4); border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+  .tab {
+    flex:1; padding: 9px; border-radius: 9px; border: none;
+    background: none; cursor: pointer;
+    font-family: 'Cinzel Decorative', serif; font-size: 0.6rem; letter-spacing: 1px;
+    color: rgba(212,175,55,0.5); transition: all 0.3s;
+  }
+  .tab.active { background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(212,175,55,0.1)); color: var(--gold2); border: 1px solid rgba(212,175,55,0.3); }
+
+  /* STORY card */
+  .stories-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; margin-bottom: 20px; }
+  .stories-row::-webkit-scrollbar { display: none; }
+  .story-circle {
+    flex-shrink: 0; width: 64px; text-align: center; cursor: pointer;
+  }
+  .story-ring {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold3), var(--gold2), var(--rose));
+    padding: 2px; margin: 0 auto 4px;
+  }
+  .story-inner { width: 100%; height: 100%; border-radius: 50%; background: rgba(20,8,0,0.9); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+  .story-name { font-size: 0.65rem; color: rgba(212,175,55,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* ── FLOATING PETALS ── */
+  .petal { position: fixed; top:-20px; font-size: 1rem; animation: fallPetal linear infinite; opacity: 0; pointer-events: none; z-index: 999; }
+  @keyframes fallPetal {
+    0%{transform:translateY(0) rotate(0deg); opacity:0.7}
+    100%{transform:translateY(110vh) rotate(360deg); opacity:0}
+  }
+
+  /* ── TOAST ── */
+  .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:linear-gradient(135deg,var(--gold3),var(--gold2)); color:var(--dark); padding:10px 24px; border-radius:20px; font-family:'Cinzel Decorative',serif; font-size:0.7rem; letter-spacing:1px; opacity:0; transition:all 0.4s; z-index:9999; pointer-events:none; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ── NAV ── */
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:rgba(10,4,0,0.97); border-top:1px solid rgba(212,175,55,0.2); display:flex; z-index:100; backdrop-filter:blur(20px); }
+  .nav-btn { flex:1; padding:12px 4px 14px; background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px; color:rgba(212,175,55,0.4); font-size:0.55rem; font-family:'Cinzel Decorative',serif; letter-spacing:1px; transition:all 0.3s; }
+  .nav-btn.active, .nav-btn:hover { color:var(--gold2); }
+  .nav-btn .ni { font-size:1.3rem; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity 0.3s; backdrop-filter:blur(6px); }
+  .modal-overlay.open { opacity:1; pointer-events:all; }
+  .modal-box { background:linear-gradient(180deg,#1a0a00,#0d0600); border:1px solid rgba(212,175,55,0.3); border-radius:24px 24px 0 0; width:100%; padding:28px 20px 40px; transform:translateY(100%); transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .modal-overlay.open .modal-box { transform:translateY(0); }
+  .modal-handle { width:40px; height:3px; background:rgba(212,175,55,0.3); border-radius:2px; margin:0 auto 20px; }
+
+  /* ── CONFESSION WHEEL ── */
+  .wheel-container { text-align:center; padding:10px 0; }
+  .spin-wheel {
+    width:180px; height:180px; border-radius:50%;
+    background: conic-gradient(
+      #7a3a00 0deg 45deg, #D4AF37 45deg 90deg, #8B0000 90deg 135deg,
+      #2a5a2a 135deg 180deg, #3a2a6a 180deg 225deg, #7a5a00 225deg 270deg,
+      #4a1a3a 270deg 315deg, #1a4a4a 315deg 360deg
+    );
+    margin: 0 auto 16px;
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 30px rgba(212,175,55,0.4);
+    transition: transform 3s cubic-bezier(0.17,0.67,0.12,0.99);
+    position: relative;
+    cursor: pointer;
+  }
+  .wheel-pointer { font-size:2rem; position:absolute; top:-30px; left:50%; transform:translateX(-50%); }
+  .spin-result { font-family:'IM Fell English',serif; font-style:italic; color:var(--gold2); font-size:1.1rem; min-height:32px; margin-top:10px; }
+
+  /* Glow anim */
+  @keyframes goldGlow { 0%,100%{box-shadow:0 0 20px rgba(212,175,55,0.2)} 50%{box-shadow:0 0 40px rgba(212,175,55,0.5)} }
+  .royal-card { animation: goldGlow 4s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<!-- Floating petals -->
+<div class="petal" style="left:10%;animation-duration:8s;animation-delay:0s">🌸</div>
+<div class="petal" style="left:25%;animation-duration:11s;animation-delay:2s">🌺</div>
+<div class="petal" style="left:50%;animation-duration:9s;animation-delay:4s">✿</div>
+<div class="petal" style="left:75%;animation-duration:12s;animation-delay:1s">🌹</div>
+<div class="petal" style="left:90%;animation-duration:10s;animation-delay:6s">🌸</div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="royal-header">
+    <span class="crown">👑</span>
+    <div class="brand-title">Insta Thoughts</div>
+    <div class="brand-sub">✦ Royal Anonymous Edition ✦</div>
+    <div class="divider"><div class="divider-line"></div><div class="divider-gem">❋</div><div class="divider-line"></div></div>
+  </div>
+
+  <!-- STORIES ROW -->
+  <div class="stories-row" id="storiesRow">
+    <div class="story-circle" onclick="showToast('Story feature coming!')">
+      <div class="story-ring"><div class="story-inner">➕</div></div>
+      <div class="story-name">Add Story</div>
+    </div>
+    <div class="story-circle">
+      <div class="story-ring"><div class="story-inner">👤</div></div>
+      <div class="story-name">Anonymous</div>
+    </div>
+    <div class="story-circle">
+      <div class="story-ring"><div class="story-inner">🌹</div></div>
+      <div class="story-name">Rose</div>
+    </div>
+    <div class="story-circle">
+      <div class="story-ring"><div class="story-inner">🦋</div></div>
+      <div class="story-name">Butterfly</div>
+    </div>
+    <div class="story-circle">
+      <div class="story-ring"><div class="story-inner">🌙</div></div>
+      <div class="story-name">Midnight</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-row">
+    <button class="tab active" onclick="switchTab(this,'feed')">📜 Feed</button>
+    <button class="tab" onclick="switchTab(this,'send')">✉ Send</button>
+    <button class="tab" onclick="switchTab(this,'games')">🎴 Games</button>
+    <button class="tab" onclick="switchTab(this,'poll')">📊 Poll</button>
+  </div>
+
+  <!-- ═══ TAB: FEED ═══ -->
+  <div id="tab-feed">
+
+    <!-- Share My Link -->
+    <div class="royal-card">
+      <div class="card-title">🔗 Share Your Royal Link</div>
+      <div class="share-box">
+        <div class="share-link" id="myLink">instathoughts.app/u/you</div>
+        <button class="copy-btn" onclick="copyLink()">COPY</button>
+      </div>
+      <div class="share-row">
+        <div class="share-opt" onclick="shareWA()"><span class="icon">💬</span>WhatsApp</div>
+        <div class="share-opt" onclick="shareIG()"><span class="icon">📸</span>Instagram</div>
+        <div class="share-opt" onclick="shareTW()"><span class="icon">🐦</span>Twitter</div>
+        <div class="share-opt" onclick="showToast('Link copied for Snapchat!')"><span class="icon">👻</span>Snapchat</div>
+      </div>
+    </div>
+
+    <!-- Messages feed -->
+    <div class="royal-card">
+      <div class="messages-title">
+        💌 Your Anonymous Messages
+        <span class="msg-count-badge" id="msgCountBadge">3 messages</span>
+      </div>
+      <div id="messagesFeed"></div>
+    </div>
+
+  </div>
+
+  <!-- ═══ TAB: SEND ═══ -->
+  <div id="tab-send" style="display:none">
+    <div class="royal-card">
+      <div class="card-title">✉ Send Anonymous Message</div>
+
+      <div class="mood-row" id="moodRow">
+        <button class="mood-btn active" data-mood="💬 Message" onclick="selectMood(this)">💬 Message</button>
+        <button class="mood-btn" data-mood="🌹 Confession" onclick="selectMood(this)">🌹 Confess</button>
+        <button class="mood-btn" data-mood="🔥 Roast" onclick="selectMood(this)">🔥 Roast</button>
+        <button class="mood-btn" data-mood="💛 Compliment" onclick="selectMood(this)">💛 Praise</button>
+        <button class="mood-btn" data-mood="🤫 Secret" onclick="selectMood(this)">🤫 Secret</button>
+        <button class="mood-btn" data-mood="💭 Advice" onclick="selectMood(this)">💭 Advice</button>
+      </div>
+
+      <textarea class="royal-input" id="msgInput" placeholder="Write your anonymous thought here... ✨" maxlength="300" oninput="updateCount()"></textarea>
+      <div class="char-count"><span id="charCount">0</span> / 300</div>
+
+      <!-- NGL-style question suggestions -->
+      <div style="margin:12px 0 6px;font-size:0.75rem;color:rgba(212,175,55,0.6);font-style:italic;">✦ Quick prompts:</div>
+      <div class="reaction-row" id="promptRow">
+        <button class="react-btn" onclick="usePrompt(this)">What do you think of me? 🤔</button>
+        <button class="react-btn" onclick="usePrompt(this)">Rate me honestly 👀</button>
+        <button class="react-btn" onclick="usePrompt(this)">Your secret crush? 💕</button>
+        <button class="react-btn" onclick="usePrompt(this)">One word for me 🌟</button>
+      </div>
+
+      <button class="royal-btn" onclick="sendMessage()">✦ SEND ANONYMOUSLY ✦</button>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: GAMES ═══ -->
+  <div id="tab-games" style="display:none">
+    <!-- Truth or Dare -->
+    <div class="royal-card">
+      <div class="card-title">🎴 Truth or Dare</div>
+      <p style="font-size:0.85rem;color:rgba(212,175,55,0.7);margin-bottom:14px;font-style:italic;">Choose your fate, dear soul...</p>
+      <div class="tod-row">
+        <button class="tod-btn truth-btn" onclick="playTOD('truth')">💙 TRUTH</button>
+        <button class="tod-btn dare-btn" onclick="playTOD('dare')">❤️ DARE</button>
+      </div>
+      <div id="todResult" style="margin-top:16px;min-height:50px;text-align:center;font-family:'IM Fell English',serif;font-style:italic;font-size:1rem;color:var(--gold4);line-height:1.6;"></div>
+    </div>
+
+    <!-- Confession Wheel -->
+    <div class="royal-card">
+      <div class="card-title">🌹 Confession Wheel</div>
+      <div class="wheel-container">
+        <div style="position:relative;display:inline-block;">
+          <div class="wheel-pointer">👆</div>
+          <div class="spin-wheel" id="spinWheel" onclick="spinTheWheel()"></div>
+        </div>
+        <p style="font-size:0.75rem;color:rgba(212,175,55,0.5);margin:8px 0 4px;">Tap to spin</p>
+        <div class="spin-result" id="spinResult">Your fate awaits...</div>
+      </div>
+    </div>
+
+    <!-- Would You Rather -->
+    <div class="royal-card">
+      <div class="card-title">⚔️ Would You Rather</div>
+      <div id="wyrQuestion" style="font-family:'IM Fell English',serif;font-style:italic;font-size:1rem;color:var(--cream);margin-bottom:14px;line-height:1.5;">Loading a royal dilemma...</div>
+      <div style="display:flex;gap:10px;">
+        <button class="tod-btn truth-btn" style="flex:1" onclick="voteWYR('A')">Option A 🌹</button>
+        <button class="tod-btn dare-btn" style="flex:1" onclick="voteWYR('B')">Option B 💀</button>
+      </div>
+      <div id="wyrVotes" style="display:none;margin-top:12px;">
+        <div style="font-size:0.8rem;color:rgba(212,175,55,0.6);margin-bottom:6px;">Results:</div>
+        <div class="poll-opt"><div class="poll-bar" id="wyrBarA"></div><div class="poll-label"><span>Option A 🌹</span><span class="poll-pct" id="wyrPctA">0%</span></div></div>
+        <div class="poll-opt"><div class="poll-bar" id="wyrBarB"></div><div class="poll-label"><span>Option B 💀</span><span class="poll-pct" id="wyrPctB">0%</span></div></div>
+      </div>
+      <button class="royal-btn" style="margin-top:12px;padding:10px" onclick="newWYR()">✦ New Question ✦</button>
+    </div>
+  </div>
+
+  <!-- ═══ TAB: POLL ═══ -->
+  <div id="tab-poll" style="display:none">
+    <div class="royal-card">
+      <div class="card-title">📊 Create a Royal Poll</div>
+      <textarea class="royal-input" id="pollQ" placeholder="Ask your royal question... e.g. What do you think of me?" style="min-height:70px" maxlength="150"></textarea>
+      <div style="margin:12px 0 8px;font-size:0.75rem;color:rgba(212,175,55,0.5);">Poll options:</div>
+      <input class="royal-input" id="opt1" placeholder="Option 1 🌹" style="min-height:44px;margin-bottom:8px"/>
+      <input class="royal-input" id="opt2" placeholder="Option 2 💫" style="min-height:44px;margin-bottom:8px"/>
+      <input class="royal-input" id="opt3" placeholder="Option 3 (optional)" style="min-height:44px;margin-bottom:8px"/>
+      <button class="royal-btn" onclick="createPoll()">✦ PUBLISH POLL ✦</button>
+    </div>
+
+    <div class="royal-card" id="activePoll" style="display:none">
+      <div class="card-title">🗳️ Active Poll</div>
+      <div id="pollQDisplay" style="font-family:'IM Fell English',serif;font-style:italic;font-size:1.05rem;color:var(--cream);margin-bottom:14px;"></div>
+      <div id="pollOptions"></div>
+      <div style="font-size:0.75rem;color:rgba(212,175,55,0.4);margin-top:10px;text-align:right;" id="pollTotal">0 votes</div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-btn active" onclick="switchTab(null,'feed',this)"><span class="ni">🏠</span>Home</button>
+  <button class="nav-btn" onclick="switchTab(null,'send',this)"><span class="ni">✉</span>Send</button>
+  <button class="nav-btn" onclick="switchTab(null,'games',this)"><span class="ni">🎴</span>Games</button>
+  <button class="nav-btn" onclick="switchTab(null,'poll',this)"><span class="ni">📊</span>Poll</button>
+  <button class="nav-btn" onclick="showToast('Profile coming soon! 👑')"><span class="ni">👤</span>Profile</button>
+</div>
+
+<script>
+// ── Sample messages ──
+const sampleMessages = [
+  { emoji:'🌹', text:'You have the most genuine smile I have ever seen. It lights up the whole room.', mood:'💛 Compliment', time:'2m ago', reacts:{❤️:12,'🔥':5,'😮':2}, replies:3 },
+  { emoji:'🦋', text:'I have had a crush on you since the very first day we met. I was too afraid to tell you.', mood:'🌹 Confession', time:'15m ago', reacts:{❤️:34,'😮':8,'😭':6}, replies:7 },
+  { emoji:'👤', text:'Be honest — your fashion sense is actually really iconic. People copy you without admitting it.', mood:'🔥 Roast', time:'1h ago', reacts:{❤️:5,'😂':20,'🔥':11}, replies:1 },
+];
+
+const emojis = ['🌹','🦋','🌙','👤','🌸','⭐','🎭','🌺'];
+const moods = { '💬 Message':'rgba(42,42,100,0.4)', '🌹 Confession':'rgba(80,10,10,0.4)', '🔥 Roast':'rgba(80,40,0,0.4)', '💛 Compliment':'rgba(60,50,0,0.4)', '🤫 Secret':'rgba(40,60,40,0.4)', '💭 Advice':'rgba(20,50,70,0.4)' };
+let selectedMood = '💬 Message';
+let messages = [...sampleMessages];
+let pollVotes = {};
+
+function renderMessages() {
+  const feed = document.getElementById('messagesFeed');
+  feed.innerHTML = '';
+  messages.forEach((m,i)=>{
+    const reactHTML = Object.entries(m.reacts).map(([e,n])=>
+      `<button class="msg-react" onclick="reactMsg(${i},'${e}')">${e} <span>${n}</span></button>`
+    ).join('');
+    feed.innerHTML += `
+    <div class="message-item">
+      <div class="msg-header">
+        <div class="anon-avatar">${m.emoji}</div>
+        <div>
+          <div style="font-size:0.78rem;color:rgba(212,175,55,0.8);font-family:'Cinzel Decorative',serif;font-size:0.65rem;">Anonymous</div>
+          <div class="anon-label">${m.mood}</div>
+        </div>
+        <div class="msg-time">${m.time}</div>
+      </div>
+      <div class="msg-text">"${m.text}"</div>
+      <div class="msg-actions">
+        ${reactHTML}
+        <button class="reply-btn" onclick="showToast('Reply feature — premium! 👑')">Reply (${m.replies})</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('msgCountBadge').textContent = messages.length + ' messages';
+}
+
+function reactMsg(i, emoji) {
+  messages[i].reacts[emoji] = (messages[i].reacts[emoji]||0)+1;
+  renderMessages();
+}
+
+// ── Tabs ──
+function switchTab(el, tab, navEl) {
+  ['feed','send','games','poll'].forEach(t=>{
+    const el2 = document.getElementById('tab-'+t);
+    if(el2) el2.style.display = t===tab?'block':'none';
+  });
+  // update tab buttons
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  // nav
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(navEl) navEl.classList.add('active');
+}
+
+// ── Mood ──
+function selectMood(el) {
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  selectedMood = el.dataset.mood;
+}
+
+// ── Char count ──
+function updateCount() {
+  const v = document.getElementById('msgInput').value.length;
+  document.getElementById('charCount').textContent = v;
+}
+
+// ── Quick prompts ──
+function usePrompt(el) {
+  document.getElementById('msgInput').value = el.textContent.trim();
+  updateCount();
+}
+
+// ── Send ──
+function sendMessage() {
+  const text = document.getElementById('msgInput').value.trim();
+  if(!text){ showToast('Please write a message ✨'); return; }
+  messages.unshift({ emoji: emojis[Math.floor(Math.random()*emojis.length)], text, mood: selectedMood, time:'Just now', reacts:{❤️:0,'🔥':0,'😮':0}, replies:0 });
+  document.getElementById('msgInput').value='';
+  document.getElementById('charCount').textContent='0';
+  renderMessages();
+  switchTab(null,'feed');
+  showToast('Message sent anonymously! 👑');
+}
+
+// ── Copy link ──
+function copyLink() {
+  const link = document.getElementById('myLink').textContent;
+  navigator.clipboard?.writeText(link).catch(()=>{});
+  showToast('Royal link copied! 🔗');
+}
+function shareWA() { showToast('Opening WhatsApp... 💬'); }
+function shareIG() { showToast('Copied for Instagram! 📸'); }
+function shareTW() { showToast('Copied for Twitter! 🐦'); }
+
+// ── Toast ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2600);
+}
+
+// ── Truth or Dare ──
+const truths = [
+  'What is the most embarrassing thing you have ever done?',
+  'Who was your first crush and do you still think about them?',
+  'What is a secret you have never told anyone?',
+  'What is the biggest lie you have ever told?',
+  'Have you ever had feelings for your best friend\'s partner?',
+  'What is your deepest insecurity?',
+  'What is the most childish thing you still do?',
+];
+const dares = [
+  'Send a voice message to someone you secretly like 🎤',
+  'Post a cringe-worthy selfie to your story for 5 minutes',
+  'Text your ex "I miss you" and screenshot the reply 📱',
+  'Change your profile picture to a funny face for 1 hour',
+  'Send a heart emoji to the last person you texted ❤️',
+  'Do 20 jumping jacks right now and send proof 🏋️',
+];
+function playTOD(type) {
+  const list = type==='truth'?truths:dares;
+  const r = list[Math.floor(Math.random()*list.length)];
+  const icon = type==='truth'?'💙':'❤️';
+  document.getElementById('todResult').innerHTML = `${icon} <em>${r}</em>`;
+}
+
+// ── Confession Wheel ──
+const wheelItems = ['Confess a secret','Roast a friend','Compliment someone','Send a love note','Tell a truth','Take a dare','Skip your turn','Double dare!'];
+let spinning = false;
+let wheelDeg = 0;
+function spinTheWheel() {
+  if(spinning) return;
+  spinning = true;
+  document.getElementById('spinResult').textContent = 'Spinning...';
+  const extra = 1080 + Math.floor(Math.random()*360);
+  wheelDeg += extra;
+  document.getElementById('spinWheel').style.transform = `rotate(${wheelDeg}deg)`;
+  setTimeout(()=>{
+    const idx = Math.floor(((360 - (wheelDeg%360)) / 45)) % 8;
+    document.getElementById('spinResult').textContent = '✦ ' + wheelItems[idx] + ' ✦';
+    spinning = false;
+  }, 3100);
+}
+
+// ── Would You Rather ──
+const wyrQuestions = [
+  { q:'Would you rather know everyone\'s darkest secret OR have everyone know yours?', a:'Know their secrets 🤫', b:'They know mine 😬' },
+  { q:'Would you rather be famous but hated OR unknown but beloved by all who know you?', a:'Famous & hated 🌟', b:'Unknown & loved 💛' },
+  { q:'Would you rather send one accidental text to your crush OR your parents?', a:'To my crush 💘', b:'To my parents 😭' },
+  { q:'Would you rather live without love OR without music?', a:'Without love 💔', b:'Without music 🎵' },
+  { q:'Would you rather have every lie you tell turn your hair blue OR feel sick every time someone lies to you?', a:'Blue hair 💙', b:'Lie detector 🤢' },
+];
+let wyrVotesA=0, wyrVotesB=0, wyrIdx=0;
+function newWYR() {
+  wyrVotesA=0; wyrVotesB=0;
+  wyrIdx=(wyrIdx+1)%wyrQuestions.length;
+  const wyr=wyrQuestions[wyrIdx];
+  document.getElementById('wyrQuestion').textContent=wyr.q;
+  document.getElementById('wyrVotes').style.display='none';
+}
+function voteWYR(opt) {
+  if(opt==='A') wyrVotesA++; else wyrVotesB++;
+  const total=wyrVotesA+wyrVotesB;
+  const pA=Math.round(wyrVotesA/total*100), pB=100-pA;
+  document.getElementById('wyrBarA').style.width=pA+'%';
+  document.getElementById('wyrBarB').style.width=pB+'%';
+  document.getElementById('wyrPctA').textContent=pA+'%';
+  document.getElementById('wyrPctB').textContent=pB+'%';
+  document.getElementById('wyrVotes').style.display='block';
+}
+newWYR();
+
+// ── Poll ──
+function createPoll() {
+  const q=document.getElementById('pollQ').value.trim();
+  const o1=document.getElementById('opt1').value.trim();
+  const o2=document.getElementById('opt2').value.trim();
+  if(!q||!o1||!o2){showToast('Please fill question and at least 2 options');return;}
+  const opts=[o1,o2];
+  const o3=document.getElementById('opt3').value.trim();
+  if(o3) opts.push(o3);
+  pollVotes={};
+  opts.forEach(o=>pollVotes[o]=0);
+  document.getElementById('pollQDisplay').textContent=q;
+  const container=document.getElementById('pollOptions');
+  container.innerHTML='';
+  opts.forEach(o=>{
+    container.innerHTML+=`<div class="poll-opt" onclick="votePoll('${o}')"><div class="poll-bar" id="bar-${o.replace(/[^a-z0-9]/gi,'_')}"></div><div class="poll-label"><span>${o}</span><span class="poll-pct" id="pct-${o.replace(/[^a-z0-9]/gi,'_')}">0%</span></div></div>`;
+  });
+  document.getElementById('activePoll').style.display='block';
+  showToast('Poll published! 📊');
+}
+function votePoll(opt) {
+  if(!pollVotes.hasOwnProperty(opt)) return;
+  pollVotes[opt]++;
+  const total=Object.values(pollVotes).reduce((a,b)=>a+b,0);
+  document.getElementById('pollTotal').textContent=total+' votes';
+  Object.entries(pollVotes).forEach(([o,v])=>{
+    const key=o.replace(/[^a-z0-9]/gi,'_');
+    const pct=Math.round(v/total*100);
+    const bar=document.getElementById('bar-'+key);
+    const pctEl=document.getElementById('pct-'+key);
+    if(bar) bar.style.width=pct+'%';
+    if(pctEl) pctEl.textContent=pct+'%';
+  });
+  showToast('Vote counted! 🗳️');
+}
+
+// ── Init ──
+renderMessages();
+document.getElementById('wyrQuestion').textContent = wyrQuestions[0].q;
+</script>
+</body>
+</html>
